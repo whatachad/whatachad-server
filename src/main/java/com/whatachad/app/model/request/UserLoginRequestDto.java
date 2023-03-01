@@ -13,11 +13,11 @@ import lombok.ToString;
 @ToString
 public class UserLoginRequestDto {
 
-	@Schema(title = "유저 아이디", description = "설명" , example = "whatachad123", type = "String")
+	@Schema(title = "유저 아이디", description = "설명" , example = "admin", type = "String")
 	@NotBlank
 	private String id;
 
-	@Schema(title = "유저 비밀번호", description = "설명" , example = "admin1234", type = "String")
+	@Schema(title = "유저 비밀번호", description = "설명" , example = "admin", type = "String")
 	@NotBlank
 	private String password;
 }

@@ -1,4 +1,4 @@
-package com.whatachad.app.common.common;
+package com.whatachad.app.common;
 
 // For Business Logic
 public enum BError implements Error {

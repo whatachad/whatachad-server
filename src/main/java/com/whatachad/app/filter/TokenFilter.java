@@ -36,7 +36,7 @@ public class TokenFilter extends OncePerRequestFilter {
 		throws ServletException, IOException {
 
 		try {
-			if (checkJWTToken(request, response)) {
+			if (checkJWTToken(request, response)) { // JWT 토큰을 체크
 				Claims claims = tokenService.validateToken(
 					request.getHeader(AuthConstant.AUTHORIZATION)
 						.replace(AuthConstant.BEARER, ""));
@@ -45,7 +45,7 @@ public class TokenFilter extends OncePerRequestFilter {
 					&& claims.get("authorities") != null) {
 					setUpSpringAuthentication(claims);
 				}
-			} else if (Objects.nonNull(request.getHeader(AuthConstant.AUTHORIZATION))
+			} else if (Objects.nonNull(request.getHeader(AuthConstant.AUTHORIZATION)) // 디버그 모드인 경우
 				&& request.getHeader(AuthConstant.AUTHORIZATION).equals(AuthConstant.DEBUG_MODE)) {
 
 				SecurityContextHolder.getContext().setAuthentication(

@@ -1,6 +1,6 @@
 package com.whatachad.app.controller.exception;
 
-import com.whatachad.app.common.common.CommonException;
+import com.whatachad.app.common.CommonException;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

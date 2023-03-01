@@ -4,10 +4,8 @@ import com.whatachad.app.filter.TokenFilter;
 import com.whatachad.app.security.AuthenticationExceptionHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -31,7 +29,6 @@ public class SecurityConfig {
             "/swagger-resources/**",
             "/swagger-ui/**",
             "/api-docs/**",
-            "/webjars/**",
             "/h2-console/**",
             "/api/**",
     };

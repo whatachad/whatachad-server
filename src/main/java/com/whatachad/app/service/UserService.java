@@ -1,7 +1,7 @@
 package com.whatachad.app.service;
 
-import com.whatachad.app.common.common.BError;
-import com.whatachad.app.common.common.CommonException;
+import com.whatachad.app.common.BError;
+import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.User;
 import com.whatachad.app.repository.UserRepository;
 import com.whatachad.app.security.AuthConstant;
@@ -41,7 +41,6 @@ public class UserService {
 
     public User signUp(User input) {
         try {
-
             return createUser(input);
         } catch (Exception e) {
             log.error(e.getMessage());
@@ -111,7 +110,7 @@ public class UserService {
         // Unique Value
         if (Objects.nonNull(input.getEmail())) {
             if (userRepository.existsByEmail(input.getEmail())) {
-                throw new CommonException(BError.EXIST, "Mail");
+                throw new CommonException(BError.EXIST, "Email");
             }
             user.setEmail(input.getEmail());
         }

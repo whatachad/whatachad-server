@@ -1,6 +1,6 @@
 package com.whatachad.app.controller.exception;
 
-import com.whatachad.app.common.common.CommonException;
+import com.whatachad.app.common.CommonException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

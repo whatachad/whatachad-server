@@ -1,4 +1,4 @@
-package com.whatachad.app.common.common;
+package com.whatachad.app.common;
 
 public class CommonException extends RuntimeException {
 

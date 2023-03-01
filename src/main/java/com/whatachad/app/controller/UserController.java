@@ -1,8 +1,8 @@
 package com.whatachad.app.controller;
 
 import com.whatachad.app.api.UserApi;
-import com.whatachad.app.common.common.BError;
-import com.whatachad.app.common.common.CommonException;
+import com.whatachad.app.common.BError;
+import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.mapper.UserMapper;
 import com.whatachad.app.model.request.SignUpRequestDto;
@@ -41,6 +41,7 @@ public class UserController implements UserApi {
     public ResponseEntity<UserTokenResponseDto> login(UserLoginRequestDto loginDTO) {
 
         try {
+            // TODO : 이 로직은 UserService 로 이동해야 함
             User user = userService.getUser(loginDTO.getId());
             if (!user.isValid()) {
                 log.error("인증되지 않은 사용자 입니다. - {}", user.getId());

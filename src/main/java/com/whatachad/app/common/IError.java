@@ -1,4 +1,4 @@
-package com.whatachad.app.common.common;
+package com.whatachad.app.common;
 
 // for Internal Error (not for user api)
 public enum IError implements Error {
