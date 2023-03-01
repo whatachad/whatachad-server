@@ -1,16 +1,20 @@
 # Project Setting
 
 ## Pull Request
-- feature 브랜치 작성 및 remote 생성
-- push하고 이를 Pull request 생성
-- Approve 되면 Merge 하기
+- feature 브랜치 작성 및 remote 브랜치 생성
+- push하고 이에 대한 Pull Request 생성
+- Approve 되면 PR을 요청한 사람이 Merge 하기
 
 ## swagger
+- 아래 URL로 실행 가능
 - http://localhost:8080/swagger-ui/index.html
 
-## h2
-- jdbc:h2:mem:whatachad
-- http://localhost:8080/h2-console/
+## H2
+- [H2 DBMS 설치](http://h2database.com/html/main.html)
+- 애플리케이션 서버를 실행한 후
+- http://localhost:8080/h2-console/ 접속
+- JDBC URL에 jdbc:h2:mem:whatachad을 입력
+- username: sa / password: -> connect(연결)
 
 ## 인증/인가
 - 회원가입 (아이디 : admin / 비밀번호 : admin) -> admin용 계정
