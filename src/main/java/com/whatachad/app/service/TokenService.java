@@ -28,6 +28,11 @@ public class TokenService {
 	final private Map<String, Integer> USER_SECRET_KEY = new HashMap<>();
 	final private UserService userService;
 
+	/**
+	 *
+	 * @param username
+	 * @param updateTime
+	 */
 	private void setUserCode(String username, LocalDateTime updateTime) {
 		USER_SECRET_KEY.put(username, updateTime.hashCode());
 	}
