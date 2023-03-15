@@ -8,7 +8,9 @@ public enum IError implements Error {
 	GROUP_NOT_EXIST("I010", "group is not Exist"),
 	AGENT_NOT_EXIST("I020", "agent is not Exist"),
 	AGENT_NOT_ALIVE("I021", "agent is not Alive"),
-	PARAMETER_NOT_EXIST("I030", "parameter is not Exist");
+	PARAMETER_NOT_EXIST("I030", "parameter is not Exist"),
+	FIELD_NOT_EXIST("I040", "field is not Exist"),
+	FIELD_NOT_ALLOWED("I042", "field is not Allowed");
 
 	private String errCode;
 	private String msg;
