@@ -16,17 +16,18 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
-@Component
 @Slf4j
+@Component
+@RequiredArgsConstructor
 public class TokenService {
 
 	// 서버가 켜지면 SECRET_KEY는 매번 초기화 된다.
 	// 즉 반대로 서버가 꺼졋다 켜지면 기존 Token은 무효
-	final private String SECRET_KEY = UUID.randomUUID().toString();
+	private final String SECRET_KEY = UUID.randomUUID().toString();
 	// User에 대한 변경사항이 있을경우 해당 코드가 변경되고 이를 기반으로 기존 유저의 수정이 발생했을때 토큰을 무효화한다.
-	final private Map<String, Integer> USER_SECRET_KEY = new HashMap<>();
-	final private UserService userService;
+	private final Map<String, Integer> USER_SECRET_KEY = new HashMap<>();
+
+	private final UserService userService;
 
 	/**
 	 *

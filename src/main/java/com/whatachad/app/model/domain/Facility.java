@@ -1,17 +1,11 @@
 package com.whatachad.app.model.domain;
 
-import com.whatachad.app.common.BError;
-import com.whatachad.app.common.CommonException;
-import com.whatachad.app.common.IError;
-import com.whatachad.app.model.dto.CreateFacilityDto;
-import com.whatachad.app.model.dto.UpdateFacilityDto;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import com.whatachad.app.model.request.FacilityDto;
+import com.whatachad.app.type.FacilityType;
+import jakarta.persistence.*;
 import lombok.*;
 
-import java.lang.reflect.Field;
+import static com.whatachad.app.model.domain.UpdateUtils.*;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -24,12 +18,23 @@ public class Facility extends BaseTime {
     @GeneratedValue
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "USER_ID")
+    private User user;
+
     @Embedded
     private Address address;
 
-    public static Facility create(CreateFacilityDto dto) {
+    private FacilityType category;
+
+    private String description;
+
+    public static Facility create(User user, FacilityDto dto) {
         return Facility.builder()
+                .user(user)
                 .address(dto.getAddress())
+                .category(dto.getCategory())
+                .description(dto.getDescription())
                 .build();
     }
 
@@ -39,7 +44,9 @@ public class Facility extends BaseTime {
      * 반드시 아래 메서드에 변경 사항을 반영해야 한다.
      * @param dto
      */
-    public void update(UpdateFacilityDto dto) {
-        UpdateUtils.changeField(this, UpdateUtils.FACILITY_ADDRESS, dto.getAddress());
+    public void update(FacilityDto dto) {
+        changeField(this, FACILITY_ADDRESS, dto.getAddress());
+        changeField(this, FACILITY_CATEGORY, dto.getCategory());
+        changeField(this, FACILITY_DESCRIPTION, dto.getDescription());
     }
 }

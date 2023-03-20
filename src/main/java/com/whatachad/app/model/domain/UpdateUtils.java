@@ -11,6 +11,8 @@ public class UpdateUtils {
      * 변경 가능한 필드 이름
      */
     public static final String FACILITY_ADDRESS = "address";
+    public static final String FACILITY_CATEGORY = "category";
+    public static final String FACILITY_DESCRIPTION = "description";
 
     /**
      * <변경될 필드에 대해서만 필드 수정하는 메서드>

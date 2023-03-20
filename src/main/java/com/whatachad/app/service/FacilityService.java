@@ -3,8 +3,10 @@ package com.whatachad.app.service;
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Facility;
-import com.whatachad.app.model.dto.CreateFacilityDto;
-import com.whatachad.app.model.dto.UpdateFacilityDto;
+import com.whatachad.app.model.domain.User;
+import com.whatachad.app.model.request.CreateFacilityDto;
+import com.whatachad.app.model.request.FacilityDto;
+import com.whatachad.app.model.request.UpdateFacilityDto;
 import com.whatachad.app.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,11 +20,14 @@ import java.util.List;
 @Service
 public class FacilityService {
 
+    private final MapperService mapperService;
+    private final UserService userService;
     private final FacilityRepository facilityRepository;
 
     @Transactional
     public Facility createFacility(CreateFacilityDto dto) {
-        return facilityRepository.save(Facility.create(dto));
+        FacilityDto facilityDto = mapperService.toFacilityDto(dto);
+        return facilityRepository.save(Facility.create(getLoginUser(), facilityDto));
     }
 
     @Transactional(readOnly = true)
@@ -40,7 +45,8 @@ public class FacilityService {
     public void updateFacility(Long id, UpdateFacilityDto dto) {
         Facility findFacility = facilityRepository.findById(id)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Facility"));
-        findFacility.update(dto);
+        FacilityDto facilityDto = mapperService.toFacilityDto(dto);
+        findFacility.update(facilityDto);
     }
 
     @Transactional
@@ -48,5 +54,11 @@ public class FacilityService {
         Facility findFacility = facilityRepository.findById(id)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Facility"));
         facilityRepository.delete(findFacility);
+    }
+
+    private User getLoginUser() {
+        String loginUserId = userService.getLoginUserId();
+        User user = userService.getUser(loginUserId);
+        return user;
     }
 }

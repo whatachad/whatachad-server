@@ -1,7 +1,7 @@
-package com.whatachad.app.model.dto;
+package com.whatachad.app.model.request;
 
 import com.whatachad.app.model.domain.Address;
-import jakarta.validation.constraints.NotEmpty;
+import com.whatachad.app.type.FacilityType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -11,8 +11,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class CreateFacilityDto {
+public class FacilityDto {
 
-    @NotEmpty // TODO : validation 로직 필요
     private Address address;
+    private FacilityType category;
+    private String description;
+
 }
