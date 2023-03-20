@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @AllArgsConstructor
-public class CreateFacilityResponseDto {
+public class UpdateFacilityResponseDto {
 
     private Address address;
     private FacilityType category;

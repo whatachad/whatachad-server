@@ -4,9 +4,9 @@ import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.domain.User;
-import com.whatachad.app.model.request.CreateFacilityDto;
+import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.request.FacilityDto;
-import com.whatachad.app.model.request.UpdateFacilityDto;
+import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class FacilityService {
     private final FacilityRepository facilityRepository;
 
     @Transactional
-    public Facility createFacility(CreateFacilityDto dto) {
+    public Facility createFacility(CreateFacilityRequestDto dto) {
         FacilityDto facilityDto = mapperService.toFacilityDto(dto);
         return facilityRepository.save(Facility.create(getLoginUser(), facilityDto));
     }
@@ -42,9 +42,12 @@ public class FacilityService {
     }
 
     @Transactional
-    public void updateFacility(Long id, UpdateFacilityDto dto) {
-        Facility findFacility = facilityRepository.findById(id)
+    public void updateFacility(UpdateFacilityRequestDto dto) {
+        Facility findFacility = facilityRepository.findById(dto.getId())
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Facility"));
+        if (!findFacility.getUser().equals(getLoginUser())) {
+            throw new CommonException(BError.NOT_MATCH, "User");
+        }
         FacilityDto facilityDto = mapperService.toFacilityDto(dto);
         findFacility.update(facilityDto);
     }
@@ -58,7 +61,6 @@ public class FacilityService {
 
     private User getLoginUser() {
         String loginUserId = userService.getLoginUserId();
-        User user = userService.getUser(loginUserId);
-        return user;
+        return userService.getUser(loginUserId);
     }
 }

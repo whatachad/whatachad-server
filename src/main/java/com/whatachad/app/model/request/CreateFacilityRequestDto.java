@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Getter
-public class UpdateFacilityDto {
+public class CreateFacilityRequestDto {
 
     private String roadAddress;
 
@@ -19,10 +19,10 @@ public class UpdateFacilityDto {
     private String jibunAddress;
 
     @NotBlank
-    private String lat;
+    private String latitude;
 
     @NotBlank
-    private String lng;
+    private String longitude;
 
     @NotBlank
     private FacilityType category;
