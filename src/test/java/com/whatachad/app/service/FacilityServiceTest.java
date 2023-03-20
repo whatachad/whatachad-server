@@ -1,8 +1,8 @@
 package com.whatachad.app.service;
 
 import com.whatachad.app.model.domain.Facility;
-import com.whatachad.app.model.request.CreateFacilityDto;
-import com.whatachad.app.model.request.UpdateFacilityDto;
+import com.whatachad.app.model.request.CreateFacilityRequestDto;
+import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.type.FacilityType;
@@ -47,10 +47,10 @@ class FacilityServiceTest {
                 authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        CreateFacilityDto createFacilityDto = CreateFacilityDto.builder()
+        CreateFacilityRequestDto createFacilityDto = CreateFacilityRequestDto.builder()
                 .jibunAddress("지번주소")
-                .lat("0.0")
-                .lng("0.0")
+                .latitude("0.0")
+                .longitude("0.0")
                 .category(FacilityType.HEALTH)
                 .build();
         facilityService.createFacility(createFacilityDto);
@@ -60,13 +60,14 @@ class FacilityServiceTest {
     @DisplayName("Update Dto를 통해 facility 정보를 수정한다.")
     void updateFacility() {
         Facility facility = facilityService.findAllFacilities().get(0);
-        UpdateFacilityDto dto = UpdateFacilityDto.builder()
+        UpdateFacilityRequestDto dto = UpdateFacilityRequestDto.builder()
+                .id(facility.getId())
                 .jibunAddress("변경된 주소")
-                .lat("0.0")
-                .lng("0.0")
+                .latitude("0.0")
+                .longitude("0.0")
                 .category(FacilityType.HEALTH)
                 .build();
-        facilityService.updateFacility(facility.getId(), dto);
+        facilityService.updateFacility(dto);
 
         Facility updateFacility = facilityService.findFacility(facility.getId());
         assertThat(updateFacility.getAddress().getJibunAddress()).isEqualTo("변경된 주소");
