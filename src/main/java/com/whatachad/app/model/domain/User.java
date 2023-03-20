@@ -5,6 +5,8 @@ import com.whatachad.app.type.UserMetaType;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 @Getter
@@ -35,6 +37,8 @@ public class User extends BaseTime {
     @Column
     private boolean valid;
 
+    @OneToMany(mappedBy = "user")
+    List<Schedule> schedules = new ArrayList<>();
     @ElementCollection(fetch = FetchType.EAGER)
     @MapKeyEnumerated(EnumType.STRING)
     @CollectionTable(
