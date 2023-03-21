@@ -53,7 +53,7 @@ public class SwaggerConfig {
 //                                .type(SecurityScheme.Type.HTTP)
 //                                .scheme("bearer")
 //                                .bearerFormat("JWT"))
-                        .addSecuritySchemes(DEBUG_MODE, new SecurityScheme() // TODO : 디버그 모드를 배포 단계에서 삭제해야 함
+                        .addSecuritySchemes(DEBUG_MODE, new SecurityScheme()
                                 .name("Authorization")
                                 .type(SecurityScheme.Type.APIKEY)
                                 .in(SecurityScheme.In.HEADER)

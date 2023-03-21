@@ -1,8 +1,5 @@
-package com.whatachad.app.dto;
+package com.whatachad.app.model.dto;
 
-import lombok.Getter;
-
-@Getter
 public class ScheduleDto {
 
     private String name;

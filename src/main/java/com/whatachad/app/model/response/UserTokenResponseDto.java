@@ -2,10 +2,7 @@ package com.whatachad.app.model.response;
 
 import com.whatachad.app.type.UserMetaType;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.util.Map;
 
@@ -13,6 +10,7 @@ import java.util.Map;
 @Setter
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserTokenResponseDto {
 
 	private String accessToken;

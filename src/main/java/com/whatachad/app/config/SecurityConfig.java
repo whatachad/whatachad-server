@@ -33,13 +33,7 @@ public class SecurityConfig {
             "/api/**",
     };
 
-    @Autowired
     private final TokenFilter tokenFilter;
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder(10);
-    }
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {

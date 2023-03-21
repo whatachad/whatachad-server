@@ -1,6 +1,6 @@
 package com.whatachad.app.controller;
 
-import com.whatachad.app.dto.DemoDto;
+import com.whatachad.app.model.dto.DemoDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

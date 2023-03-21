@@ -1,6 +1,6 @@
 package com.whatachad.app.api;
 
-import com.whatachad.app.dto.ScheduleDto;
+import com.whatachad.app.model.dto.ScheduleDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(name = "Schedule API", description = "스케줄 관련 기능")
-@RequestMapping("/v1/schedule/")
+@RequestMapping("/v1/schedule")
 public interface ScheduleApi {
 
     @Operation(summary = "스케줄 조회", description = "해당 유저의 오늘 스케줄 조회")

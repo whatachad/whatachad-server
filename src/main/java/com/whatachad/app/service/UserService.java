@@ -3,13 +3,18 @@ package com.whatachad.app.service;
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.User;
+import com.whatachad.app.model.request.UserLoginRequestDto;
+import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.repository.UserRepository;
 import com.whatachad.app.security.AuthConstant;
 import com.whatachad.app.type.UserMetaType;
 import com.whatachad.app.type.UserRoleType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,6 +30,7 @@ public class UserService {
             UserRoleType.ROLE_CUSTOMER));
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public User getUser(String id) {
@@ -37,6 +43,19 @@ public class UserService {
     public List<User> getUserList() {
         List<User> userList = userRepository.findAll();
         return userList;
+    }
+
+    public User signIn(UserLoginRequestDto loginDTO) {
+        User user = getUser(loginDTO.getId());
+        if (!user.isValid()) {
+            log.error("인증되지 않은 사용자 입니다. - {}", user.getId());
+            throw new CommonException(BError.NOT_SUPPORT, user.getId());
+        }
+        // 패스워드 검증
+        if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
+            throw new CommonException(BError.NOT_MATCH, "Password");
+        }
+        return user;
     }
 
     public User signUp(User input) {

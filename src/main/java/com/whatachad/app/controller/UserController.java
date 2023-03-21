@@ -41,24 +41,14 @@ public class UserController implements UserApi {
     public ResponseEntity<UserTokenResponseDto> login(UserLoginRequestDto loginDTO) {
 
         try {
-            // TODO : 이 로직은 UserService 로 이동해야 함
-            User user = userService.getUser(loginDTO.getId());
-            if (!user.isValid()) {
-                log.error("인증되지 않은 사용자 입니다. - {}", user.getId());
-                throw new CommonException(BError.NOT_SUPPORT, user.getId());
-            }
-            // 패스워드 검증
-            if (!passwordEncoder.matches(loginDTO.getPassword(), user.getPassword())) {
-                throw new CommonException(BError.NOT_MATCH, "Password");
-            } else {
-                return new ResponseEntity<>(
-                        UserTokenResponseDto.builder()
-                                .accessToken(tokenService.genAccessToken(loginDTO.getId()))
-                                .refreshToken(tokenService.genRefreshToken(loginDTO.getId()))
-                                .meta(user.getMeta())
-                                .build(),
-                        HttpStatus.OK);
-            }
+            User user = userService.signIn(loginDTO);
+            return new ResponseEntity<>(
+                    UserTokenResponseDto.builder()
+                            .accessToken(tokenService.genAccessToken(loginDTO.getId()))
+                            .refreshToken(tokenService.genRefreshToken(loginDTO.getId()))
+                            .meta(user.getMeta())
+                            .build(),
+                    HttpStatus.OK);
         } catch (CommonException e) {
             throw e;
         } catch (Exception e) {
