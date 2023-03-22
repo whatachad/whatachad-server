@@ -27,3 +27,6 @@ springdoc:
   default-consumes-media-type: application/json
   default-produces-media-type: application/json
 
+server:
+  port: 3000
+

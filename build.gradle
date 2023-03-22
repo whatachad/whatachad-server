@@ -41,3 +41,7 @@ dependencies {
 tasks.named('test') {
     useJUnitPlatform()
 }
+
+jar {
+    enabled = false // plain jar 파일 빌드 x
+}
