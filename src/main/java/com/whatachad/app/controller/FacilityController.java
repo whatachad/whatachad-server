@@ -3,6 +3,7 @@ package com.whatachad.app.controller;
 import com.whatachad.app.api.FacilityApi;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
+import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.response.CreateFacilityResponseDto;
 import com.whatachad.app.model.response.FacilityResponseDto;
@@ -25,7 +26,8 @@ public class FacilityController implements FacilityApi {
 
     @Override
     public ResponseEntity<CreateFacilityResponseDto> registerFacility(CreateFacilityRequestDto requestDto) {
-        Facility facility = facilityService.createFacility(requestDto);
+        FacilityDto facilityDto = mapperService.toFacilityDto(requestDto);
+        Facility facility = facilityService.createFacility(facilityDto);
         return new ResponseEntity<>(mapperService.toCreateResponseDto(facility), HttpStatus.OK);
     }
 
@@ -37,7 +39,8 @@ public class FacilityController implements FacilityApi {
 
     @Override
     public ResponseEntity<UpdateFacilityResponseDto> editFacility(UpdateFacilityRequestDto requestDto) {
-        facilityService.updateFacility(requestDto);
+        FacilityDto facilityDto = mapperService.toFacilityDto(requestDto);
+        facilityService.updateFacility(facilityDto);
         Facility facility = facilityService.findFacility(requestDto.getId());
         return new ResponseEntity<>(mapperService.toUpdateResponseDto(facility), HttpStatus.OK);
     }

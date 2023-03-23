@@ -29,6 +29,7 @@ public class FacilityMapperService {
 
     public FacilityDto toFacilityDto(UpdateFacilityRequestDto dto) {
         return FacilityDto.builder()
+                .id(dto.getId())
                 .address(createAddress(dto))
                 .category(dto.getCategory())
                 .description(dto.getDescription())
