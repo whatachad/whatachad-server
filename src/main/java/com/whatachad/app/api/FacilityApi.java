@@ -3,6 +3,7 @@ package com.whatachad.app.api;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.response.CreateFacilityResponseDto;
+import com.whatachad.app.model.response.FacilityResponseDto;
 import com.whatachad.app.model.response.UpdateFacilityResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -26,6 +27,16 @@ public interface FacilityApi {
     })
     @PostMapping
     ResponseEntity<CreateFacilityResponseDto> registerFacility(@RequestBody CreateFacilityRequestDto requestDto);
+
+    @Operation(summary = "스포츠 시설 상세 조회",
+            description = "유저가 선택한 스포츠 시설에 대한 상세 정보를 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = CreateFacilityResponseDto.class))),
+            @ApiResponse(responseCode = "405", description = "Invalid input")
+    })
+    @GetMapping("/{facilityId}")
+    ResponseEntity<FacilityResponseDto> getFacility(@PathVariable Long facilityId);
 
     @Operation(summary = "스포츠 시설 정보 수정",
             description = "해당 시설을 등록한 유저가 시설 정보를 수정")

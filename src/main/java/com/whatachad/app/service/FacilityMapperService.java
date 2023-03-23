@@ -6,6 +6,7 @@ import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.response.CreateFacilityResponseDto;
+import com.whatachad.app.model.response.FacilityResponseDto;
 import com.whatachad.app.model.response.UpdateFacilityResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @RequiredArgsConstructor
 @Service
-public class MapperService {
+public class FacilityMapperService {
 
     private final FacilityMapService facilityMapService;
 
@@ -38,6 +39,16 @@ public class MapperService {
         return CreateFacilityResponseDto.builder()
                 .address(entity.getAddress())
                 .category(entity.getCategory())
+                .description(entity.getDescription())
+                .build();
+    }
+
+    public FacilityResponseDto toResponseDto(Facility entity) {
+        return FacilityResponseDto.builder()
+                .id(entity.getId())
+                .address(entity.getAddress())
+                .category(entity.getCategory())
+//                .title(entity.getTitle())
                 .description(entity.getDescription())
                 .build();
     }

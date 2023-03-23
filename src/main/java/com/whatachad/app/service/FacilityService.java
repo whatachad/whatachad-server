@@ -7,6 +7,7 @@ import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
+import com.whatachad.app.model.response.FacilityResponseDto;
 import com.whatachad.app.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +21,7 @@ import java.util.List;
 @Service
 public class FacilityService {
 
-    private final MapperService mapperService;
+    private final FacilityMapperService mapperService;
     private final UserService userService;
     private final FacilityRepository facilityRepository;
 
