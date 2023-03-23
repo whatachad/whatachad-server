@@ -30,5 +30,7 @@ public class UpdateFacilityRequestDto {
     @NotBlank
     private FacilityType category;
 
+    private String title;
+
     private String description;
 }

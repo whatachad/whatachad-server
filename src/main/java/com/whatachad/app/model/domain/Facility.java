@@ -27,6 +27,8 @@ public class Facility extends BaseTime {
 
     private FacilityType category;
 
+    private String title;
+
     private String description;
 
     public static Facility create(User user, FacilityDto dto) {
@@ -45,6 +47,7 @@ public class Facility extends BaseTime {
      * @param dto
      */
     public void update(FacilityDto dto) {
+        changeField(this, FACILITY_TITLE, dto.getTitle());
         changeField(this, FACILITY_ADDRESS, dto.getAddress());
         changeField(this, FACILITY_CATEGORY, dto.getCategory());
         changeField(this, FACILITY_DESCRIPTION, dto.getDescription());

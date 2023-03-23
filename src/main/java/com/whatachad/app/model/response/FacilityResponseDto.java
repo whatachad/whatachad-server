@@ -16,7 +16,7 @@ public class FacilityResponseDto {
     private Long id;
     private Address address;
     private FacilityType category;
-    private String title; // TODO : 엔티티에 title 필드 추가해야 함
+    private String title;
     private String description;
 
 }

@@ -18,7 +18,6 @@ import java.util.List;
 @Service
 public class FacilityService {
 
-    private final FacilityMapperService mapperService;
     private final UserService userService;
     private final FacilityRepository facilityRepository;
 

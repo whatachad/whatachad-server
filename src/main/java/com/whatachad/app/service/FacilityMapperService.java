@@ -19,10 +19,13 @@ public class FacilityMapperService {
 
     private final FacilityMapService facilityMapService;
 
+    // TODO : 아래 코드를 추상화할 해결책은?
+
     public FacilityDto toFacilityDto(CreateFacilityRequestDto dto) {
         return FacilityDto.builder()
                 .address(createAddress(dto))
                 .category(dto.getCategory())
+                .title(dto.getTitle())
                 .description(dto.getDescription())
                 .build();
     }
@@ -32,6 +35,7 @@ public class FacilityMapperService {
                 .id(dto.getId())
                 .address(createAddress(dto))
                 .category(dto.getCategory())
+                .title(dto.getTitle())
                 .description(dto.getDescription())
                 .build();
     }
@@ -40,6 +44,7 @@ public class FacilityMapperService {
         return CreateFacilityResponseDto.builder()
                 .address(entity.getAddress())
                 .category(entity.getCategory())
+                .title(entity.getTitle())
                 .description(entity.getDescription())
                 .build();
     }
@@ -49,7 +54,7 @@ public class FacilityMapperService {
                 .id(entity.getId())
                 .address(entity.getAddress())
                 .category(entity.getCategory())
-//                .title(entity.getTitle())
+                .title(entity.getTitle())
                 .description(entity.getDescription())
                 .build();
     }
@@ -58,6 +63,7 @@ public class FacilityMapperService {
         return UpdateFacilityResponseDto.builder()
                 .address(entity.getAddress())
                 .category(entity.getCategory())
+                .title(entity.getTitle())
                 .description(entity.getDescription())
                 .build();
     }
