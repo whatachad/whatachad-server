@@ -1,8 +1,10 @@
 package com.whatachad.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whatachad.app.model.domain.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
+import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
@@ -63,13 +65,15 @@ class FacilityControllerTest {
                 authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         SecurityContextHolder.getContext().setAuthentication(auth);
 
-        CreateFacilityRequestDto createFacilityDto = CreateFacilityRequestDto.builder()
-                .jibunAddress("지번 주소")
-                .latitude("0.0")
-                .longitude("0.0")
+        FacilityDto facilityDto = FacilityDto.builder()
+                .address(Address.builder()
+                        .jibunAddress("지번 주소")
+                        .latitude("0.0")
+                        .longitude("0.0")
+                        .build())
                 .category(FacilityType.HEALTH)
                 .build();
-        facility = facilityService.createFacility(createFacilityDto);
+        facility = facilityService.createFacility(facilityDto);
     }
 
     @Test
