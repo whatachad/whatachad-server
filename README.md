@@ -13,7 +13,9 @@
 ## H2
 - [H2 DBMS 설치](http://h2database.com/html/main.html)
 - 애플리케이션 서버를 실행한 후
-- http://localhost:3000/h2-console 접속
+- 로컬 : http://localhost:3000/h2-console
+- 배포 : http://129.154.212.45:3000/h2-console
+- 각 환경에 맞는 링크로 접속
 - JDBC URL에 jdbc:h2:mem:whatachad을 입력
 - username: sa / password: -> connect(연결)
 
