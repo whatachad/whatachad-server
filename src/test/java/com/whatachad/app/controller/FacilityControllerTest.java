@@ -36,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FacilityControllerTest {
 
     private final ObjectMapper mapper = new ObjectMapper();
+    private Facility facility;
     private String accessToken;
 
     @Autowired
@@ -46,7 +47,7 @@ class FacilityControllerTest {
     private TokenService tokenService;
 
     @BeforeEach
-    void authenticate() {
+    void init() {
         UserLoginRequestDto loginDto = UserLoginRequestDto.builder()
                 .id("admin")
                 .password("admin")
@@ -61,6 +62,14 @@ class FacilityControllerTest {
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
                 authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         SecurityContextHolder.getContext().setAuthentication(auth);
+
+        CreateFacilityRequestDto createFacilityDto = CreateFacilityRequestDto.builder()
+                .jibunAddress("지번 주소")
+                .latitude("0.0")
+                .longitude("0.0")
+                .category(FacilityType.HEALTH)
+                .build();
+        facility = facilityService.createFacility(createFacilityDto);
     }
 
     @Test
@@ -87,13 +96,6 @@ class FacilityControllerTest {
     @Test
     @DisplayName("facility를 수정한다. PUT /v1/facilities")
     void editFacility() throws Exception {
-        CreateFacilityRequestDto createFacilityDto = CreateFacilityRequestDto.builder()
-                .jibunAddress("지번 주소")
-                .latitude("0.0")
-                .longitude("0.0")
-                .category(FacilityType.HEALTH)
-                .build();
-        Facility facility = facilityService.createFacility(createFacilityDto);
         UpdateFacilityRequestDto updateFacilityDto = UpdateFacilityRequestDto.builder()
                 .id(facility.getId())
                 .jibunAddress("변경된 주소")
@@ -114,14 +116,6 @@ class FacilityControllerTest {
     @DisplayName("facility를 수정할 때 변경되는 필드 외에 기존 필드 값을 유지하지 않으면 " +
             "변경 후에 null 값이 저장된다. PUT /v1/facilities")
     void editFacilityWithoutExistingField() throws Exception {
-        CreateFacilityRequestDto createFacilityDto = CreateFacilityRequestDto.builder()
-                .roadAddress("도로명 주소")
-                .jibunAddress("지번 주소")
-                .latitude("0.0")
-                .longitude("0.0")
-                .category(FacilityType.HEALTH)
-                .build();
-        Facility facility = facilityService.createFacility(createFacilityDto);
         UpdateFacilityRequestDto updateFacilityDto = UpdateFacilityRequestDto.builder()
                 .id(facility.getId())
                 .jibunAddress("변경된 주소")
@@ -143,17 +137,20 @@ class FacilityControllerTest {
     @Test
     @DisplayName("facility를 삭제한다. DELETE /v1/facilities/{facilityId}")
     void deleteFacility() throws Exception {
-        CreateFacilityRequestDto createFacilityDto = CreateFacilityRequestDto.builder()
-                .roadAddress("도로명 주소")
-                .jibunAddress("지번 주소")
-                .latitude("0.0")
-                .longitude("0.0")
-                .category(FacilityType.HEALTH)
-                .build();
-        Facility facility = facilityService.createFacility(createFacilityDto);
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/facilities/" + facility.getId())
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("facility를 조회한다. GET /v1/facilities/{facilityId}")
+    void getFacility() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities/" + facility.getId())
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.address.jibunAddress").value("지번 주소"))
+                .andExpect(jsonPath("$.category").value("HEALTH"))
                 .andDo(print());
     }
 
