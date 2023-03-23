@@ -17,7 +17,8 @@
 - 배포 : http://129.154.212.45:3000/h2-console
 - 각 환경에 맞는 링크로 접속
 - JDBC URL에 jdbc:h2:mem:whatachad을 입력
-- username: sa / password: -> connect(연결)
+- username: sa / password: 
+- connect(연결)
 
 ## 인증/인가
 - 회원가입 (아이디 : admin / 비밀번호 : admin) -> admin용 계정
