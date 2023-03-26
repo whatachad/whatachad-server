@@ -7,6 +7,7 @@ import com.whatachad.app.model.response.FacilityResponseDto;
 import com.whatachad.app.model.response.UpdateFacilityResponseDto;
 import com.whatachad.app.type.FacilityType;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,9 +16,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(name = "Facility API", description = "스포츠 시설 관련 기능")
 @RequestMapping("/v1/facilities")
@@ -40,7 +44,7 @@ public interface FacilityApi {
             description = "유저의 위치를 기반으로 주변 스포츠 시설을 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(schema = @Schema(implementation = FacilityResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = FacilityResponseSlice.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
@@ -85,5 +89,10 @@ public interface FacilityApi {
     @DeleteMapping("/{facilityId}")
     void deleteFacility(@PathVariable Long facilityId);
 
+}
 
+class FacilityResponseSlice extends SliceImpl<FacilityResponseDto> {
+    public FacilityResponseSlice(List<FacilityResponseDto> content, Pageable pageable, boolean hasNext) {
+        super(content, pageable, hasNext);
+    }
 }
