@@ -148,13 +148,38 @@ class FacilityControllerTest {
     }
 
     @Test
-    @DisplayName("facility를 조회한다. GET /v1/facilities/{facilityId}")
+    @DisplayName("facility 하나를 조회한다. GET /v1/facilities/{facilityId}")
     void getFacility() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities/" + facility.getId())
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address.jibunAddress").value("지번 주소"))
                 .andExpect(jsonPath("$.category").value("HEALTH"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("facility를 카테고리 기준으로 조회한다. GET /v1/facilities?page=0&size=5&category=HEALTH")
+    void getFacilityByCategory() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities")
+                        .param("page", "0")
+                        .param("size", "5")
+                        .param("category", "HEALTH")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].category").value("HEALTH"))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("facility를 존재하지 않는 카테고리로 조회한다. GET /v1/facilities?page=0&size=5&category=health")
+    void getFacilityByNotExistingCategory() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities")
+                        .param("page", "0")
+                        .param("size", "5")
+                        .param("category", "health")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isBadRequest())
                 .andDo(print());
     }
 

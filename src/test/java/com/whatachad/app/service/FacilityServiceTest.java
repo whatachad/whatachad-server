@@ -13,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -82,6 +84,15 @@ class FacilityServiceTest {
     void createFacilityWithLoginUser() {
         Facility facility = facilityService.findAllFacilities().get(0);
         assertThat(facility.getUser().getId()).isEqualTo("admin");
+    }
+
+    @Test
+    @DisplayName("facility의 카테고리를 기준으로 모든 facility를 조회한다.")
+    void findFacilitiesByCategory() {
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Slice<Facility> facilities = facilityService.findFacilities(pageRequest, FacilityType.HEALTH);
+        Facility facility = facilities.getContent().get(0);
+        assertThat(facility.getCategory()).isEqualTo(FacilityType.HEALTH);
     }
 
 }
