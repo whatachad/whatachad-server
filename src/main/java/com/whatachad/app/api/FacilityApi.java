@@ -23,35 +23,45 @@ public interface FacilityApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(schema = @Schema(implementation = CreateFacilityResponseDto.class))),
-            @ApiResponse(responseCode = "405", description = "Invalid input")
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping
     ResponseEntity<CreateFacilityResponseDto> registerFacility(@RequestBody CreateFacilityRequestDto requestDto);
+
+
 
     @Operation(summary = "스포츠 시설 상세 조회",
             description = "유저가 선택한 스포츠 시설에 대한 상세 정보를 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(schema = @Schema(implementation = CreateFacilityResponseDto.class))),
-            @ApiResponse(responseCode = "405", description = "Invalid input")
+                    content = @Content(schema = @Schema(implementation = FacilityResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @GetMapping("/{facilityId}")
     ResponseEntity<FacilityResponseDto> getFacility(@PathVariable Long facilityId);
+
+
 
     @Operation(summary = "스포츠 시설 정보 수정",
             description = "해당 시설을 등록한 유저가 시설 정보를 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(schema = @Schema(implementation = UpdateFacilityResponseDto.class))),
-            @ApiResponse(responseCode = "405", description = "Invalid input")
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PutMapping
     ResponseEntity<UpdateFacilityResponseDto> editFacility(@RequestBody UpdateFacilityRequestDto requestDto);
 
+
+
     @Operation(summary = "등록된 스포츠 시설 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
-            @ApiResponse(responseCode = "405", description = "Invalid input")
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @DeleteMapping("/{facilityId}")
     void deleteFacility(@PathVariable Long facilityId);
