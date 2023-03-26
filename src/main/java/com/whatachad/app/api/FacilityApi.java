@@ -5,12 +5,17 @@ import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.response.CreateFacilityResponseDto;
 import com.whatachad.app.model.response.FacilityResponseDto;
 import com.whatachad.app.model.response.UpdateFacilityResponseDto;
+import com.whatachad.app.type.FacilityType;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +32,21 @@ public interface FacilityApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping
-    ResponseEntity<CreateFacilityResponseDto> registerFacility(@RequestBody CreateFacilityRequestDto requestDto);
+    ResponseEntity<CreateFacilityResponseDto> registerFacility(@RequestBody @Valid CreateFacilityRequestDto requestDto);
+
+
+
+    @Operation(summary = "주변 스포츠 시설 조회",
+            description = "유저의 위치를 기반으로 주변 스포츠 시설을 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = FacilityResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @GetMapping
+    ResponseEntity<Slice<FacilityResponseDto>> getFacilities(@PageableDefault(page = 0, size = 10) Pageable pageable,
+                                                             @RequestParam @Valid FacilityType category);
 
 
 
@@ -53,7 +72,7 @@ public interface FacilityApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PutMapping
-    ResponseEntity<UpdateFacilityResponseDto> editFacility(@RequestBody UpdateFacilityRequestDto requestDto);
+    ResponseEntity<UpdateFacilityResponseDto> editFacility(@RequestBody @Valid UpdateFacilityRequestDto requestDto);
 
 
 

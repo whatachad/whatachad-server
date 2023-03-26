@@ -6,8 +6,11 @@ import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.repository.FacilityRepository;
+import com.whatachad.app.type.FacilityType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,6 +38,11 @@ public class FacilityService {
     public Facility findFacility(Long id) {
         return facilityRepository.findById(id)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Facility"));
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<Facility> findFacilities(Pageable pageable, FacilityType category) {
+        return facilityRepository.findFacilityByCategory(pageable, category);
     }
 
     @Transactional
