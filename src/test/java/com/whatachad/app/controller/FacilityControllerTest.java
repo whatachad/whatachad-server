@@ -172,7 +172,7 @@ class FacilityControllerTest {
     }
 
     @Test
-    @DisplayName("facility를 존재하지 않는 카테고리로 조회한다. GET /v1/facilities?page=0&size=5&category=health")
+    @DisplayName("facility를 존재하지 않는 카테고리로 조회하면 400 error를 내려준다. GET /v1/facilities?page=0&size=5&category=health")
     void getFacilityByNotExistingCategory() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities")
                         .param("page", "0")
@@ -180,6 +180,28 @@ class FacilityControllerTest {
                         .param("category", "health")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isBadRequest())
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("facility를 지역명으로 조회한다. GET /v1/facilities?page=0&size=5&l1=서울특별시&l2=강남구&l3=청담동")
+    void getFacilityByArea() throws Exception {
+        FacilityDto facilityDto = FacilityDto.builder()
+                .address(Address.builder()
+                        .jibunAddress("서울특별시 강남구 청담동 92-22")
+                        .latitude("0.0")
+                        .longitude("0.0")
+                        .build())
+                .category(FacilityType.HEALTH)
+                .build();
+        facilityService.createFacility(facilityDto);
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities/search")
+                        .param("l1", "서울특별시")
+                        .param("l2", "강남구")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].address.jibunAddress")
+                        .value("서울특별시 강남구 청담동 92-22"))
                 .andDo(print());
     }
 

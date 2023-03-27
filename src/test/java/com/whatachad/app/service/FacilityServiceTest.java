@@ -95,4 +95,24 @@ class FacilityServiceTest {
         assertThat(facility.getCategory()).isEqualTo(FacilityType.HEALTH);
     }
 
+    @Test
+    @DisplayName("지역명으로 모든 facility를 조회한다.")
+    void findFacilitiesByAreaName() {
+        FacilityDto facilityDto = FacilityDto.builder()
+                .address(Address.builder()
+                        .jibunAddress("서울특별시 강남구 청담동 92-22")
+                        .latitude("0.0")
+                        .longitude("0.0")
+                        .build())
+                .category(FacilityType.HEALTH)
+                .build();
+        facilityService.createFacility(facilityDto);
+
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        Slice<Facility> facilities = facilityService.findFacilities(pageRequest, "서울특별시 강남구");
+        Facility facility = facilities.getContent().get(0);
+        assertThat(facility.getAddress().getJibunAddress()).isEqualTo("서울특별시 강남구 청담동 92-22");
+        assertThat(facility.getCategory()).isEqualTo(FacilityType.HEALTH);
+    }
+
 }
