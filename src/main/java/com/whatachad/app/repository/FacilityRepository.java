@@ -12,4 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface FacilityRepository extends JpaRepository<Facility, Long> {
 
     Slice<Facility> findFacilityByCategory(Pageable pageable, FacilityType category);
+
+    @Query(value = "select f from Facility f where f.address.jibunAddress like %:area%")
+    Slice<Facility> findFacilityByArea(Pageable pageable, String area);
 }

@@ -7,7 +7,6 @@ import com.whatachad.app.model.response.FacilityResponseDto;
 import com.whatachad.app.model.response.UpdateFacilityResponseDto;
 import com.whatachad.app.type.FacilityType;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,7 +38,7 @@ public interface FacilityApi {
     ResponseEntity<CreateFacilityResponseDto> registerFacility(@RequestBody @Valid CreateFacilityRequestDto requestDto);
 
 
-
+    // TODO : 위치 기반 조회 기능 추가
     @Operation(summary = "주변 스포츠 시설 조회",
             description = "유저의 위치를 기반으로 주변 스포츠 시설을 조회")
     @ApiResponses(value = {
@@ -50,7 +49,23 @@ public interface FacilityApi {
     })
     @GetMapping
     ResponseEntity<Slice<FacilityResponseDto>> getFacilities(@PageableDefault(page = 0, size = 10) Pageable pageable,
-                                                             @RequestParam @Valid FacilityType category);
+                                                                   @RequestParam @Valid FacilityType category);
+
+
+    // TODO : 검색 조건 추가
+    @Operation(summary = "선택 지역 내의 스포츠 시설 조회",
+            description = "유저가 지정한 지역 내의 주변 스포츠 시설을 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = FacilityResponseSlice.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @GetMapping("/search")
+    ResponseEntity<Slice<FacilityResponseDto>> getFacilitiesBySearchCond(@PageableDefault(page = 0, size = 10) Pageable pageable,
+                                                                   @RequestParam(required = true) @Valid String l1,
+                                                                   @RequestParam(required = false) @Valid String l2,
+                                                                   @RequestParam(required = false) @Valid String l3);
 
 
 

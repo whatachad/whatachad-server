@@ -2,6 +2,7 @@ package com.whatachad.app.controller;
 
 import com.whatachad.app.api.FacilityApi;
 import com.whatachad.app.model.domain.Facility;
+import com.whatachad.app.model.request.AreaRequestDto;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
@@ -37,6 +38,12 @@ public class FacilityController implements FacilityApi {
     @Override
     public ResponseEntity<Slice<FacilityResponseDto>> getFacilities(Pageable pageable, FacilityType category) {
         Slice<Facility> facilities = facilityService.findFacilities(pageable, category);
+        return ResponseEntity.ok(facilities.map(FacilityResponseDto::new));
+    }
+
+    @Override
+    public ResponseEntity<Slice<FacilityResponseDto>> getFacilitiesBySearchCond(Pageable pageable, String l1, String l2, String l3) {
+        Slice<Facility> facilities = facilityService.findFacilities(pageable, AreaRequestDto.getArea(l1, l2, l3));
         return ResponseEntity.ok(facilities.map(FacilityResponseDto::new));
     }
 

@@ -45,6 +45,11 @@ public class FacilityService {
         return facilityRepository.findFacilityByCategory(pageable, category);
     }
 
+    @Transactional(readOnly = true)
+    public Slice<Facility> findFacilities(Pageable pageable, String area) {
+        return facilityRepository.findFacilityByArea(pageable, area);
+    }
+
     @Transactional
     public void updateFacility(FacilityDto facilityDto) {
         Facility findFacility = facilityRepository.findById(facilityDto.getId())
