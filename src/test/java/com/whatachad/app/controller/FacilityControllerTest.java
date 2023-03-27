@@ -50,21 +50,7 @@ class FacilityControllerTest {
 
     @BeforeEach
     void init() {
-        UserLoginRequestDto loginDto = UserLoginRequestDto.builder()
-                .id("admin")
-                .password("admin")
-                .build();
-        UserTokenResponseDto token = UserTokenResponseDto.builder()
-                .accessToken(tokenService.genAccessToken(loginDto.getId()))
-                .refreshToken(tokenService.genRefreshToken(loginDto.getId()))
-                .build();
-        accessToken = token.getAccessToken();
-        Claims claims = tokenService.validateToken(accessToken);
-        List<String> authorities = (List) claims.get("authorities");
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
-                authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-        SecurityContextHolder.getContext().setAuthentication(auth);
-
+        authorize();
         FacilityDto facilityDto = FacilityDto.builder()
                 .address(Address.builder()
                         .jibunAddress("지번 주소")
@@ -120,14 +106,14 @@ class FacilityControllerTest {
     @DisplayName("facility를 수정할 때 변경되는 필드 외에 기존 필드 값을 유지하지 않으면 " +
             "변경 후에 null 값이 저장된다. PUT /v1/facilities")
     void editFacilityWithoutExistingField() throws Exception {
-        UpdateFacilityRequestDto updateFacilityDto = UpdateFacilityRequestDto.builder()
+        UpdateFacilityRequestDto updateDto = UpdateFacilityRequestDto.builder()
                 .id(facility.getId())
                 .jibunAddress("변경된 주소")
                 .latitude("0.0")
                 .longitude("0.0")
                 .category(FacilityType.HEALTH)
                 .build();
-        String request = mapper.writeValueAsString(updateFacilityDto);
+        String request = mapper.writeValueAsString(updateDto);
         mockMvc.perform(MockMvcRequestBuilders.put("/v1/facilities")
                         .content(request)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -205,5 +191,22 @@ class FacilityControllerTest {
                 .andDo(print());
     }
 
-    // TODO : 예외 상황에 대한 테스트 필요
+    // TODO : 예외 상황에 대한 테스트 필요 -> 하나의 기능에 대한 여러 파라미터 값으로 테스트 (Parameterized Test)
+
+    private void authorize() {
+        UserLoginRequestDto loginDto = UserLoginRequestDto.builder()
+                .id("admin")
+                .password("admin")
+                .build();
+        UserTokenResponseDto token = UserTokenResponseDto.builder()
+                .accessToken(tokenService.genAccessToken(loginDto.getId()))
+                .refreshToken(tokenService.genRefreshToken(loginDto.getId()))
+                .build();
+        accessToken = token.getAccessToken();
+        Claims claims = tokenService.validateToken(accessToken);
+        List<String> authorities = (List) claims.get("authorities");
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
+                authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
 }

@@ -90,7 +90,7 @@ public interface FacilityApi {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @PutMapping
+    @PutMapping(consumes = "application/json")
     ResponseEntity<UpdateFacilityResponseDto> editFacility(@RequestBody @Valid UpdateFacilityRequestDto requestDto);
 
 

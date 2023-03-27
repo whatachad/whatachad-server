@@ -2,6 +2,7 @@ package com.whatachad.app.model.request;
 
 import com.whatachad.app.type.FacilityType;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +25,7 @@ public class CreateFacilityRequestDto {
     @NotBlank
     private String longitude;
 
-    @NotBlank
+    @NotNull
     private FacilityType category;
 
     private String title;

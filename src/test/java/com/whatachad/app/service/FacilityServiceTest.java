@@ -64,7 +64,7 @@ class FacilityServiceTest {
     @DisplayName("Update Dto를 통해 facility 정보를 수정한다.")
     void updateFacility() {
         Facility facility = facilityService.findAllFacilities().get(0);
-        FacilityDto facilityDto = FacilityDto.builder()
+        FacilityDto updateDto = FacilityDto.builder()
                 .id(facility.getId())
                 .address(Address.builder()
                         .jibunAddress("변경된 주소")
@@ -73,7 +73,7 @@ class FacilityServiceTest {
                         .build())
                 .category(FacilityType.HEALTH)
                 .build();
-        facilityService.updateFacility(facilityDto);
+        facilityService.updateFacility(updateDto);
 
         Facility updateFacility = facilityService.findFacility(facility.getId());
         assertThat(updateFacility.getAddress().getJibunAddress()).isEqualTo("변경된 주소");
