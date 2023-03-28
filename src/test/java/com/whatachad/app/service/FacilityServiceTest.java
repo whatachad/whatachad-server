@@ -5,8 +5,10 @@ import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
+import com.whatachad.app.repository.FacilityRepository;
 import com.whatachad.app.type.FacilityType;
 import io.jsonwebtoken.Claims;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,22 +34,12 @@ class FacilityServiceTest {
     private FacilityService facilityService;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private FacilityRepository facilityRepository;
 
     @BeforeEach
     void initFacility() throws Exception {
-        UserLoginRequestDto loginDto = UserLoginRequestDto.builder()
-                .id("admin")
-                .password("admin")
-                .build();
-        UserTokenResponseDto token = UserTokenResponseDto.builder()
-                .accessToken(tokenService.genAccessToken(loginDto.getId()))
-                .refreshToken(tokenService.genRefreshToken(loginDto.getId()))
-                .build();
-        Claims claims = tokenService.validateToken(token.getAccessToken());
-        List<String> authorities = (List) claims.get("authorities");
-        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
-                authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
-        SecurityContextHolder.getContext().setAuthentication(auth);
+        authorize();
 
         FacilityDto facilityDto = FacilityDto.builder()
                 .address(Address.builder()
@@ -58,6 +50,11 @@ class FacilityServiceTest {
                 .category(FacilityType.HEALTH)
                 .build();
         facilityService.createFacility(facilityDto);
+    }
+
+    @AfterEach
+    void clear() {
+        facilityRepository.deleteAll();
     }
 
     @Test
@@ -114,5 +111,22 @@ class FacilityServiceTest {
         assertThat(facility.getAddress().getJibunAddress()).isEqualTo("서울특별시 강남구 청담동 92-22");
         assertThat(facility.getCategory()).isEqualTo(FacilityType.HEALTH);
     }
+
+    private void authorize() {
+        UserLoginRequestDto loginDto = UserLoginRequestDto.builder()
+                .id("admin")
+                .password("admin")
+                .build();
+        UserTokenResponseDto token = UserTokenResponseDto.builder()
+                .accessToken(tokenService.genAccessToken(loginDto.getId()))
+                .refreshToken(tokenService.genRefreshToken(loginDto.getId()))
+                .build();
+        Claims claims = tokenService.validateToken(token.getAccessToken());
+        List<String> authorities = (List) claims.get("authorities");
+        UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
+                authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+        SecurityContextHolder.getContext().setAuthentication(auth);
+    }
+
 
 }

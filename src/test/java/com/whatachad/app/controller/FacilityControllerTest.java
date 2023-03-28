@@ -8,11 +8,13 @@ import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
+import com.whatachad.app.repository.FacilityRepository;
 import com.whatachad.app.service.FacilityService;
 import com.whatachad.app.service.TokenService;
 import com.whatachad.app.type.FacilityType;
 import io.jsonwebtoken.Claims;
 import org.hamcrest.core.IsNull;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,6 +49,8 @@ class FacilityControllerTest {
     private FacilityService facilityService;
     @Autowired
     private TokenService tokenService;
+    @Autowired
+    private FacilityRepository facilityRepository;
 
     @BeforeEach
     void init() {
@@ -60,6 +64,11 @@ class FacilityControllerTest {
                 .category(FacilityType.HEALTH)
                 .build();
         facility = facilityService.createFacility(facilityDto);
+    }
+
+    @AfterEach
+    void clear() {
+        facilityRepository.deleteAll();
     }
 
     @Test
