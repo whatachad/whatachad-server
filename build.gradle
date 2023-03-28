@@ -23,6 +23,7 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.postgresql:postgresql'
 
     compileOnly 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
@@ -31,7 +32,7 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
 
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.4'
     implementation group: 'io.jsonwebtoken', name: 'jjwt', version: "0.9.1"
     implementation group: 'org.mapstruct', name: 'mapstruct', version: "1.4.2.Final"
     annotationProcessor group: 'org.mapstruct', name: 'mapstruct-processor', version: "1.4.2.Final"
