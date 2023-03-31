@@ -55,14 +55,14 @@ public interface UserApi {
 
 
 
-//    @Operation(summary = "메일 인증 API", description = "")
-//    @ApiResponses(value = {
-//            @ApiResponse(responseCode = "200", description = "OK"),
-//            @ApiResponse(responseCode = "400", description = "Bad Request"),
-//            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
-//    })
-//    @GetMapping(path = "/v1/signUpConfirm")
-//    String signUpConfirm(@RequestParam("email") String email, @RequestParam("authKey") String authKey);
+    @Operation(summary = "메일 인증 API", description = "")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @GetMapping(path = "/v1/signUpConfirm")
+    String signUpConfirm(@RequestParam("email") String email, @RequestParam("authKey") String authKey);
 
 
 

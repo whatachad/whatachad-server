@@ -12,6 +12,7 @@ import com.whatachad.app.model.request.UserUpdateRequestDto;
 import com.whatachad.app.model.response.UserResponseDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.security.AuthConstant;
+import com.whatachad.app.service.MailSendService;
 import com.whatachad.app.service.TokenService;
 import com.whatachad.app.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +36,11 @@ public class UserController implements UserApi {
 
     private final TokenService tokenService;
     private final UserService userService;
+    private final MailSendService mailSendService;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
+    @Override
     public ResponseEntity<UserTokenResponseDto> login(UserLoginRequestDto loginDTO) {
 
         try {
@@ -57,16 +60,18 @@ public class UserController implements UserApi {
         }
     }
 
+    @Override
     public ResponseEntity logout(String accessToken) {
         SecurityContextHolder.clearContext();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+    @Override
     public ResponseEntity<UserResponseDto> signUp(SignUpRequestDto signUpRequestDto) {
         try {
             User input = userMapper.toEntity(signUpRequestDto);
             User user = userService.signUp(input);
-//            mailSendService.sendAuthMail(user.getEmail());
+            mailSendService.sendAuthMail(user.getEmail());
             return new ResponseEntity<>(userMapper.toDto(user), HttpStatus.OK);
         } catch (CommonException e) {
             log.error(e.getMessage());
@@ -79,6 +84,7 @@ public class UserController implements UserApi {
         }
     }
 
+    @Override
     public ResponseEntity<List<UserResponseDto>> getUserList() {
 
         List<User> userList = userService.getUserList();
@@ -87,6 +93,7 @@ public class UserController implements UserApi {
                 .collect(Collectors.toList()), HttpStatus.OK);
     }
 
+    @Override
     public ResponseEntity<UserResponseDto> updateUser(UserUpdateRequestDto userUpdateRequestDto)
             throws CommonException {
 
@@ -122,6 +129,7 @@ public class UserController implements UserApi {
         }
     }
 
+    @Override
     public ResponseEntity<UserTokenResponseDto> updateAccessToken(UserTokenUpdateRequestDto userTokenUpdateRequestDto) {
         try {
             log.debug("TokenUpdate {}", userTokenUpdateRequestDto);
@@ -136,6 +144,7 @@ public class UserController implements UserApi {
         }
     }
 
+    @Override
     public ResponseEntity<UserResponseDto> deleteUser(String id) {
         try {
             if (id.equals(AuthConstant.ADMIN_USER))
@@ -151,17 +160,17 @@ public class UserController implements UserApi {
         }
     }
 
-//    @Override
-//    public String signUpConfirm(String email, String authKey) {
-//        log.info("Email {}, AuthKey {}", email, authKey);
-//        try {
-//            tokenService.validateToken(authKey);
-//            userService.updateAuthStatus(email);
-//        } catch (Exception e) {
-//            log.error("signUpConfirm Fail {}", e.getMessage());
-//            log.debug(e.getMessage(), e);
-//            throw e;
-//        }
-//        return "가입을 축하합니다.";
-//    }
+    @Override
+    public String signUpConfirm(String email, String authKey) {
+        log.info("Email {}, AuthKey {}", email, authKey);
+        try {
+            tokenService.validateToken(authKey);
+            userService.updateAuthStatus(email);
+        } catch (Exception e) {
+            log.error("signUpConfirm Fail {}", e.getMessage());
+            log.debug(e.getMessage(), e);
+            throw e;
+        }
+        return "가입을 축하합니다.";
+    }
 }
