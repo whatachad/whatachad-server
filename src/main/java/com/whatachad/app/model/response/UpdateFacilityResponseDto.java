@@ -15,5 +15,6 @@ public class UpdateFacilityResponseDto {
 
     private Address address;
     private FacilityType category;
+    private String title;
     private String description;
 }

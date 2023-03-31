@@ -12,6 +12,7 @@ public class UpdateUtils {
      */
     public static final String FACILITY_ADDRESS = "address";
     public static final String FACILITY_CATEGORY = "category";
+    public static final String FACILITY_TITLE = "title";
     public static final String FACILITY_DESCRIPTION = "description";
 
     /**

@@ -15,5 +15,6 @@ public class CreateFacilityResponseDto {
 
     private Address address;
     private FacilityType category;
+    private String title;
     private String description;
 }

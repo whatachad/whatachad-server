@@ -13,8 +13,10 @@ import lombok.NoArgsConstructor;
 @Getter
 public class FacilityDto {
 
+    private Long id;
     private Address address;
     private FacilityType category;
+    private String title;
     private String description;
 
 }

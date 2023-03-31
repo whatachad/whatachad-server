@@ -4,12 +4,13 @@ import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.domain.User;
-import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.request.FacilityDto;
-import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.repository.FacilityRepository;
+import com.whatachad.app.type.FacilityType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -20,13 +21,11 @@ import java.util.List;
 @Service
 public class FacilityService {
 
-    private final MapperService mapperService;
     private final UserService userService;
     private final FacilityRepository facilityRepository;
 
     @Transactional
-    public Facility createFacility(CreateFacilityRequestDto dto) {
-        FacilityDto facilityDto = mapperService.toFacilityDto(dto);
+    public Facility createFacility(FacilityDto facilityDto) {
         return facilityRepository.save(Facility.create(getLoginUser(), facilityDto));
     }
 
@@ -41,14 +40,23 @@ public class FacilityService {
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Facility"));
     }
 
+    @Transactional(readOnly = true)
+    public Slice<Facility> findFacilities(Pageable pageable, FacilityType category) {
+        return facilityRepository.findFacilityByCategory(pageable, category);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<Facility> findFacilities(Pageable pageable, String area) {
+        return facilityRepository.findFacilityByArea(pageable, area);
+    }
+
     @Transactional
-    public void updateFacility(UpdateFacilityRequestDto dto) {
-        Facility findFacility = facilityRepository.findById(dto.getId())
+    public void updateFacility(FacilityDto facilityDto) {
+        Facility findFacility = facilityRepository.findById(facilityDto.getId())
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Facility"));
         if (!findFacility.getUser().equals(getLoginUser())) {
             throw new CommonException(BError.NOT_MATCH, "User");
         }
-        FacilityDto facilityDto = mapperService.toFacilityDto(dto);
         findFacility.update(facilityDto);
     }
 
