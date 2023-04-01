@@ -9,6 +9,7 @@ public enum FacilityType {
     YOGA,
     CLIMBING,
     PULL_UP_BAR,
-    PARALLEL_BAR
+    PARALLEL_BAR,
+    ABCD
 
 }
