@@ -2,16 +2,12 @@ package com.whatachad.app.controller;
 
 import com.whatachad.app.api.FacilityApi;
 import com.whatachad.app.model.domain.Facility;
-import com.whatachad.app.model.request.AreaRequestDto;
-import com.whatachad.app.model.request.CreateFacilityRequestDto;
-import com.whatachad.app.model.request.FacilityDto;
-import com.whatachad.app.model.request.UpdateFacilityRequestDto;
+import com.whatachad.app.model.request.*;
 import com.whatachad.app.model.response.CreateFacilityResponseDto;
 import com.whatachad.app.model.response.FacilityResponseDto;
 import com.whatachad.app.model.response.UpdateFacilityResponseDto;
 import com.whatachad.app.service.FacilityMapperService;
 import com.whatachad.app.service.FacilityService;
-import com.whatachad.app.type.FacilityType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -19,6 +15,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -36,8 +34,9 @@ public class FacilityController implements FacilityApi {
     }
 
     @Override
-    public ResponseEntity<Slice<FacilityResponseDto>> getFacilities(Pageable pageable, FacilityType category) {
-        Slice<Facility> facilities = facilityService.findFacilities(pageable, category);
+    public ResponseEntity<Slice<FacilityResponseDto>> getFacilitiesAround(Pageable pageable, Map<String, String> findFacilityParam) {
+        FindFacilityDto findFacilityDto = mapperService.toFindFacilityDto(findFacilityParam);
+        Slice<Facility> facilities = facilityService.findFacilities(pageable, findFacilityDto);
         return ResponseEntity.ok(facilities.map(FacilityResponseDto::new));
     }
 
