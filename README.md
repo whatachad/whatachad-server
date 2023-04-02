@@ -11,7 +11,7 @@
 - 배포 : http://whatachad.site:3000/swagger-ui/index.html 
 
 ## PostgreSQL
-- [PostgreSQL을 설치] (https://www.postgresql.org/download/)
+- [PostgreSQL을 설치](https://www.postgresql.org/download/)
 - 혹은 각 OS 환경에 따라서 CLI로 설치
 - terminal 혹은 pgadmin을 이용하여 DB server에 접속
 - port : 5432
