@@ -10,7 +10,16 @@
 - 로컬 : http://localhost:3000/swagger-ui/index.html
 - 배포 : http://whatachad.site:3000/swagger-ui/index.html 
 
-## H2
+## PostgreSQL
+- [PostgreSQL을 설치] (https://www.postgresql.org/download/)
+- 혹은 각 OS 환경에 따라서 CLI로 설치
+- terminal 혹은 pgadmin을 이용하여 DB server에 접속
+- port : 5432
+- db : whatachad
+- username : postgres
+- password : postgres
+
+## H2 (test 환경에서 사용 예정)
 - [H2 DBMS 설치](http://h2database.com/html/main.html)
 - 애플리케이션 서버를 실행한 후
 - 로컬 : http://localhost:3000/h2-console
