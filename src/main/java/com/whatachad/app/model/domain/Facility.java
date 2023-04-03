@@ -15,7 +15,7 @@ import static com.whatachad.app.model.domain.UpdateUtils.*;
 public class Facility extends BaseTime {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
