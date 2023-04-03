@@ -1,13 +1,15 @@
 package com.whatachad.app.service;
 
+import com.whatachad.app.TestInit;
 import com.whatachad.app.model.domain.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.request.FacilityDto;
+import com.whatachad.app.model.request.FindFacilityDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
-import com.whatachad.app.repository.FacilityRepository;
 import com.whatachad.app.type.FacilityType;
 import io.jsonwebtoken.Claims;
+import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +22,9 @@ import org.springframework.data.domain.Slice;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -35,7 +40,9 @@ class FacilityServiceTest {
     @Autowired
     private TokenService tokenService;
     @Autowired
-    private FacilityRepository facilityRepository;
+    private EntityManager em;
+    @Autowired
+    private PlatformTransactionManager txManager;
 
     @BeforeEach
     void initFacility() throws Exception {
@@ -44,8 +51,8 @@ class FacilityServiceTest {
         FacilityDto facilityDto = FacilityDto.builder()
                 .address(Address.builder()
                         .jibunAddress("지번 주소")
-                        .latitude("0.0")
-                        .longitude("0.0")
+                        .latitude(0D)
+                        .longitude(0D)
                         .build())
                 .category(FacilityType.HEALTH)
                 .build();
@@ -53,9 +60,14 @@ class FacilityServiceTest {
     }
 
     @AfterEach
-    void clear() {
-        facilityRepository.deleteAll();
+    void rollback() {
+        TransactionStatus txStatus = txManager.getTransaction(new DefaultTransactionDefinition());
+        em.createQuery("delete from Facility f where f.title not in :title")
+                .setParameter("title", List.of(TestInit.FACILITY_TITLE))
+                .executeUpdate();
+        txManager.commit(txStatus);
     }
+
 
     @Test
     @DisplayName("Update Dto를 통해 facility 정보를 수정한다.")
@@ -65,8 +77,8 @@ class FacilityServiceTest {
                 .id(facility.getId())
                 .address(Address.builder()
                         .jibunAddress("변경된 주소")
-                        .latitude("0.0")
-                        .longitude("0.0")
+                        .latitude(0D)
+                        .longitude(0D)
                         .build())
                 .category(FacilityType.HEALTH)
                 .build();
@@ -84,12 +96,18 @@ class FacilityServiceTest {
     }
 
     @Test
-    @DisplayName("facility의 카테고리를 기준으로 모든 facility를 조회한다.")
-    void findFacilitiesByCategory() {
+    @DisplayName("유저의 현재 위치로부터 반경 100 떨어진 모든 facility를 조회한다.")
+    void findFacilitiesAroundUser() {
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Slice<Facility> facilities = facilityService.findFacilities(pageRequest, FacilityType.HEALTH);
-        Facility facility = facilities.getContent().get(0);
-        assertThat(facility.getCategory()).isEqualTo(FacilityType.HEALTH);
+        FindFacilityDto findFacilityDto = FindFacilityDto.builder()
+                .category(FacilityType.HEALTH)
+                .latitude(37.484231) // TODO : 테스트 데이터 상수 처리
+                .longitude(126.929699)
+                .distance(100)
+                .build();
+        Slice<Facility> facilities = facilityService.findFacilities(pageRequest, findFacilityDto);
+        List<Facility> result = facilities.getContent();
+        assertThat(result.size()).isEqualTo(2);
     }
 
     @Test
@@ -98,8 +116,8 @@ class FacilityServiceTest {
         FacilityDto facilityDto = FacilityDto.builder()
                 .address(Address.builder()
                         .jibunAddress("서울특별시 강남구 청담동 92-22")
-                        .latitude("0.0")
-                        .longitude("0.0")
+                        .latitude(0D)
+                        .longitude(0D)
                         .build())
                 .category(FacilityType.HEALTH)
                 .build();
