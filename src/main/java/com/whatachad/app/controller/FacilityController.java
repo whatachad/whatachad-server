@@ -30,7 +30,7 @@ public class FacilityController implements FacilityApi {
     public ResponseEntity<CreateFacilityResponseDto> registerFacility(CreateFacilityRequestDto requestDto) {
         FacilityDto facilityDto = mapperService.toFacilityDto(requestDto);
         Facility facility = facilityService.createFacility(facilityDto);
-        return new ResponseEntity<>(mapperService.toCreateResponseDto(facility), HttpStatus.OK);
+        return ResponseEntity.ok(mapperService.toCreateResponseDto(facility));
     }
 
     @Override
@@ -49,7 +49,7 @@ public class FacilityController implements FacilityApi {
     @Override
     public ResponseEntity<FacilityResponseDto> getFacility(Long facilityId) {
         Facility facility = facilityService.findFacility(facilityId);
-        return new ResponseEntity<>(mapperService.toResponseDto(facility), HttpStatus.OK);
+        return ResponseEntity.ok(mapperService.toResponseDto(facility));
     }
 
     @Override
@@ -57,7 +57,7 @@ public class FacilityController implements FacilityApi {
         FacilityDto facilityDto = mapperService.toFacilityDto(requestDto);
         facilityService.updateFacility(facilityDto);
         Facility facility = facilityService.findFacility(requestDto.getId());
-        return new ResponseEntity<>(mapperService.toUpdateResponseDto(facility), HttpStatus.OK);
+        return ResponseEntity.ok(mapperService.toUpdateResponseDto(facility));
     }
 
     @Override
