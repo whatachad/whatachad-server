@@ -15,11 +15,11 @@ import com.whatachad.app.type.FacilityType;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,6 +32,8 @@ import java.util.stream.IntStream;
 public class FacilityMapperService {
 
     public static final Map<String, String> REGION_CODE = new HashMap<>(); // <ADDRESS, REGION_CODE>
+
+    private final ResourceLoader resourceLoader;
 
     // TODO : 아래 코드를 추상화할 해결책은?
 
@@ -151,8 +153,10 @@ public class FacilityMapperService {
 
     @PostConstruct
     void initRegionCode() throws IOException {
-        String filePath = "src/main/resources/static/region-code.csv";
-        BufferedReader reader = new BufferedReader(new FileReader(filePath));
+        String filePath = "static/region-code.csv";
+        Resource resource = resourceLoader.getResource("classpath:" + filePath);
+        InputStream inputStream = resource.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
         String currentLine = reader.readLine(); // 첫 줄은 column명이므로 skip
         while ((currentLine = reader.readLine()) != null) {
             String[] splitLine = currentLine.split(",");
