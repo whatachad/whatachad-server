@@ -15,7 +15,7 @@ import static com.whatachad.app.model.domain.UpdateUtils.*;
 public class Facility extends BaseTime {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -25,6 +25,7 @@ public class Facility extends BaseTime {
     @Embedded
     private Address address;
 
+    @Enumerated(EnumType.STRING)
     private FacilityType category;
 
     private String title;
@@ -36,6 +37,7 @@ public class Facility extends BaseTime {
                 .user(user)
                 .address(dto.getAddress())
                 .category(dto.getCategory())
+                .title(dto.getTitle())
                 .description(dto.getDescription())
                 .build();
     }
@@ -50,6 +52,7 @@ public class Facility extends BaseTime {
         changeField(this, FACILITY_TITLE, dto.getTitle());
         changeField(this, FACILITY_ADDRESS, dto.getAddress());
         changeField(this, FACILITY_CATEGORY, dto.getCategory());
+        changeField(this, FACILITY_TITLE, dto.getTitle());
         changeField(this, FACILITY_DESCRIPTION, dto.getDescription());
     }
 }

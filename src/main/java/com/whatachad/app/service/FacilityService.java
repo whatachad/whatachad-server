@@ -5,8 +5,8 @@ import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.request.FacilityDto;
+import com.whatachad.app.model.request.FindFacilityDto;
 import com.whatachad.app.repository.FacilityRepository;
-import com.whatachad.app.type.FacilityType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -41,8 +41,8 @@ public class FacilityService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<Facility> findFacilities(Pageable pageable, FacilityType category) {
-        return facilityRepository.findFacilityByCategory(pageable, category);
+    public Slice<Facility> findFacilities(Pageable pageable, FindFacilityDto findFacilityDto) {
+        return facilityRepository.findFacilityAroundUser(pageable, findFacilityDto);
     }
 
     @Transactional(readOnly = true)

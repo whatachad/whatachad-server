@@ -1,6 +1,7 @@
 package com.whatachad.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whatachad.app.TestInit;
 import com.whatachad.app.model.domain.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
@@ -8,11 +9,11 @@ import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
-import com.whatachad.app.repository.FacilityRepository;
 import com.whatachad.app.service.FacilityService;
 import com.whatachad.app.service.TokenService;
 import com.whatachad.app.type.FacilityType;
 import io.jsonwebtoken.Claims;
+import jakarta.persistence.EntityManager;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +28,10 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,7 +55,9 @@ class FacilityControllerTest {
     @Autowired
     private TokenService tokenService;
     @Autowired
-    private FacilityRepository facilityRepository;
+    private EntityManager em;
+    @Autowired
+    private PlatformTransactionManager txManager;
 
     @BeforeEach
     void init() {
@@ -58,8 +65,8 @@ class FacilityControllerTest {
         FacilityDto facilityDto = FacilityDto.builder()
                 .address(Address.builder()
                         .jibunAddress("지번 주소")
-                        .latitude("0.0")
-                        .longitude("0.0")
+                        .latitude(0D)
+                        .longitude(0D)
                         .build())
                 .category(FacilityType.HEALTH)
                 .build();
@@ -67,8 +74,13 @@ class FacilityControllerTest {
     }
 
     @AfterEach
-    void clear() {
-        facilityRepository.deleteAll();
+    @Transactional
+    void rollback() {
+        TransactionStatus txStatus = txManager.getTransaction(new DefaultTransactionDefinition());
+        em.createQuery("delete from Facility f where f.title not in :title")
+                .setParameter("title", List.of(TestInit.FACILITY_TITLE))
+                .executeUpdate();
+        txManager.commit(txStatus);
     }
 
     @Test
@@ -76,8 +88,8 @@ class FacilityControllerTest {
     void registerFacility() throws Exception {
         CreateFacilityRequestDto createFacilityDto = CreateFacilityRequestDto.builder()
                 .jibunAddress("지번 주소")
-                .latitude("0.0")
-                .longitude("0.0")
+                .latitude(0D)
+                .longitude(0D)
                 .category(FacilityType.HEALTH)
                 .build();
         String request = mapper.writeValueAsString(createFacilityDto);
@@ -98,8 +110,8 @@ class FacilityControllerTest {
         UpdateFacilityRequestDto updateFacilityDto = UpdateFacilityRequestDto.builder()
                 .id(facility.getId())
                 .jibunAddress("변경된 주소")
-                .latitude("0.0")
-                .longitude("0.0")
+                .latitude(0D)
+                .longitude(0D)
                 .category(FacilityType.HEALTH)
                 .build();
         String request = mapper.writeValueAsString(updateFacilityDto);
@@ -118,8 +130,8 @@ class FacilityControllerTest {
         UpdateFacilityRequestDto updateDto = UpdateFacilityRequestDto.builder()
                 .id(facility.getId())
                 .jibunAddress("변경된 주소")
-                .latitude("0.0")
-                .longitude("0.0")
+                .latitude(0D)
+                .longitude(0D)
                 .category(FacilityType.HEALTH)
                 .build();
         String request = mapper.writeValueAsString(updateDto);
@@ -154,38 +166,63 @@ class FacilityControllerTest {
     }
 
     @Test
-    @DisplayName("facility를 카테고리 기준으로 조회한다. GET /v1/facilities?page=0&size=5&category=HEALTH")
-    void getFacilityByCategory() throws Exception {
+    @DisplayName("카테고리와 거리를 지정하고 내 주변 facility를 조회한다. " +
+            "GET /v1/facilities?page=0&size=5&category=HEALTH&latitude=37.484231&longitude=126.929699&distance=100")
+    void getFacilityAround() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities")
                         .param("page", "0")
                         .param("size", "5")
                         .param("category", "HEALTH")
+                        .param("latitude", "37.484231")
+                        .param("longitude", "126.929699")
+                        .param("distance", "100")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].category").value("HEALTH"))
+                .andExpect(jsonPath("$.content.length()").value(2))
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("facility를 존재하지 않는 카테고리로 조회하면 400 error를 내려준다. GET /v1/facilities?page=0&size=5&category=health")
-    void getFacilityByNotExistingCategory() throws Exception {
+    @DisplayName("facility를 잘못된 형식의 카테고리 값으로 조회하면 400 ERROR가 발생한다. " +
+            "GET /v1/facilities?page=0&size=5&category=health&latitude=37.484231&longitude=126.929699&distance=100")
+    void getFacilityByInvalidCategory() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities")
                         .param("page", "0")
                         .param("size", "5")
                         .param("category", "health")
+                        .param("latitude", "37.484231")
+                        .param("longitude", "126.929699")
+                        .param("distance", "100")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].reason").value("category is not valid."))
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("facility를 지역명으로 조회한다. GET /v1/facilities?page=0&size=5&l1=서울특별시&l2=강남구&l3=청담동")
+    @DisplayName("주변 시설을 조회할 때 위도, 경도, 거리 중에서 값이 하나라도 빠지면 400 ERROR가 발생한다." +
+            "GET /v1/facilities?page=0&size=5&category=health&latitude=37.484231&longitude=126.929699")
+    void getFacilityByEmptyGeometricValue() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities")
+                        .param("page", "0")
+                        .param("size", "5")
+                        .param("category", "health")
+                        .param("latitude", "37.484231")
+                        .param("longitude", "126.929699")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.errors[0].reason").value("distance does not exist."))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("facility를 지역명으로 조회한다. GET /v1/facilities/search?page=0&size=5&l1=서울특별시&l2=강남구&l3=청담동")
     void getFacilityByArea() throws Exception {
         FacilityDto facilityDto = FacilityDto.builder()
                 .address(Address.builder()
                         .jibunAddress("서울특별시 강남구 청담동 92-22")
-                        .latitude("0.0")
-                        .longitude("0.0")
+                        .latitude(0D)
+                        .longitude(0D)
                         .build())
                 .category(FacilityType.HEALTH)
                 .build();

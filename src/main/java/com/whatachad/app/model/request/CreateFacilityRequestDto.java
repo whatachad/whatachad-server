@@ -19,11 +19,11 @@ public class CreateFacilityRequestDto {
     @NotBlank
     private String jibunAddress;
 
-    @NotBlank
-    private String latitude;
+    @NotNull
+    private Double latitude;
 
-    @NotBlank
-    private String longitude;
+    @NotNull
+    private Double longitude;
 
     @NotNull
     private FacilityType category;

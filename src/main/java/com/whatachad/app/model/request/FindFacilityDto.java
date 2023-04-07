@@ -1,22 +1,20 @@
-package com.whatachad.app.model.domain;
+package com.whatachad.app.model.request;
 
-import jakarta.persistence.Embeddable;
+import com.whatachad.app.type.FacilityType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Embeddable
-public class Address {
+@Getter
+public class FindFacilityDto {
 
-    private String roadAddress;
-    private String jibunAddress;
-    private String regionCode;
+    private FacilityType category;
     private Double latitude;
     private Double longitude;
+    private Integer distance;
 
 }
