@@ -1,16 +1,14 @@
 package com.whatachad.app.model.domain;
 
+import com.whatachad.app.type.AccountType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
+@Getter
 @Builder
 @Entity
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Account extends BaseTime{
 
     @Id @GeneratedValue
@@ -24,9 +22,8 @@ public class Account extends BaseTime{
     @Enumerated(EnumType.STRING)
     private AccountType type;
 
-    private int cost;
+    private Integer cost;
 
-    private int time;
-
-    private int date;
+    @Embedded
+    private DateTime dateTime;
 }

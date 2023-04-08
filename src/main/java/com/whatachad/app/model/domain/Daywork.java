@@ -1,16 +1,15 @@
 package com.whatachad.app.model.domain;
 
+import com.whatachad.app.type.DayworkPriority;
+import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
-@Builder
-@AllArgsConstructor
-@NoArgsConstructor
-@Entity
 @Getter
+@Builder
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 public class Daywork extends BaseTime {
 
     @Id @GeneratedValue
@@ -29,6 +28,7 @@ public class Daywork extends BaseTime {
     @Enumerated(EnumType.STRING)
     private Workcheck status;
 
-    int time;
-    int date;
+    @Embedded
+    private DateTime dateTime;
 }
+

@@ -7,10 +7,10 @@ import org.hibernate.annotations.ColumnDefault;
 import java.util.ArrayList;
 import java.util.List;
 
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
 @Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Schedule{
 
@@ -22,15 +22,15 @@ public class Schedule{
     @JoinColumn(name = "USER_ID")
     private User user;
 
-    private int year;
-    private int month;
-    private int budget;
+    private Integer year;
+    private Integer month;
+    private Integer budget;
 
     @Builder.Default
-    @OneToMany(mappedBy = "schedule")
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
     private List<Daywork> dayworks = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "schedule")
+    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
     private List<Account> accounts = new ArrayList<>();
 }

@@ -1,4 +1,4 @@
-package com.whatachad.app.model.domain;
+package com.whatachad.app.type;
 
 public enum DayworkPriority {
     FIRST, SECOND, THIRD
