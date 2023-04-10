@@ -13,7 +13,7 @@ public class ScheduleController implements ScheduleApi {
 
     @Override
     public ResponseEntity<ScheduleDto> getSchedule() {
-        return new ResponseEntity<>(new ScheduleDto("schedule"), HttpStatus.OK);
+        return null; //new ResponseEntity<>(new ScheduleDto("schedule"), HttpStatus.OK);
     }
 
 }

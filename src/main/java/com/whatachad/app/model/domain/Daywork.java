@@ -1,5 +1,6 @@
 package com.whatachad.app.model.domain;
 
+import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.type.DayworkPriority;
 import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
@@ -30,5 +31,19 @@ public class Daywork extends BaseTime {
 
     @Embedded
     private DateTime dateTime;
+
+    public static Daywork create(Schedule schedule, DayworkDto dto) {
+        return Daywork.builder()
+                .schedule(schedule)
+                .title(dto.getTitle())
+                .priority(dto.getPriority())
+                .dateTime(dto.getDateTime())
+                .build();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.status = Workcheck.NOT_COMPLETE;
+    }
 }
 
