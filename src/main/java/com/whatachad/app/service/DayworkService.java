@@ -4,7 +4,6 @@ import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.domain.Schedule;
-import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.repository.DayworkRepository;
@@ -20,7 +19,6 @@ public class DayworkService {
 
     private final ScheduleService scheduleService;
     private final DayworkRepository dayworkRepository;
-    private final UserService userService;
 
     @Transactional
     public Daywork createDaywork(DayworkDto dayworkDto, ScheduleDto scheduleDto) {
@@ -37,9 +35,20 @@ public class DayworkService {
     }
 
     @Transactional(readOnly = true)
-    public Daywork findDaywork(Long id) {
+    public Daywork findDayworkById(Long id) {
         return dayworkRepository.findById(id)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isDayworkBySchedule(Long schedule_id) {
+        Schedule schedule = scheduleService.findSchedule(schedule_id);
+        return dayworkRepository.existBySchedule(schedule);
+    }
+
+    @Transactional
+    public void deleteDaywork(Long daywork_id) {
+        dayworkRepository.deleteById(daywork_id);
     }
 
     private Schedule getOrCreateSchedule(ScheduleDto scheduleDto) {

@@ -1,5 +1,7 @@
 package com.whatachad.app.service;
 
+import com.whatachad.app.common.BError;
+import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.dto.ScheduleDto;
@@ -22,14 +24,24 @@ public class ScheduleService {
         return scheduleRepository.save(Schedule.create(getLoginUser(), scheduleDto));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public boolean isExistSchedule(Integer year, Integer month) {
         return scheduleRepository.existByYMonth(year, month, getLoginUser());
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public Schedule findSchedule(Integer year, Integer month) {
         return scheduleRepository.findByYMonth(year, month, getLoginUser());
+    }
+    @Transactional(readOnly = true)
+    public Schedule findSchedule(Long schedule_id) {
+        return scheduleRepository.findById(schedule_id)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
+    }
+
+    @Transactional
+    public void deleteSchedule(Long id) {
+        scheduleRepository.deleteById(id);
     }
 
     private User getLoginUser() {
