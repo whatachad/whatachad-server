@@ -24,12 +24,12 @@ public class ScheduleService {
 
     @Transactional
     public boolean isExistSchedule(Integer year, Integer month) {
-        return scheduleRepository.existByYMonth(year, month);
+        return scheduleRepository.existByYMonth(year, month, getLoginUser());
     }
 
     @Transactional
     public Schedule findSchedule(Integer year, Integer month) {
-        return scheduleRepository.findByYMonth(year, month);
+        return scheduleRepository.findByYMonth(year, month, getLoginUser());
     }
 
     private User getLoginUser() {
