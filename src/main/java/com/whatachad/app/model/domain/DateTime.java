@@ -12,4 +12,9 @@ public class DateTime {
     private Integer date;
     private Integer hour;
     private Integer minute;
+
+    protected void changeDateTime(Integer hour, Integer minute) {
+        this.hour = hour;
+        this.minute = minute;
+    }
 }

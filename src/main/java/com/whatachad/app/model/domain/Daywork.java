@@ -45,5 +45,12 @@ public class Daywork extends BaseTime {
     public void prePersist() {
         this.status = Workcheck.NOT_COMPLETE;
     }
+
+    public void updateDaywork(DayworkDto dto) {
+        this.title = dto.getTitle();
+        this.status = dto.getStatus();
+        this.priority = dto.getPriority();
+        this.dateTime.changeDateTime(dto.getDateTime().getHour(), dto.getDateTime().getMinute());
+    }
 }
 

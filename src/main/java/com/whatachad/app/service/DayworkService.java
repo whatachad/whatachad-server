@@ -1,5 +1,7 @@
 package com.whatachad.app.service;
 
+import com.whatachad.app.common.BError;
+import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.DayworkDto;
@@ -9,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -22,6 +26,20 @@ public class DayworkService {
     public Daywork createDaywork(DayworkDto dayworkDto, ScheduleDto scheduleDto) {
         Schedule schedule = getSchedule(scheduleDto);
         return dayworkRepository.save(Daywork.create(schedule,dayworkDto));
+    }
+
+    @Transactional
+    public void updateDaywork(DayworkDto dayworkDto, Long daywork_id) {
+        Daywork findDaywork = dayworkRepository.findById(daywork_id)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
+
+        findDaywork.updateDaywork(dayworkDto);
+    }
+
+    @Transactional(readOnly = true)
+    public Daywork findDaywork(Long id) {
+        return dayworkRepository.findById(id)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
     }
 
     private Schedule getSchedule(ScheduleDto scheduleDto) {
