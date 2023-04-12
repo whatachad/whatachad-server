@@ -12,6 +12,6 @@ import java.util.List;
 @Repository
 public interface DayworkRepository extends JpaRepository<Daywork, Long> {
 
-    @Query(value = "select count(d.id) > 0 from Daywork d where d.schedule = :schedule")
-    boolean existBySchedule(@Param("schedule") Schedule schedule);
+    @Query(value = "select count(d.id) > 0 from Daywork d where d.schedule.id = :schedule_id")
+    boolean existBySchedule(@Param("schedule_id") Long schedule_id);
 }

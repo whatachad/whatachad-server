@@ -1,6 +1,6 @@
 package com.whatachad.app.controller;
 
-import com.whatachad.app.api.DayworkApi;
+import com.whatachad.app.api.ScheduleCrudApi;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.DayworkDto;
@@ -23,19 +23,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @CrossOrigin(origins = "*")
 @RequiredArgsConstructor
-public class DayworkController implements DayworkApi {
+public class ScheduleCrudController implements ScheduleCrudApi {
 
     private final DayworkService dayworkService;
+    private final ScheduleService scheduleService;
     private final ScheduleMapperService scheduleMapper;
     private final DayworkMapperService dayworkMapper;
-    private final ScheduleService scheduleService;
 
+    /**
+     *  Daywork 관련
+     * */
     @Override
     public ResponseEntity<CreateDayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String ym, Integer date) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(ym);
         DayworkDto dayworkDto = dayworkMapper.toDayworkDto(requestDto, date);
 
-        Daywork daywork = dayworkService.createDaywork(dayworkDto, scheduleDto);
+        Daywork daywork =scheduleService.createDayworkOnSchedule(dayworkDto, scheduleDto);
         return ResponseEntity.ok(dayworkMapper.toCreateResponseDto(daywork));
     }
 
@@ -59,4 +62,5 @@ public class DayworkController implements DayworkApi {
             scheduleService.deleteSchedule(schedule.getId());
         }
     }
+
 }

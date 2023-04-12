@@ -3,7 +3,6 @@ package com.whatachad.app.api;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
 import com.whatachad.app.model.response.CreateDayworkResponseDto;
-import com.whatachad.app.model.response.CreateFacilityResponseDto;
 import com.whatachad.app.model.response.UpdateDayworkResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,9 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Daywork API", description = "일정 관련 기능")
-@RequestMapping("/v1/schedules")
-public interface DayworkApi {
+@Tag(name = "Schedule API", description = "스케줄 관련 기능")
+@RequestMapping("/v1/schedule")
+public interface ScheduleCrudApi {
 
     @Operation(summary = "일정(daywork) 등록",
             description = " daywork 등록 시 기존에 Schedule이 존재하지 않으면 새로 생성하여 저장한다.")

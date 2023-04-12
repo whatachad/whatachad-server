@@ -32,9 +32,8 @@ public class Daywork extends BaseTime {
     @Embedded
     private DateTime dateTime;
 
-    public static Daywork create(Schedule schedule, DayworkDto dto) {
+    public static Daywork create(DayworkDto dto) {
         return Daywork.builder()
-                .schedule(schedule)
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
                 .dateTime(dto.getDateTime())
@@ -51,6 +50,12 @@ public class Daywork extends BaseTime {
         this.status = dto.getStatus();
         this.priority = dto.getPriority();
         this.dateTime.changeDateTime(dto.getDateTime().getHour(), dto.getDateTime().getMinute());
+    }
+
+    /* 연관 관계 편의 메서드*/
+    public void addScheduleInDaywork(Schedule schedule) {
+        this.schedule = schedule;
+        schedule.getDayworks().add(this);
     }
 }
 

@@ -2,8 +2,10 @@ package com.whatachad.app.service;
 
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
+import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.domain.User;
+import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,21 +20,22 @@ public class ScheduleService {
 
     private final UserService userService;
     private final ScheduleRepository scheduleRepository;
+    private final DayworkService dayworkService;
 
     @Transactional
-    public Schedule createSchedule(ScheduleDto scheduleDto) {
-        return scheduleRepository.save(Schedule.create(getLoginUser(), scheduleDto));
-    }
+    public Daywork createDayworkOnSchedule(DayworkDto dayworkDto, ScheduleDto scheduleDto) {
+        Schedule schedule = getOrCreateSchedule(scheduleDto);
+        Daywork daywork = dayworkService.createDaywork(dayworkDto);
 
-    @Transactional(readOnly = true)
-    public boolean isExistSchedule(Integer year, Integer month) {
-        return scheduleRepository.existByYMonth(year, month, getLoginUser());
+        daywork.addScheduleInDaywork(schedule);
+        return daywork;
     }
 
     @Transactional(readOnly = true)
     public Schedule findSchedule(Integer year, Integer month) {
-        return scheduleRepository.findByYMonth(year, month, getLoginUser());
+        return scheduleRepository.findByYMonth(year, month, getLoginUser().getId());
     }
+
     @Transactional(readOnly = true)
     public Schedule findSchedule(Long schedule_id) {
         return scheduleRepository.findById(schedule_id)
@@ -42,6 +45,26 @@ public class ScheduleService {
     @Transactional
     public void deleteSchedule(Long id) {
         scheduleRepository.deleteById(id);
+    }
+
+    private Schedule getOrCreateSchedule(ScheduleDto scheduleDto) {
+        boolean existSchedule = isExistSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
+        Schedule schedule = null;
+
+        if(existSchedule){
+            schedule = findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
+        }else {
+            schedule = createSchedule(scheduleDto);
+        }
+        return schedule;
+    }
+
+    private Schedule createSchedule(ScheduleDto scheduleDto) {
+        return scheduleRepository.save(Schedule.create(getLoginUser(), scheduleDto));
+    }
+
+    private boolean isExistSchedule(Integer year, Integer month) {
+        return scheduleRepository.existByYMonth(year, month, getLoginUser().getId());
     }
 
     private User getLoginUser() {

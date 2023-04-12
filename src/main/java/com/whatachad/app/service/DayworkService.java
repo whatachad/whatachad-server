@@ -17,13 +17,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class DayworkService {
 
-    private final ScheduleService scheduleService;
     private final DayworkRepository dayworkRepository;
 
     @Transactional
-    public Daywork createDaywork(DayworkDto dayworkDto, ScheduleDto scheduleDto) {
-        Schedule schedule = getOrCreateSchedule(scheduleDto);
-        return dayworkRepository.save(Daywork.create(schedule,dayworkDto));
+    public Daywork createDaywork(DayworkDto dayworkDto) {
+        return dayworkRepository.save(Daywork.create(dayworkDto));
     }
 
     @Transactional
@@ -42,8 +40,7 @@ public class DayworkService {
 
     @Transactional(readOnly = true)
     public boolean isDayworkBySchedule(Long schedule_id) {
-        Schedule schedule = scheduleService.findSchedule(schedule_id);
-        return dayworkRepository.existBySchedule(schedule);
+        return dayworkRepository.existBySchedule(schedule_id);
     }
 
     @Transactional
@@ -51,15 +48,4 @@ public class DayworkService {
         dayworkRepository.deleteById(daywork_id);
     }
 
-    private Schedule getOrCreateSchedule(ScheduleDto scheduleDto) {
-        boolean existSchedule = scheduleService.isExistSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
-        Schedule schedule = null;
-
-        if(existSchedule){
-            schedule = scheduleService.findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
-        }else {
-            schedule = scheduleService.createSchedule(scheduleDto);
-        }
-        return schedule;
-    }
 }
