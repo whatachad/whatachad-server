@@ -1,7 +1,9 @@
 package com.whatachad.app.api;
 
+import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
+import com.whatachad.app.model.response.CreateAccountResponseDto;
 import com.whatachad.app.model.response.CreateDayworkResponseDto;
 import com.whatachad.app.model.response.UpdateDayworkResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
@@ -50,4 +52,17 @@ public interface ScheduleCrudApi {
     })
     @DeleteMapping("/{YYYYMM}/dayworks/{DD}/{daywork_id}")
     public void deleteDaywork(@PathVariable Long daywork_id);
+
+
+    @Operation(summary = "가계부 등록",
+            description = " 가계부 등록 시 기존에 Schedule이 존재하지 않으면 새로 생성하여 저장한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = CreateAccountResponseDto.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @PostMapping("/{YYYYMM}/accounts/{DD}")
+    public ResponseEntity<CreateAccountResponseDto> registerAccount(@RequestBody CreateAccountRequestDto requestDto, @PathVariable("YYYYMM") String ym, @PathVariable("DD") Integer date);
+
 }

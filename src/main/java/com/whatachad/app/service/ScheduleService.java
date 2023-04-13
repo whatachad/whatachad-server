@@ -2,9 +2,11 @@ package com.whatachad.app.service;
 
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
+import com.whatachad.app.model.domain.Account;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.domain.User;
+import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.repository.ScheduleRepository;
@@ -21,7 +23,11 @@ public class ScheduleService {
     private final UserService userService;
     private final ScheduleRepository scheduleRepository;
     private final DayworkService dayworkService;
+    private final AccountService accountService;
 
+    /**
+     * Daywork Method
+     * */
     @Transactional
     public Daywork createDayworkOnSchedule(DayworkDto dayworkDto, ScheduleDto scheduleDto) {
         Schedule schedule = getOrCreateSchedule(scheduleDto);
@@ -47,6 +53,22 @@ public class ScheduleService {
         scheduleRepository.deleteById(id);
     }
 
+    /**
+     *  Account Method
+     * */
+    @Transactional
+    public Account createAccountOnSchedule(AccountDto accountDto, ScheduleDto scheduleDto) {
+        Schedule schedule = getOrCreateSchedule(scheduleDto);
+        Account account = accountService.createAccount(accountDto);
+
+        account.addScheduleInAccount(schedule);
+        return account;
+    }
+
+
+    /**
+     * private Method
+     * */
     private Schedule getOrCreateSchedule(ScheduleDto scheduleDto) {
         boolean existSchedule = isExistSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
         Schedule schedule = null;
@@ -71,4 +93,5 @@ public class ScheduleService {
         String loginUserId = userService.getLoginUserId();
         return userService.getUser(loginUserId);
     }
+
 }

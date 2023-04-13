@@ -1,18 +1,19 @@
 package com.whatachad.app.controller;
 
 import com.whatachad.app.api.ScheduleCrudApi;
+import com.whatachad.app.model.domain.Account;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.domain.Schedule;
+import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
+import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
+import com.whatachad.app.model.response.CreateAccountResponseDto;
 import com.whatachad.app.model.response.CreateDayworkResponseDto;
 import com.whatachad.app.model.response.UpdateDayworkResponseDto;
-import com.whatachad.app.service.DayworkMapperService;
-import com.whatachad.app.service.DayworkService;
-import com.whatachad.app.service.ScheduleMapperService;
-import com.whatachad.app.service.ScheduleService;
+import com.whatachad.app.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     private final ScheduleService scheduleService;
     private final ScheduleMapperService scheduleMapper;
     private final DayworkMapperService dayworkMapper;
-
+    private final AccountMapperService accountMapper;
     /**
      *  Daywork 관련
      * */
@@ -63,4 +64,15 @@ public class ScheduleCrudController implements ScheduleCrudApi {
         }
     }
 
+    /**
+     *  Account 관련
+     * */
+    @Override
+    public ResponseEntity<CreateAccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String ym, Integer date) {
+        ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(ym);
+        AccountDto accountDto = accountMapper.toAccountDto(requestDto, date);
+
+        Account account = scheduleService.createAccountOnSchedule(accountDto, scheduleDto);
+        return ResponseEntity.ok(accountMapper.toCreateAccountResponseDto(account));
+    }
 }
