@@ -38,4 +38,12 @@ public class AccountService {
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "account"));
     }
 
+    @Transactional
+    public void deleteAccount(Long account_id) {
+        accountRepository.deleteById(account_id);
+    }
+
+    protected boolean isAccountBySchedule(Long schedule_id) {
+        return accountRepository.existBySchedule(schedule_id);
+    }
 }

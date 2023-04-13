@@ -61,8 +61,8 @@ public class ScheduleCrudController implements ScheduleCrudApi {
         Schedule schedule = daywork.getSchedule();
         dayworkService.deleteDaywork(daywork_id);
 
-        boolean remainDaywork = dayworkService.isDayworkBySchedule(schedule.getId());
-        if(!remainDaywork){
+        boolean remain = scheduleService.existsAnythingOnSchedule(schedule.getId());
+        if(!remain){
             scheduleService.deleteSchedule(schedule.getId());
         }
     }
@@ -87,4 +87,16 @@ public class ScheduleCrudController implements ScheduleCrudApi {
         return ResponseEntity.ok(accountMapper.toUpdateResponseDto(account));
     }
 
+    @Override
+    public void deleteAccount(Long account_id) {
+        Account account = accountService.findAccountById(account_id);
+        Schedule schedule = account.getSchedule();
+        accountService.deleteAccount(account_id);
+
+        boolean remain = scheduleService.existsAnythingOnSchedule(schedule.getId());
+
+        if(!remain){
+            scheduleService.deleteSchedule(schedule.getId());
+        }
+    }
 }

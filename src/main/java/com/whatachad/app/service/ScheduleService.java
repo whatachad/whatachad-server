@@ -26,7 +26,18 @@ public class ScheduleService {
     private final AccountService accountService;
 
     /**
-     * Daywork Method
+     * Schedule Methods
+     * */
+    @Transactional
+    public boolean existsAnythingOnSchedule(Long schedule_id) {
+        boolean existsDaywork = dayworkService.isDayworkBySchedule(schedule_id);
+        boolean existsAccount = accountService.isAccountBySchedule(schedule_id);
+
+        return (existsDaywork || existsAccount);
+    }
+
+    /**
+     * Daywork Methods
      * */
     @Transactional
     public Daywork createDayworkOnSchedule(DayworkDto dayworkDto, ScheduleDto scheduleDto) {
@@ -54,7 +65,7 @@ public class ScheduleService {
     }
 
     /**
-     *  Account Method
+     *  Account Methods
      * */
     @Transactional
     public Account createAccountOnSchedule(AccountDto accountDto, ScheduleDto scheduleDto) {
@@ -67,7 +78,7 @@ public class ScheduleService {
 
 
     /**
-     * private Method
+     * private Methods
      * */
     private Schedule getOrCreateSchedule(ScheduleDto scheduleDto) {
         boolean existSchedule = isExistSchedule(scheduleDto.getYear(), scheduleDto.getMonth());

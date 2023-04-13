@@ -78,4 +78,15 @@ public interface ScheduleCrudApi {
     @PutMapping("/{YYYYMM}/accounts/{DD}/{account_id}")
     public  ResponseEntity<UpdateAccountResponseDto> editAccount(@RequestBody UpdateAccountRequestDto requestDto, @PathVariable Long account_id);
 
+
+    @Operation(summary = "가계부 삭제",
+            description = "가계부를 삭제한다. 가계부과 관계된 Schedule에 하위의 것이 존재하지 않으면 같이 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @DeleteMapping("/{YYYYMM}/accounts/{DD}/{account_id}")
+    public void deleteAccount(@PathVariable Long account_id);
+
 }

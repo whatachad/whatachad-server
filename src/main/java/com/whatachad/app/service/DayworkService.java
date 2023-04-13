@@ -38,14 +38,13 @@ public class DayworkService {
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
     }
 
-    @Transactional(readOnly = true)
-    public boolean isDayworkBySchedule(Long schedule_id) {
-        return dayworkRepository.existBySchedule(schedule_id);
-    }
-
     @Transactional
     public void deleteDaywork(Long daywork_id) {
         dayworkRepository.deleteById(daywork_id);
+    }
+
+    protected boolean isDayworkBySchedule(Long schedule_id) {
+        return dayworkRepository.existBySchedule(schedule_id);
     }
 
 }
