@@ -34,6 +34,7 @@ public enum AccountCategory {
         }
     }
 
+    // todo: Category와 매칭되는 Label이 들어오지 않는다면? 그런 상황을 안 만들 수 있는 방법?
     public static AccountCategory valueOfLabel(String label) {
         return BY_LABEL.get(label);
     }

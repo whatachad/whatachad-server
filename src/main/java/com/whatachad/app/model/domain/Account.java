@@ -52,4 +52,11 @@ public class Account extends BaseTime{
         schedule.getAccounts().add(this);
     }
 
+    public void updateAccount(AccountDto dto) {
+        this.title = dto.getTitle();
+        this.type = dto.getType();
+        this.category = dto.getCategory();
+        this.cost = dto.getCost();
+        this.dateTime.changeDateTime(dto.getDateTime().getHour(), dto.getDateTime().getMinute());
+    }
 }

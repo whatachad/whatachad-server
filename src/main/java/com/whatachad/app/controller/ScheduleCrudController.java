@@ -9,9 +9,11 @@ import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
+import com.whatachad.app.model.request.UpdateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
 import com.whatachad.app.model.response.CreateAccountResponseDto;
 import com.whatachad.app.model.response.CreateDayworkResponseDto;
+import com.whatachad.app.model.response.UpdateAccountResponseDto;
 import com.whatachad.app.model.response.UpdateDayworkResponseDto;
 import com.whatachad.app.service.*;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +33,7 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     private final ScheduleMapperService scheduleMapper;
     private final DayworkMapperService dayworkMapper;
     private final AccountMapperService accountMapper;
+    private final AccountService accountService;
     /**
      *  Daywork 관련
      * */
@@ -75,4 +78,13 @@ public class ScheduleCrudController implements ScheduleCrudApi {
         Account account = scheduleService.createAccountOnSchedule(accountDto, scheduleDto);
         return ResponseEntity.ok(accountMapper.toCreateAccountResponseDto(account));
     }
+
+    @Override
+    public ResponseEntity<UpdateAccountResponseDto> editAccount(UpdateAccountRequestDto requestDto, Long account_id) {
+        AccountDto accountDto = accountMapper.toAccountDto(requestDto);
+        accountService.updateAccount(accountDto, account_id);
+        Account account = accountService.findAccountById(account_id);
+        return ResponseEntity.ok(accountMapper.toUpdateResponseDto(account));
+    }
+
 }

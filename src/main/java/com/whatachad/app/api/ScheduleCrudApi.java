@@ -2,9 +2,11 @@ package com.whatachad.app.api;
 
 import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
+import com.whatachad.app.model.request.UpdateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
 import com.whatachad.app.model.response.CreateAccountResponseDto;
 import com.whatachad.app.model.response.CreateDayworkResponseDto;
+import com.whatachad.app.model.response.UpdateAccountResponseDto;
 import com.whatachad.app.model.response.UpdateDayworkResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -64,5 +66,16 @@ public interface ScheduleCrudApi {
     })
     @PostMapping("/{YYYYMM}/accounts/{DD}")
     public ResponseEntity<CreateAccountResponseDto> registerAccount(@RequestBody CreateAccountRequestDto requestDto, @PathVariable("YYYYMM") String ym, @PathVariable("DD") Integer date);
+
+    @Operation(summary = "가계부 수정",
+            description = "가계부의 title, cost, type, category, hour, minute 를 수정할 수 있다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = UpdateDayworkRequestDto.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @PutMapping("/{YYYYMM}/accounts/{DD}/{account_id}")
+    public  ResponseEntity<UpdateAccountResponseDto> editAccount(@RequestBody UpdateAccountRequestDto requestDto, @PathVariable Long account_id);
 
 }
