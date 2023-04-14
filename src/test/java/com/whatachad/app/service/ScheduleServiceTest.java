@@ -7,6 +7,7 @@ import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
+import com.whatachad.app.repository.DayworkRepository;
 import com.whatachad.app.type.DayworkPriority;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.Assertions;
@@ -19,51 +20,47 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @SpringBootTest
-public class DayWorkServiceTest {
+public class ScheduleServiceTest {
+    @Autowired private ScheduleService scheduleService;
+    @Autowired private DayworkService dayworkService;
+    @Autowired private TokenService tokenService;
 
-    @Autowired DayworkService dayworkService;
-    @Autowired
-    private TokenService tokenService;
+    @Autowired private DayworkRepository dayworkRepository;
 
     @BeforeEach
-    void initFacility() throws Exception {
+    void initSchedule() throws Exception {
         authorize();
+        createDaywork(2023, 4, 2);
+        createDaywork(2023, 4, 2);
+        createDaywork(2023, 4, 2);
+        createDaywork(2023, 4, 2);
+        createDaywork(2023, 4, 2);
+        createDaywork(2023, 4, 2);
+        createDaywork(2023, 4, 2);
+        createDaywork(2023, 4, 2);
+
+        createDaywork(2023, 4, 1);
+        createDaywork(2023, 4, 1);
+        createDaywork(2023, 4, 1);
+        createDaywork(2023, 4, 4);
+
+
+        createDaywork(2023, 4, 1);
+        createDaywork(2023, 4, 4);
     }
 
+
     @Test
-    public void 기존에Schedule없을때Daywork생성() throws Exception{
-        //given
-        DateTime dateTime = DateTime.builder()
-                .date(1)
-                .hour(11)
-                .minute(50)
-                .build();
+    public void Schedule와Daywork리스트가져오기() throws Exception{
+        ScheduleDto scheduleDto = ScheduleDto.builder().year(2023).month(4).build();
+        List<Daywork> dayworks = scheduleService.getDayworkOnSchedule(scheduleDto);
 
-        String title = "스쿼트";
-        DayworkDto dayworkDto = DayworkDto.builder()
-                .title(title)
-                .priority(DayworkPriority.FIRST)
-                .dateTime(dateTime)
-                .build();
-
-        Integer year = 2023;
-        Integer month = 3;
-
-        ScheduleDto scheduleDto = ScheduleDto.builder()
-                .year(year)
-                .month(month)
-                .build();
-
-        //when
-        //Daywork daywork = dayworkService.createDaywork(dayworkDto, scheduleDto);
-        //Schedule dayworkSchedule = daywork.getSchedule();
-
-        //then
-        //Assertions.assertEquals(daywork.getTitle(), title);
-        //Assertions.assertEquals(dayworkSchedule.getYear(), year);
+//        dayworks.stream().forEach((i) -> System.out.println(i.getTitle() + " " + i.getDateTime().getDate()));
+        Assertions.assertEquals(dayworks.size(), 8);
     }
 
     private void authorize() {
@@ -82,4 +79,24 @@ public class DayWorkServiceTest {
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
+    private void createDaywork(int year, int month, int date) {
+        DateTime dateTime = DateTime.builder()
+                .date(date)
+                .hour(11)
+                .minute(50)
+                .build();
+
+        String title = "스쿼트";
+        DayworkDto dayworkDto = DayworkDto.builder()
+                .title(title)
+                .priority(DayworkPriority.FIRST)
+                .dateTime(dateTime)
+                .build();
+
+        ScheduleDto scheduleDto = ScheduleDto.builder()
+                .year(year)
+                .month(month)
+                .build();
+        scheduleService.createDayworkOnSchedule(dayworkDto, scheduleDto);
+    }
 }

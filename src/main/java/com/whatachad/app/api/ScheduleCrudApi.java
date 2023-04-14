@@ -4,18 +4,18 @@ import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
-import com.whatachad.app.model.response.CreateAccountResponseDto;
-import com.whatachad.app.model.response.CreateDayworkResponseDto;
-import com.whatachad.app.model.response.UpdateAccountResponseDto;
-import com.whatachad.app.model.response.UpdateDayworkResponseDto;
+import com.whatachad.app.model.response.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Tag(name = "Schedule API", description = "스케줄 관련 기능")
 @RequestMapping("/v1/schedule")
@@ -88,5 +88,15 @@ public interface ScheduleCrudApi {
     })
     @DeleteMapping("/{YYYYMM}/accounts/{DD}/{accountId}")
     public void deleteAccount(@PathVariable Long accountId);
+
+    @Operation(summary = "캘린더 조회",
+            description = "year 과 month 정보를 이용하여 캘린더를 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @GetMapping("/{YYYYMM}")
+    public ResponseEntity<Map<String, Object>> getSchedule(@PathVariable("YYYYMM") String yearAndMonth);
 
 }

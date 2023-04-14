@@ -15,6 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -66,6 +70,30 @@ public class ScheduleService {
         return account;
     }
 
+    /**
+     *  Schedule Method
+     * */
+
+    @Transactional(readOnly = true)
+    public List<Daywork> getDayworkOnSchedule(ScheduleDto scheduleDto) {
+        Schedule schedule = scheduleRepository.findByYMonth(scheduleDto.getYear(), scheduleDto.getMonth(), getLoginUser().getId());
+
+        List<Daywork> dayworks = dayworkService.findDayworkBySchedule(schedule.getId());
+        if(dayworks.isEmpty()) return dayworks;
+
+        int cnt = 1, i = 1, curDate = dayworks.get(0).getDateTime().getDate();
+        while(i < dayworks.size()){
+            if (dayworks.get(i++).getDateTime().getDate() == curDate) cnt++;
+            else {cnt = 1; curDate = dayworks.get(i).getDateTime().getDate();}
+            if (cnt >= 3) {
+                while (i < dayworks.size() && dayworks.get(i).getDateTime().getDate() == curDate) {
+                    dayworks.remove(i);
+                }
+            }
+        }
+
+        return dayworks;
+    }
 
     /**
      * private Methods
@@ -94,5 +122,4 @@ public class ScheduleService {
         String loginUserId = userService.getLoginUserId();
         return userService.getUser(loginUserId);
     }
-
 }

@@ -11,16 +11,19 @@ import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
-import com.whatachad.app.model.response.CreateAccountResponseDto;
-import com.whatachad.app.model.response.CreateDayworkResponseDto;
-import com.whatachad.app.model.response.UpdateAccountResponseDto;
-import com.whatachad.app.model.response.UpdateDayworkResponseDto;
+import com.whatachad.app.model.response.*;
 import com.whatachad.app.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestController
@@ -87,5 +90,27 @@ public class ScheduleCrudController implements ScheduleCrudApi {
         Account account = accountService.findAccountById(accountId);
         Schedule schedule = account.getSchedule();
         accountService.deleteAccount(accountId);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> getSchedule(String yearAndMonth) {
+        HashMap<String, Object> response = new HashMap<>();
+        List<DayworkResponseDto> dayworkResponses = new ArrayList<>();
+
+        ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
+
+        Schedule schedule = scheduleService.findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
+        List<Daywork> dayworkOnSchedule = scheduleService.getDayworkOnSchedule(scheduleDto);
+
+        for (Daywork daywork : dayworkOnSchedule) {
+            DayworkResponseDto dayworkResponseDto = dayworkMapper.toDayworkResponseDto(daywork);
+            dayworkResponses.add(dayworkResponseDto);
+        }
+        ScheduleResponseDto scheduleResponse = scheduleMapper.toScheduleResponseDto(schedule);
+
+        response.put("schedule", scheduleResponse);
+        response.put("dayworks", dayworkResponses);
+
+        return ResponseEntity.ok().body(response);
     }
 }
