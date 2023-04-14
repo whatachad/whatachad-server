@@ -15,7 +15,6 @@ import com.whatachad.app.model.response.*;
 import com.whatachad.app.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
@@ -61,8 +60,7 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     @Override
     public void deleteDaywork(Long dayworkId) {
         Daywork daywork = dayworkService.findDayworkById(dayworkId);
-        Schedule schedule = daywork.getSchedule();
-        dayworkService.deleteDaywork(dayworkId);
+        dayworkService.deleteDaywork(daywork.getId());
     }
 
     /**
@@ -88,8 +86,7 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     @Override
     public void deleteAccount(Long accountId) {
         Account account = accountService.findAccountById(accountId);
-        Schedule schedule = account.getSchedule();
-        accountService.deleteAccount(accountId);
+        accountService.deleteAccount(account.getId());
     }
 
     @Override
@@ -98,15 +95,13 @@ public class ScheduleCrudController implements ScheduleCrudApi {
         List<DayworkResponseDto> dayworkResponses = new ArrayList<>();
 
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
-
         Schedule schedule = scheduleService.findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
-        List<Daywork> dayworkOnSchedule = scheduleService.getDayworkOnSchedule(scheduleDto);
+        List<Daywork> dayworks = scheduleService.getDayworksBySchedule(scheduleDto);
 
-        for (Daywork daywork : dayworkOnSchedule) {
-            DayworkResponseDto dayworkResponseDto = dayworkMapper.toDayworkResponseDto(daywork);
-            dayworkResponses.add(dayworkResponseDto);
-        }
         ScheduleResponseDto scheduleResponse = scheduleMapper.toScheduleResponseDto(schedule);
+        dayworks.forEach(daywork -> {
+            dayworkResponses.add(dayworkMapper.toDayworkResponseDto(daywork));
+        });
 
         response.put("schedule", scheduleResponse);
         response.put("dayworks", dayworkResponses);

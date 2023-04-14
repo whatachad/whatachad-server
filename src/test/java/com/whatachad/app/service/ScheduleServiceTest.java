@@ -2,7 +2,6 @@ package com.whatachad.app.service;
 
 import com.whatachad.app.model.domain.DateTime;
 import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
@@ -20,7 +19,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 @SpringBootTest
@@ -57,7 +55,7 @@ public class ScheduleServiceTest {
     @Test
     public void Schedule와Daywork리스트가져오기() throws Exception{
         ScheduleDto scheduleDto = ScheduleDto.builder().year(2023).month(4).build();
-        List<Daywork> dayworks = scheduleService.getDayworkOnSchedule(scheduleDto);
+        List<Daywork> dayworks = scheduleService.getDayworksBySchedule(scheduleDto);
 
 //        dayworks.stream().forEach((i) -> System.out.println(i.getTitle() + " " + i.getDateTime().getDate()));
         Assertions.assertEquals(dayworks.size(), 8);

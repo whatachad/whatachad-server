@@ -15,9 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -32,7 +32,7 @@ public class ScheduleService {
 
     /**
      * Daywork Methods
-     * */
+     */
     @Transactional
     public Daywork createDayworkOnSchedule(DayworkDto dayworkDto, ScheduleDto scheduleDto) {
         Schedule schedule = getOrCreateSchedule(scheduleDto);
@@ -59,8 +59,8 @@ public class ScheduleService {
     }
 
     /**
-     *  Account Methods
-     * */
+     * Account Methods
+     */
     @Transactional
     public Account createAccountOnSchedule(AccountDto accountDto, ScheduleDto scheduleDto) {
         Schedule schedule = getOrCreateSchedule(scheduleDto);
@@ -71,40 +71,34 @@ public class ScheduleService {
     }
 
     /**
-     *  Schedule Method
-     * */
-
+     * Schedule Method
+     */
     @Transactional(readOnly = true)
-    public List<Daywork> getDayworkOnSchedule(ScheduleDto scheduleDto) {
+    public List<Daywork> getDayworksBySchedule(ScheduleDto scheduleDto) {
         Schedule schedule = scheduleRepository.findByYMonth(scheduleDto.getYear(), scheduleDto.getMonth(), getLoginUser().getId());
+        List<Daywork> beforeDayworks = dayworkService.findDayworkBySchedule(schedule.getId());
+        if (beforeDayworks.isEmpty()) return beforeDayworks;
 
-        List<Daywork> dayworks = dayworkService.findDayworkBySchedule(schedule.getId());
-        if(dayworks.isEmpty()) return dayworks;
+        List<Daywork> afterDayworks = new LinkedList<>();
 
-        int cnt = 1, i = 1, curDate = dayworks.get(0).getDateTime().getDate();
-        while(i < dayworks.size()){
-            if (dayworks.get(i++).getDateTime().getDate() == curDate) cnt++;
-            else {cnt = 1; curDate = dayworks.get(i).getDateTime().getDate();}
-            if (cnt >= 3) {
-                while (i < dayworks.size() && dayworks.get(i).getDateTime().getDate() == curDate) {
-                    dayworks.remove(i);
-                }
-            }
-        }
+        IntStream.rangeClosed(1, 31).forEach(currentDate -> {
+            beforeDayworks.stream().filter(daywork -> daywork.getDateTime().getDate() == currentDate).limit(3)
+                            .forEach(daywork -> afterDayworks.add(daywork));
+        });
 
-        return dayworks;
+        return afterDayworks;
     }
 
     /**
      * private Methods
-     * */
+     */
     private Schedule getOrCreateSchedule(ScheduleDto scheduleDto) {
-        boolean existSchedule = isExistSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
+        boolean existSchedule = existSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
         Schedule schedule = null;
 
-        if(existSchedule){
+        if (existSchedule) {
             schedule = findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
-        }else {
+        } else {
             schedule = createSchedule(scheduleDto);
         }
         return schedule;
@@ -114,7 +108,7 @@ public class ScheduleService {
         return scheduleRepository.save(Schedule.create(getLoginUser(), scheduleDto));
     }
 
-    private boolean isExistSchedule(Integer year, Integer month) {
+    private boolean existSchedule(Integer year, Integer month) {
         return scheduleRepository.existByYMonth(year, month, getLoginUser().getId());
     }
 
