@@ -25,25 +25,21 @@ public class AccountService {
     }
 
     @Transactional
-    public void updateAccount(AccountDto accountDto, Long account_id) {
-        Account findAccount = accountRepository.findById(account_id)
+    public void updateAccount(AccountDto accountDto, Long accountId) {
+        Account findAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "account"));
 
         findAccount.updateAccount(accountDto);
     }
 
     @Transactional(readOnly = true)
-    public Account findAccountById(Long account_id) {
-        return accountRepository.findById(account_id)
+    public Account findAccountById(Long accountId) {
+        return accountRepository.findById(accountId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "account"));
     }
 
     @Transactional
-    public void deleteAccount(Long account_id) {
-        accountRepository.deleteById(account_id);
-    }
-
-    protected boolean isAccountBySchedule(Long schedule_id) {
-        return accountRepository.existBySchedule(schedule_id);
+    public void deleteAccount(Long accountId) {
+        accountRepository.deleteById(accountId);
     }
 }

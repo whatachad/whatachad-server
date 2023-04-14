@@ -25,16 +25,6 @@ public class ScheduleService {
     private final DayworkService dayworkService;
     private final AccountService accountService;
 
-    /**
-     * Schedule Methods
-     * */
-    @Transactional
-    public boolean existsAnythingOnSchedule(Long schedule_id) {
-        boolean existsDaywork = dayworkService.isDayworkBySchedule(schedule_id);
-        boolean existsAccount = accountService.isAccountBySchedule(schedule_id);
-
-        return (existsDaywork || existsAccount);
-    }
 
     /**
      * Daywork Methods
@@ -54,14 +44,14 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public Schedule findSchedule(Long schedule_id) {
-        return scheduleRepository.findById(schedule_id)
+    public Schedule findSchedule(Long scheduleId) {
+        return scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
     }
 
     @Transactional
-    public void deleteSchedule(Long id) {
-        scheduleRepository.deleteById(id);
+    public void deleteSchedule(Long scheduleId) {
+        scheduleRepository.deleteById(scheduleId);
     }
 
     /**

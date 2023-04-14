@@ -38,8 +38,8 @@ public class ScheduleCrudController implements ScheduleCrudApi {
      *  Daywork 관련
      * */
     @Override
-    public ResponseEntity<CreateDayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String ym, Integer date) {
-        ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(ym);
+    public ResponseEntity<CreateDayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String yearAndMonth, Integer date) {
+        ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
         DayworkDto dayworkDto = dayworkMapper.toDayworkDto(requestDto, date);
 
         Daywork daywork =scheduleService.createDayworkOnSchedule(dayworkDto, scheduleDto);
@@ -47,32 +47,27 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     }
 
     @Override
-    public ResponseEntity<UpdateDayworkResponseDto> editDaywork(UpdateDayworkRequestDto requestDto, Long daywork_id) {
+    public ResponseEntity<UpdateDayworkResponseDto> editDaywork(UpdateDayworkRequestDto requestDto, Long dayworkId) {
         // todo : 스케쥴 관련(Year Month date)도 변경할 수 있게?
         DayworkDto dayworkDto = dayworkMapper.toDayworkDto(requestDto);
-        dayworkService.updateDaywork(dayworkDto, daywork_id);
-        Daywork daywork = dayworkService.findDayworkById(daywork_id);
+        dayworkService.updateDaywork(dayworkDto, dayworkId);
+        Daywork daywork = dayworkService.findDayworkById(dayworkId);
         return ResponseEntity.ok(dayworkMapper.toUpdateResponseDto(daywork));
     }
 
     @Override
-    public void deleteDaywork(Long daywork_id) {
-        Daywork daywork = dayworkService.findDayworkById(daywork_id);
+    public void deleteDaywork(Long dayworkId) {
+        Daywork daywork = dayworkService.findDayworkById(dayworkId);
         Schedule schedule = daywork.getSchedule();
-        dayworkService.deleteDaywork(daywork_id);
-
-        boolean remain = scheduleService.existsAnythingOnSchedule(schedule.getId());
-        if(!remain){
-            scheduleService.deleteSchedule(schedule.getId());
-        }
+        dayworkService.deleteDaywork(dayworkId);
     }
 
     /**
      *  Account 관련
      * */
     @Override
-    public ResponseEntity<CreateAccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String ym, Integer date) {
-        ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(ym);
+    public ResponseEntity<CreateAccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String yearAndMonth, Integer date) {
+        ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
         AccountDto accountDto = accountMapper.toAccountDto(requestDto, date);
 
         Account account = scheduleService.createAccountOnSchedule(accountDto, scheduleDto);
@@ -80,23 +75,17 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     }
 
     @Override
-    public ResponseEntity<UpdateAccountResponseDto> editAccount(UpdateAccountRequestDto requestDto, Long account_id) {
+    public ResponseEntity<UpdateAccountResponseDto> editAccount(UpdateAccountRequestDto requestDto, Long accountId) {
         AccountDto accountDto = accountMapper.toAccountDto(requestDto);
-        accountService.updateAccount(accountDto, account_id);
-        Account account = accountService.findAccountById(account_id);
+        accountService.updateAccount(accountDto, accountId);
+        Account account = accountService.findAccountById(accountId);
         return ResponseEntity.ok(accountMapper.toUpdateResponseDto(account));
     }
 
     @Override
-    public void deleteAccount(Long account_id) {
-        Account account = accountService.findAccountById(account_id);
+    public void deleteAccount(Long accountId) {
+        Account account = accountService.findAccountById(accountId);
         Schedule schedule = account.getSchedule();
-        accountService.deleteAccount(account_id);
-
-        boolean remain = scheduleService.existsAnythingOnSchedule(schedule.getId());
-
-        if(!remain){
-            scheduleService.deleteSchedule(schedule.getId());
-        }
+        accountService.deleteAccount(accountId);
     }
 }

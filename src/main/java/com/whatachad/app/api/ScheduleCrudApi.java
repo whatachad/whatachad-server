@@ -30,7 +30,7 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping("/{YYYYMM}/dayworks/{DD}")
-    public ResponseEntity<CreateDayworkResponseDto> registerDaywork(@RequestBody CreateDayworkRequestDto requestDto, @PathVariable("YYYYMM") String ym, @PathVariable("DD") Integer date);
+    public ResponseEntity<CreateDayworkResponseDto> registerDaywork(@RequestBody CreateDayworkRequestDto requestDto, @PathVariable("YYYYMM") String yearAndMonth, @PathVariable("DD") Integer date);
 
 
     @Operation(summary = "일정(daywork) 수정",
@@ -41,19 +41,19 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @PutMapping("/{YYYYMM}/dayworks/{DD}/{daywork_id}")
-    public ResponseEntity<UpdateDayworkResponseDto> editDaywork(@RequestBody UpdateDayworkRequestDto requestDto, @PathVariable Long daywork_id);
+    @PutMapping("/{YYYYMM}/dayworks/{DD}/{dayworkId}")
+    public ResponseEntity<UpdateDayworkResponseDto> editDaywork(@RequestBody UpdateDayworkRequestDto requestDto, @PathVariable Long dayworkId);
 
 
     @Operation(summary = "일정(daywork) 삭제",
-            description = "일정의 삭제한다. 일정과 관계된 Schedule에 하위의 것이 존재하지 않으면 같이 삭제한다.")
+            description = "daywork_id를 이용해 일정을 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @DeleteMapping("/{YYYYMM}/dayworks/{DD}/{daywork_id}")
-    public void deleteDaywork(@PathVariable Long daywork_id);
+    @DeleteMapping("/{YYYYMM}/dayworks/{DD}/{dayworkId}")
+    public void deleteDaywork(@PathVariable Long dayworkId);
 
 
     @Operation(summary = "가계부 등록",
@@ -65,7 +65,7 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping("/{YYYYMM}/accounts/{DD}")
-    public ResponseEntity<CreateAccountResponseDto> registerAccount(@RequestBody CreateAccountRequestDto requestDto, @PathVariable("YYYYMM") String ym, @PathVariable("DD") Integer date);
+    public ResponseEntity<CreateAccountResponseDto> registerAccount(@RequestBody CreateAccountRequestDto requestDto, @PathVariable("YYYYMM") String yearAndMonth, @PathVariable("DD") Integer date);
 
     @Operation(summary = "가계부 수정",
             description = "가계부의 title, cost, type, category, hour, minute 를 수정할 수 있다.")
@@ -75,18 +75,18 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @PutMapping("/{YYYYMM}/accounts/{DD}/{account_id}")
-    public  ResponseEntity<UpdateAccountResponseDto> editAccount(@RequestBody UpdateAccountRequestDto requestDto, @PathVariable Long account_id);
+    @PutMapping("/{YYYYMM}/accounts/{DD}/{accountId}")
+    public  ResponseEntity<UpdateAccountResponseDto> editAccount(@RequestBody UpdateAccountRequestDto requestDto, @PathVariable Long accountId);
 
 
     @Operation(summary = "가계부 삭제",
-            description = "가계부를 삭제한다. 가계부과 관계된 Schedule에 하위의 것이 존재하지 않으면 같이 삭제한다.")
+            description = "account_id를 이용해 가계부를 삭제한다.")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK"),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @DeleteMapping("/{YYYYMM}/accounts/{DD}/{account_id}")
-    public void deleteAccount(@PathVariable Long account_id);
+    @DeleteMapping("/{YYYYMM}/accounts/{DD}/{accountId}")
+    public void deleteAccount(@PathVariable Long accountId);
 
 }

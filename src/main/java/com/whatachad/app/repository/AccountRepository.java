@@ -9,6 +9,4 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    @Query(value = "select count(a.id) > 0 from Account a where a.schedule.id = :schedule_id")
-    boolean existBySchedule(@Param("schedule_id") Long schedule_id);
 }
