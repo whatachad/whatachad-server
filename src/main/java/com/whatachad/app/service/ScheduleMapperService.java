@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class ScheduleMapperService {
 
-    public ScheduleDto toScheduleDto(String ym){
-        String year = ym.substring(0, 4);
-        String month = ym.substring(4);
+    public ScheduleDto toScheduleDto(String yearAndMonth){
+        String year = yearAndMonth.substring(0, 4);
+        String month = yearAndMonth.substring(4);
 
         return ScheduleDto.builder()
                 .year(Integer.valueOf(year))

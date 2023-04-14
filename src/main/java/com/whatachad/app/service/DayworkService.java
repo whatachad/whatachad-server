@@ -25,27 +25,22 @@ public class DayworkService {
     }
 
     @Transactional
-    public void updateDaywork(DayworkDto dayworkDto, Long daywork_id) {
-        Daywork findDaywork = dayworkRepository.findById(daywork_id)
+    public void updateDaywork(DayworkDto dayworkDto, Long dayworkId) {
+        Daywork findDaywork = dayworkRepository.findById(dayworkId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
 
         findDaywork.updateDaywork(dayworkDto);
     }
 
     @Transactional(readOnly = true)
-    public Daywork findDayworkById(Long id) {
-        return dayworkRepository.findById(id)
+    public Daywork findDayworkById(Long dayworkId) {
+        return dayworkRepository.findById(dayworkId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
     }
 
-    @Transactional(readOnly = true)
-    public boolean isDayworkBySchedule(Long schedule_id) {
-        return dayworkRepository.existBySchedule(schedule_id);
-    }
-
     @Transactional
-    public void deleteDaywork(Long daywork_id) {
-        dayworkRepository.deleteById(daywork_id);
+    public void deleteDaywork(Long dayworkId) {
+        dayworkRepository.deleteById(dayworkId);
     }
 
 }
