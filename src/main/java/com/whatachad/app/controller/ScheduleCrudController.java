@@ -96,7 +96,7 @@ public class ScheduleCrudController implements ScheduleCrudApi {
 
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
         Schedule schedule = scheduleService.findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
-        List<Daywork> dayworks = scheduleService.getDayworksBySchedule(scheduleDto);
+        List<Daywork> dayworks = scheduleService.getDayworksBySchedule(schedule.getId());
 
         ScheduleResponseDto scheduleResponse = scheduleMapper.toScheduleResponseDto(schedule);
         dayworks.forEach(daywork -> {

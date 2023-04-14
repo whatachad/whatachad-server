@@ -15,7 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.LinkedList;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -44,7 +45,8 @@ public class ScheduleService {
 
     @Transactional(readOnly = true)
     public Schedule findSchedule(Integer year, Integer month) {
-        return scheduleRepository.findByYMonth(year, month, getLoginUser().getId());
+        return scheduleRepository.findByYearMonth(year, month, getLoginUser().getId())
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
     }
 
     @Transactional(readOnly = true)
@@ -74,19 +76,26 @@ public class ScheduleService {
      * Schedule Method
      */
     @Transactional(readOnly = true)
-    public List<Daywork> getDayworksBySchedule(ScheduleDto scheduleDto) {
-        Schedule schedule = scheduleRepository.findByYMonth(scheduleDto.getYear(), scheduleDto.getMonth(), getLoginUser().getId());
-        List<Daywork> beforeDayworks = dayworkService.findDayworkBySchedule(schedule.getId());
-        if (beforeDayworks.isEmpty()) return beforeDayworks;
+    public List<Daywork> getDayworksBySchedule(Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
 
-        List<Daywork> afterDayworks = new LinkedList<>();
+        LocalDate lastDayOfMonth = LocalDate.of(schedule.getYear(), schedule.getMonth(), 1).plusMonths(1).minusDays(1);
+        final Integer START_DATE = 1;
+        final Integer END_DATE = lastDayOfMonth.getDayOfMonth();
 
-        IntStream.rangeClosed(1, 31).forEach(currentDate -> {
-            beforeDayworks.stream().filter(daywork -> daywork.getDateTime().getDate() == currentDate).limit(3)
-                            .forEach(daywork -> afterDayworks.add(daywork));
+        List<Daywork> dayworksOfMonth = dayworkService.findDayworkBySchedule(schedule.getId());
+        if (dayworksOfMonth.isEmpty()) return dayworksOfMonth;
+
+        List<Daywork> filterDayworks = new ArrayList<>();
+        IntStream.rangeClosed(START_DATE, END_DATE).forEach(currentDate -> {
+            dayworksOfMonth.stream()
+                    .filter(daywork -> daywork.getDateTime().getDate() == currentDate)
+                    .limit(3)
+                    .forEach(filterDayworks::add);
         });
 
-        return afterDayworks;
+        return filterDayworks;
     }
 
     /**
@@ -116,4 +125,5 @@ public class ScheduleService {
         String loginUserId = userService.getLoginUserId();
         return userService.getUser(loginUserId);
     }
+
 }
