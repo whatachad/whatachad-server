@@ -19,10 +19,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RestController
@@ -36,15 +38,16 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     private final DayworkMapperService dayworkMapper;
     private final AccountMapperService accountMapper;
     private final AccountService accountService;
+
     /**
-     *  Daywork 관련
-     * */
+     * Daywork 관련
+     */
     @Override
     public ResponseEntity<CreateDayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String yearAndMonth, Integer date) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
         DayworkDto dayworkDto = dayworkMapper.toDayworkDto(requestDto, date);
 
-        Daywork daywork =scheduleService.createDayworkOnSchedule(dayworkDto, scheduleDto);
+        Daywork daywork = scheduleService.createDayworkOnSchedule(dayworkDto, scheduleDto);
         return ResponseEntity.ok(dayworkMapper.toCreateResponseDto(daywork));
     }
 
@@ -64,8 +67,8 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     }
 
     /**
-     *  Account 관련
-     * */
+     * Account 관련
+     */
     @Override
     public ResponseEntity<CreateAccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String yearAndMonth, Integer date) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
@@ -92,15 +95,25 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     @Override
     public ResponseEntity<Map<String, Object>> getSchedule(String yearAndMonth) {
         HashMap<String, Object> response = new HashMap<>();
-        List<DayworkResponseDto> dayworkResponses = new ArrayList<>();
-
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
+        LocalDate lastDayOfMonth = LocalDate.of(scheduleDto.getYear(), scheduleDto.getMonth(), 1).plusMonths(1).minusDays(1);
+        final Integer START_DATE = 1;
+        final Integer END_DATE = lastDayOfMonth.getDayOfMonth();
+
         Schedule schedule = scheduleService.findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
-        List<Daywork> dayworks = scheduleService.getDayworksBySchedule(schedule.getId());
+        List<List<Daywork>> dayworks = scheduleService.getDayworksBySchedule(schedule.getId());
+
+        List<List<DayworkResponseDto>> dayworkResponses = IntStream.rangeClosed(START_DATE, END_DATE + 1)
+                .<List<DayworkResponseDto>>mapToObj(ArrayList::new)
+                .toList();
 
         ScheduleResponseDto scheduleResponse = scheduleMapper.toScheduleResponseDto(schedule);
-        dayworks.forEach(daywork -> {
-            dayworkResponses.add(dayworkMapper.toDayworkResponseDto(daywork));
+        IntStream.rangeClosed(START_DATE, END_DATE).forEach(currentDate -> {
+            dayworks.get(currentDate)
+                    .forEach(daywork -> {
+                        dayworkResponses.get(currentDate)
+                                .add(dayworkMapper.toDayworkResponseDto(daywork));
+                    });
         });
 
         response.put("schedule", scheduleResponse);

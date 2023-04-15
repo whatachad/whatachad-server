@@ -16,8 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -76,7 +75,7 @@ public class ScheduleService {
      * Schedule Method
      */
     @Transactional(readOnly = true)
-    public List<Daywork> getDayworksBySchedule(Long scheduleId) {
+    public List<List<Daywork>> getDayworksBySchedule(Long scheduleId) {
         Schedule schedule = scheduleRepository.findById(scheduleId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
 
@@ -85,14 +84,17 @@ public class ScheduleService {
         final Integer END_DATE = lastDayOfMonth.getDayOfMonth();
 
         List<Daywork> dayworksOfMonth = dayworkService.findDayworkBySchedule(schedule.getId());
-        if (dayworksOfMonth.isEmpty()) return dayworksOfMonth;
+        if (dayworksOfMonth.isEmpty()) return null;
 
-        List<Daywork> filterDayworks = new ArrayList<>();
+        List<List<Daywork>> filterDayworks = IntStream.rangeClosed(START_DATE, END_DATE + 1)
+                .<List<Daywork>>mapToObj(ArrayList::new)
+                .toList();
+
         IntStream.rangeClosed(START_DATE, END_DATE).forEach(currentDate -> {
             dayworksOfMonth.stream()
                     .filter(daywork -> daywork.getDateTime().getDate() == currentDate)
                     .limit(3)
-                    .forEach(filterDayworks::add);
+                    .forEach(filterDayworks.get(currentDate)::add);
         });
 
         return filterDayworks;
