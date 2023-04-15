@@ -75,7 +75,7 @@ public class DayworkControllerTest {
                 .budget(1000)
                 .build();
 
-        daywork = dayworkService.createDaywork(dayworkDto, scheduleDto);
+        //daywork = dayworkService.createDaywork(dayworkDto, scheduleDto);
     }
     @Test
     @DisplayName("daywork를 수정한다. Put /v1/schedules/{YYYYMM}/dayworks/{DD}/{daywork_id}")

@@ -11,16 +11,20 @@ import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
-import com.whatachad.app.model.response.CreateAccountResponseDto;
-import com.whatachad.app.model.response.CreateDayworkResponseDto;
-import com.whatachad.app.model.response.UpdateAccountResponseDto;
-import com.whatachad.app.model.response.UpdateDayworkResponseDto;
+import com.whatachad.app.model.response.*;
 import com.whatachad.app.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.IntStream;
 
 @Slf4j
 @RestController
@@ -34,15 +38,16 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     private final DayworkMapperService dayworkMapper;
     private final AccountMapperService accountMapper;
     private final AccountService accountService;
+
     /**
-     *  Daywork 관련
-     * */
+     * Daywork 관련
+     */
     @Override
     public ResponseEntity<CreateDayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String yearAndMonth, Integer date) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
         DayworkDto dayworkDto = dayworkMapper.toDayworkDto(requestDto, date);
 
-        Daywork daywork =scheduleService.createDayworkOnSchedule(dayworkDto, scheduleDto);
+        Daywork daywork = scheduleService.createDayworkOnSchedule(dayworkDto, scheduleDto);
         return ResponseEntity.ok(dayworkMapper.toCreateResponseDto(daywork));
     }
 
@@ -58,13 +63,12 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     @Override
     public void deleteDaywork(Long dayworkId) {
         Daywork daywork = dayworkService.findDayworkById(dayworkId);
-        Schedule schedule = daywork.getSchedule();
-        dayworkService.deleteDaywork(dayworkId);
+        dayworkService.deleteDaywork(daywork.getId());
     }
 
     /**
-     *  Account 관련
-     * */
+     * Account 관련
+     */
     @Override
     public ResponseEntity<CreateAccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String yearAndMonth, Integer date) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
@@ -85,7 +89,36 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     @Override
     public void deleteAccount(Long accountId) {
         Account account = accountService.findAccountById(accountId);
-        Schedule schedule = account.getSchedule();
-        accountService.deleteAccount(accountId);
+        accountService.deleteAccount(account.getId());
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> getSchedule(String yearAndMonth) {
+        HashMap<String, Object> response = new HashMap<>();
+        ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
+        LocalDate lastDayOfMonth = LocalDate.of(scheduleDto.getYear(), scheduleDto.getMonth(), 1).plusMonths(1).minusDays(1);
+        final Integer START_DATE = 1;
+        final Integer END_DATE = lastDayOfMonth.getDayOfMonth();
+
+        Schedule schedule = scheduleService.findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
+        List<List<Daywork>> dayworks = scheduleService.getDayworksBySchedule(schedule.getId());
+
+        List<List<DayworkResponseDto>> dayworkResponses = IntStream.rangeClosed(START_DATE, END_DATE + 1)
+                .<List<DayworkResponseDto>>mapToObj(ArrayList::new)
+                .toList();
+
+        ScheduleResponseDto scheduleResponse = scheduleMapper.toScheduleResponseDto(schedule);
+        IntStream.rangeClosed(START_DATE, END_DATE).forEach(currentDate -> {
+            dayworks.get(currentDate)
+                    .forEach(daywork -> {
+                        dayworkResponses.get(currentDate)
+                                .add(dayworkMapper.toDayworkResponseDto(daywork));
+                    });
+        });
+
+        response.put("schedule", scheduleResponse);
+        response.put("dayworks", dayworkResponses);
+
+        return ResponseEntity.ok().body(response);
     }
 }

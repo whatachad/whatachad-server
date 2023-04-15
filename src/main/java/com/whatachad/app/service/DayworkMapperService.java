@@ -6,6 +6,7 @@ import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
 import com.whatachad.app.model.response.CreateDayworkResponseDto;
+import com.whatachad.app.model.response.DayworkResponseDto;
 import com.whatachad.app.model.response.UpdateDayworkResponseDto;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -31,20 +32,6 @@ public class DayworkMapperService {
                 .build();
     }
 
-    private DateTime createDateTime(UpdateDayworkRequestDto dto) {
-        return DateTime.builder()
-                .hour(dto.getHour())
-                .minute(dto.getMinute())
-                .build();
-    }
-    private DateTime createDateTime(CreateDayworkRequestDto dto, Integer date) {
-        return DateTime.builder()
-                .hour(dto.getHour())
-                .minute(dto.getMinute())
-                .date(date)
-                .build();
-    }
-
     public CreateDayworkResponseDto toCreateResponseDto(Daywork daywork) {
         return CreateDayworkResponseDto.builder()
                 .title(daywork.getTitle())
@@ -60,6 +47,30 @@ public class DayworkMapperService {
                 .priority(daywork.getPriority())
                 .status(daywork.getStatus())
                 .dateTime(daywork.getDateTime())
+                .build();
+    }
+
+    public DayworkResponseDto toDayworkResponseDto(Daywork daywork) {
+        return DayworkResponseDto.builder()
+                .id(daywork.getId())
+                .title(daywork.getTitle())
+                .priority(daywork.getPriority())
+                .status(daywork.getStatus())
+                .dateTime(daywork.getDateTime())
+                .build();
+    }
+    private DateTime createDateTime(UpdateDayworkRequestDto dto) {
+        return DateTime.builder()
+                .hour(dto.getHour())
+                .minute(dto.getMinute())
+                .build();
+    }
+
+    private DateTime createDateTime(CreateDayworkRequestDto dto, Integer date) {
+        return DateTime.builder()
+                .hour(dto.getHour())
+                .minute(dto.getMinute())
+                .date(date)
                 .build();
     }
 }
