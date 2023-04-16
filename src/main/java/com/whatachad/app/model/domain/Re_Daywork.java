@@ -43,12 +43,20 @@ public class Re_Daywork extends BaseTime{
                 .build();
     }
 
+    public void updateDaywork(Re_DayworkDto dto) {
+        this.title = dto.getTitle();
+        this.priority = dto.getPriority();
+        this.status = dto.getStatus();
+        this.hour = dto.getHour();
+        this.minute = dto.getMinute();
+    }
+
     @PrePersist
     public void prePersist() {
         this.status = Workcheck.NOT_COMPLETE;
     }
-
     /* 연관관계 편의 메소드 */
+
     public void addDaySchedule(Re_DaySchedule daySchedule) {
         this.daySchedule = daySchedule;
         daySchedule.getDayworks().add(this);

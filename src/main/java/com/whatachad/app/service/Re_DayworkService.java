@@ -1,5 +1,7 @@
 package com.whatachad.app.service;
 
+import com.whatachad.app.common.BError;
+import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Re_Daywork;
 import com.whatachad.app.model.dto.Re_DayworkDto;
 import com.whatachad.app.repository.Re_DayworkRepository;
@@ -18,5 +20,15 @@ public class Re_DayworkService {
     @Transactional
     public Re_Daywork createDaywork(Re_DayworkDto dayworkDto) {
         return dayworkRepository.save(Re_Daywork.create(dayworkDto));
+    }
+
+    @Transactional
+    public Re_Daywork updateDaywork(Re_DayworkDto dayworkDto, Long dayworkId) {
+        log.info("dayworkDto = {}", dayworkDto.getStatus());
+        Re_Daywork findDaywork = dayworkRepository.findById(dayworkId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "daywork"));
+        findDaywork.updateDaywork(dayworkDto);
+
+        return findDaywork;
     }
 }
