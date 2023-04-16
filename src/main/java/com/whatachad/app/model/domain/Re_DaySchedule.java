@@ -1,5 +1,6 @@
 package com.whatachad.app.model.domain;
 
+import com.whatachad.app.model.dto.Re_DayScheduleDto;
 import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,6 +33,17 @@ public class Re_DaySchedule {
 
     @OneToMany(mappedBy = "daySchedule")
     private List<Re_Account> accounts = new ArrayList<>();
+
+    public static Re_DaySchedule create(Re_DayScheduleDto dto) {
+        return Re_DaySchedule.builder()
+                .date(dto.getDate())
+                .build();
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.totalDayworkStatus = Workcheck.NOT_COMPLETE;
+    }
 
     /* 연관관계 편의 메소드 */
     public void addSchedule(Re_Schedule schedule) {

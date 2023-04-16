@@ -1,5 +1,6 @@
 package com.whatachad.app.model.domain;
 
+import com.whatachad.app.model.dto.Re_ScheduleDto;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,4 +30,18 @@ public class Re_Schedule {
 
     @OneToMany(mappedBy = "schedule")
     List<Re_DaySchedule> days = new ArrayList<>();
+
+    @PrePersist
+    public void prePersist(){
+        this.budget = this.budget == null ? 0 : this.budget;
+    }
+
+    public static Re_Schedule create(Re_ScheduleDto dto, User user) {
+        return Re_Schedule.builder()
+                .user(user)
+                .year(dto.getYear())
+                .month(dto.getMonth())
+                .budget(dto.getBudget())
+                .build();
+    }
 }
