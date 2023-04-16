@@ -56,4 +56,9 @@ public class Re_ScheduleCrudController implements Re_ScheduleCrudApi {
 
         return ResponseEntity.ok(dayworkMapper.toUpdateResponseDto(daywork));
     }
+
+    @Override
+    public void deleteDaywork(Long dayworkId) {
+        dayworkService.deleteDaywork(dayworkId);
+    }
 }

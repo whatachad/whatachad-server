@@ -39,4 +39,14 @@ public interface Re_ScheduleCrudApi {
     @PutMapping("/{YYYYMM}/dayworks/{DD}/{dayworkId}")
     public ResponseEntity<Re_UpdateDayworkResponseDto> editDaywork(@RequestBody Re_UpdateDayworkRequestDto requestDto, @PathVariable Long dayworkId);
 
+    @Operation(summary = "일정(daywork) 삭제",
+            description = "daywork_id를 이용해 일정을 삭제한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @DeleteMapping("/{YYYYMM}/dayworks/{DD}/{dayworkId}")
+    public void deleteDaywork(@PathVariable Long dayworkId);
+
 }

@@ -24,11 +24,15 @@ public class Re_DayworkService {
 
     @Transactional
     public Re_Daywork updateDaywork(Re_DayworkDto dayworkDto, Long dayworkId) {
-        log.info("dayworkDto = {}", dayworkDto.getStatus());
         Re_Daywork findDaywork = dayworkRepository.findById(dayworkId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "daywork"));
         findDaywork.updateDaywork(dayworkDto);
 
         return findDaywork;
+    }
+
+    @Transactional
+    public void deleteDaywork(Long dayworkId) {
+        dayworkRepository.deleteById(dayworkId);
     }
 }
