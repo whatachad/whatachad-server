@@ -32,4 +32,10 @@ public class Re_Daywork extends BaseTime{
     private Integer hour;
 
     private Integer minute;
+
+    /* 연관관계 편의 메소드 */
+    public void addDaySchedule(Re_DaySchedule daySchedule) {
+        this.daySchedule = daySchedule;
+        daySchedule.getDayworks().add(this);
+    }
 }

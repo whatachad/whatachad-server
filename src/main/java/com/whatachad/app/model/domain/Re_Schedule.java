@@ -3,6 +3,9 @@ package com.whatachad.app.model.domain;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @Builder
 @NoArgsConstructor
@@ -23,4 +26,7 @@ public class Re_Schedule {
     private Integer month;
 
     private Integer budget;
+
+    @OneToMany(mappedBy = "schedule")
+    List<Re_DaySchedule> days = new ArrayList<>();
 }

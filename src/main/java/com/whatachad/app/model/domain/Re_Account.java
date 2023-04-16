@@ -30,4 +30,9 @@ public class Re_Account extends BaseTime{
     @Enumerated(EnumType.STRING)
     private AccountCategory category;
 
+    /* 연관관계 편의 메소드 */
+    public void addDaySchedule(Re_DaySchedule daySchedule) {
+        this.daySchedule = daySchedule;
+        daySchedule.getAccounts().add(this);
+    }
 }
