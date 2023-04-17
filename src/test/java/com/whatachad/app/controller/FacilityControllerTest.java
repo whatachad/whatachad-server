@@ -8,7 +8,9 @@ import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.request.FacilityDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
+import com.whatachad.app.model.response.FacilityResponseDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
+import com.whatachad.app.service.FacilityMapperService;
 import com.whatachad.app.service.FacilityService;
 import com.whatachad.app.service.TokenService;
 import com.whatachad.app.type.FacilityType;
@@ -22,7 +24,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -30,11 +35,16 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -74,7 +84,6 @@ class FacilityControllerTest {
     }
 
     @AfterEach
-    @Transactional
     void rollback() {
         TransactionStatus txStatus = txManager.getTransaction(new DefaultTransactionDefinition());
         em.createQuery("delete from Facility f where f.title not in :title")
@@ -255,4 +264,6 @@ class FacilityControllerTest {
                 authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
+
 }
+
