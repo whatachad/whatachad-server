@@ -35,4 +35,17 @@ public class EntityUtils {
             throw new CommonException(IError.FIELD_NOT_EXIST);
         }
     }
+
+    public static <T, S> void setEntity(String fieldName, T source, S target) {
+        try {
+            Class<?> sourceClass = source.getClass();
+            Field field = sourceClass.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(source, target);
+        } catch (IllegalAccessException e) {
+            throw new CommonException(IError.FIELD_NOT_ALLOWED);
+        } catch (NoSuchFieldException e) {
+            throw new CommonException(IError.FIELD_NOT_EXIST);
+        }
+    }
 }

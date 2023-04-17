@@ -16,4 +16,6 @@ public class DayworkDto {
     private DayworkPriority priority;
     private Workcheck status;
     private DateTime dateTime;
+    private Integer hour;
+    private Integer minute;
 }

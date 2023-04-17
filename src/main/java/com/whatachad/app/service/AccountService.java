@@ -29,7 +29,7 @@ public class AccountService {
         Account findAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "account"));
 
-        findAccount.updateAccount(accountDto);
+        findAccount.update(accountDto);
     }
 
     @Transactional(readOnly = true)

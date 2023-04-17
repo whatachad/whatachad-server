@@ -37,7 +37,6 @@ public class DayworkMapperService {
                 .title(daywork.getTitle())
                 .priority(daywork.getPriority())
                 .status(daywork.getStatus())
-                .dateTime(daywork.getDateTime())
                 .build();
     }
 
@@ -46,7 +45,6 @@ public class DayworkMapperService {
                 .title(daywork.getTitle())
                 .priority(daywork.getPriority())
                 .status(daywork.getStatus())
-                .dateTime(daywork.getDateTime())
                 .build();
     }
 
@@ -56,9 +54,9 @@ public class DayworkMapperService {
                 .title(daywork.getTitle())
                 .priority(daywork.getPriority())
                 .status(daywork.getStatus())
-                .dateTime(daywork.getDateTime())
                 .build();
     }
+
     private DateTime createDateTime(UpdateDayworkRequestDto dto) {
         return DateTime.builder()
                 .hour(dto.getHour())

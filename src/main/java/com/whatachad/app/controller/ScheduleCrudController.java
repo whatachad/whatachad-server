@@ -72,9 +72,8 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     @Override
     public ResponseEntity<CreateAccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String yearAndMonth, Integer date) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
-        AccountDto accountDto = accountMapper.toAccountDto(requestDto, date);
-
-        Account account = scheduleService.createAccountOnSchedule(accountDto, scheduleDto);
+        AccountDto accountDto = accountMapper.toAccountDto(requestDto);
+        Account account = scheduleService.createAccountOnSchedule(date, accountDto, scheduleDto);
         return ResponseEntity.ok(accountMapper.toCreateAccountResponseDto(account));
     }
 

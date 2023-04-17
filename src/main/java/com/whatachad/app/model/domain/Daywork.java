@@ -3,23 +3,27 @@ package com.whatachad.app.model.domain;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.type.DayworkPriority;
 import com.whatachad.app.type.Workcheck;
+import com.whatachad.app.util.EntityUtils;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.validator.constraints.UniqueElements;
+
+import static com.whatachad.app.util.EntityUtils.*;
 
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Daywork extends BaseTime {
+public class Daywork extends BaseTime{
 
     @Id @GeneratedValue
     @Column(name = "DAYWORK_ID")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SCHEDULE_ID")
-    private Schedule schedule;
+    @JoinColumn(name = "DAY_SCHEDULE_ID")
+    private DaySchedule daySchedule;
 
     private String title;
 
@@ -29,33 +33,21 @@ public class Daywork extends BaseTime {
     @Enumerated(EnumType.STRING)
     private Workcheck status;
 
-    @Embedded
-    private DateTime dateTime;
+    private Integer hour;
+
+    private Integer minute;
 
     public static Daywork create(DayworkDto dto) {
         return Daywork.builder()
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
-                .dateTime(dto.getDateTime())
+                .hour(dto.getHour())
+                .minute(dto.getMinute())
                 .build();
     }
 
-    @PrePersist
-    public void prePersist() {
-        this.status = Workcheck.NOT_COMPLETE;
+    public void update(DayworkDto dto) {
+        setValueExceptNull(this, dto);
     }
 
-    public void updateDaywork(DayworkDto dto) {
-        this.title = dto.getTitle();
-        this.status = dto.getStatus();
-        this.priority = dto.getPriority();
-        this.dateTime.changeDateTime(dto.getDateTime().getHour(), dto.getDateTime().getMinute());
-    }
-
-    /* 연관 관계 편의 메서드*/
-    public void addScheduleInDaywork(Schedule schedule) {
-        this.schedule = schedule;
-        schedule.getDayworks().add(this);
-    }
 }
-

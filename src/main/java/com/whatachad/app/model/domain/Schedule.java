@@ -1,19 +1,21 @@
 package com.whatachad.app.model.domain;
 
 import com.whatachad.app.model.dto.ScheduleDto;
+import com.whatachad.app.util.EntityUtils;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.whatachad.app.util.EntityUtils.*;
 
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Schedule{
+public class Schedule {
 
     @Id @GeneratedValue
     @Column(name = "SCHEDULE_ID")
@@ -21,21 +23,18 @@ public class Schedule{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    private  User user;
 
     private Integer year;
+
     private Integer month;
+
     private Integer budget;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-    private List<Daywork> dayworks = new ArrayList<>();
+    @OneToMany(mappedBy = "schedule")
+    List<DaySchedule> daySchedules = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-    private List<Account> accounts = new ArrayList<>();
-
-    public static Schedule create(User user, ScheduleDto dto) {
+    public static Schedule create(ScheduleDto dto, User user) {
         return Schedule.builder()
                 .user(user)
                 .year(dto.getYear())
@@ -44,8 +43,9 @@ public class Schedule{
                 .build();
     }
 
-    @PrePersist
-    public void prePersist(){
-        this.budget = this.budget == null ? 0 : this.budget;
+    public void addDaySchedule(DaySchedule daySchedule) {
+        this.daySchedules.add(daySchedule);
+        setEntity("schedule", daySchedule, this);
     }
+
 }

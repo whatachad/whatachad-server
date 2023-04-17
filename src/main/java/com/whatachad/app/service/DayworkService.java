@@ -3,9 +3,7 @@ package com.whatachad.app.service;
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.DayworkDto;
-import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.repository.DayworkRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +29,7 @@ public class DayworkService {
         Daywork findDaywork = dayworkRepository.findById(dayworkId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
 
-        findDaywork.updateDaywork(dayworkDto);
+        findDaywork.update(dayworkDto);
     }
 
     @Transactional(readOnly = true)

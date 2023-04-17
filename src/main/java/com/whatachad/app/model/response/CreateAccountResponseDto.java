@@ -13,5 +13,5 @@ public class CreateAccountResponseDto {
     private Integer cost;
     private AccountType type;
     private String category;
-    private DateTime dateTime;
+    private Integer date;
 }

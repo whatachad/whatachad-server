@@ -2,10 +2,7 @@ package com.whatachad.app.service;
 
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
-import com.whatachad.app.model.domain.Account;
-import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.domain.Schedule;
-import com.whatachad.app.model.domain.User;
+import com.whatachad.app.model.domain.*;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
@@ -16,7 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.IntStream;
 
 @Slf4j
@@ -24,8 +22,9 @@ import java.util.stream.IntStream;
 @Service
 public class ScheduleService {
 
-    private final UserService userService;
     private final ScheduleRepository scheduleRepository;
+    private final UserService userService;
+    private final DayScheduleService dayScheduleService;
     private final DayworkService dayworkService;
     private final AccountService accountService;
 
@@ -37,8 +36,7 @@ public class ScheduleService {
     public Daywork createDayworkOnSchedule(DayworkDto dayworkDto, ScheduleDto scheduleDto) {
         Schedule schedule = getOrCreateSchedule(scheduleDto);
         Daywork daywork = dayworkService.createDaywork(dayworkDto);
-
-        daywork.addScheduleInDaywork(schedule);
+        //== (연관관계 맺는 로직 생략) ==//
         return daywork;
     }
 
@@ -63,12 +61,11 @@ public class ScheduleService {
      * Account Methods
      */
     @Transactional
-    public Account createAccountOnSchedule(AccountDto accountDto, ScheduleDto scheduleDto) {
+    public Account createAccountOnSchedule(Integer date, AccountDto accountDto, ScheduleDto scheduleDto) {
         Schedule schedule = getOrCreateSchedule(scheduleDto);
-        Account account = accountService.createAccount(accountDto);
-
-        account.addScheduleInAccount(schedule);
-        return account;
+        DaySchedule daySchedule = dayScheduleService.createAccountOnDay(date, accountDto, schedule.getId());
+        schedule.addDaySchedule(daySchedule);
+        return daySchedule.getLastAccount();
     }
 
     /**
@@ -92,7 +89,7 @@ public class ScheduleService {
 
         IntStream.rangeClosed(START_DATE, END_DATE).forEach(currentDate -> {
             dayworksOfMonth.stream()
-                    .filter(daywork -> daywork.getDateTime().getDate() == currentDate)
+                    .filter(daywork -> daywork.getDaySchedule().getDate() == currentDate)
                     .limit(3)
                     .forEach(filterDayworks.get(currentDate)::add);
         });
@@ -116,7 +113,7 @@ public class ScheduleService {
     }
 
     private Schedule createSchedule(ScheduleDto scheduleDto) {
-        return scheduleRepository.save(Schedule.create(getLoginUser(), scheduleDto));
+        return scheduleRepository.save(Schedule.create(scheduleDto, getLoginUser()));
     }
 
     private boolean existSchedule(Integer year, Integer month) {
