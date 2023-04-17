@@ -40,7 +40,7 @@ public class DayworkService {
 
     @Transactional(readOnly = true)
     public List<Daywork> findDayworkBySchedule(Long scheduleId) {
-        return dayworkRepository.findAllBySchedule(scheduleId);
+        return dayworkRepository.findAllByDaySchedule(scheduleId);
     }
 
     @Transactional

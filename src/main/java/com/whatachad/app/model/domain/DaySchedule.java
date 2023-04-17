@@ -37,6 +37,8 @@ public class DaySchedule {
 
     public static DaySchedule createByDate(Integer date) {
         return DaySchedule.builder()
+                .dayworks(new ArrayList<>())
+                .accounts(new ArrayList<>())
                 .date(date)
                 .build();
     }

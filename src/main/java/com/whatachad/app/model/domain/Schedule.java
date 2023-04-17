@@ -40,6 +40,7 @@ public class Schedule {
                 .year(dto.getYear())
                 .month(dto.getMonth())
                 .budget(dto.getBudget())
+                .daySchedules(new ArrayList<>())
                 .build();
     }
 

@@ -7,6 +7,8 @@ import com.whatachad.app.util.EntityUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -17,6 +19,8 @@ public class Account extends BaseTime{
     @Id @GeneratedValue
     @Column(name = "ACCOUNT_ID")
     private Long id;
+
+    private LocalDate accountDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DAY_SCHEDULE_ID")
@@ -34,7 +38,6 @@ public class Account extends BaseTime{
 
     public static Account create(AccountDto dto) {
         return Account.builder()
-                .id(dto.getId())
                 .title(dto.getTitle())
                 .cost(dto.getCost())
                 .type(dto.getType())
@@ -44,6 +47,10 @@ public class Account extends BaseTime{
 
     public void update(AccountDto dto) {
         EntityUtils.setValueExceptNull(this, dto);
+    }
+
+    public void setAccountDate(Integer year, Integer month, Integer day) {
+        this.accountDate = LocalDate.of(year, month, day);
     }
 
 }

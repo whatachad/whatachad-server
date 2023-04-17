@@ -1,6 +1,5 @@
 package com.whatachad.app.service;
 
-import com.whatachad.app.model.domain.DateTime;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
@@ -19,7 +18,6 @@ public class DayworkMapperService {
         return DayworkDto.builder()
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
-                .dateTime(createDateTime(dto, date))
                 .build();
     }
 
@@ -28,7 +26,6 @@ public class DayworkMapperService {
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
                 .status(dto.getStatus())
-                .dateTime(createDateTime(dto))
                 .build();
     }
 
@@ -57,18 +54,4 @@ public class DayworkMapperService {
                 .build();
     }
 
-    private DateTime createDateTime(UpdateDayworkRequestDto dto) {
-        return DateTime.builder()
-                .hour(dto.getHour())
-                .minute(dto.getMinute())
-                .build();
-    }
-
-    private DateTime createDateTime(CreateDayworkRequestDto dto, Integer date) {
-        return DateTime.builder()
-                .hour(dto.getHour())
-                .minute(dto.getMinute())
-                .date(date)
-                .build();
-    }
 }

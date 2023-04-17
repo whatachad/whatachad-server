@@ -1,15 +1,11 @@
 package com.whatachad.app.service;
 
-import com.whatachad.app.model.domain.DateTime;
-import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.type.DayworkPriority;
 import io.jsonwebtoken.Claims;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,17 +32,11 @@ public class DayWorkServiceTest {
     @Test
     public void 기존에Schedule없을때Daywork생성() throws Exception{
         //given
-        DateTime dateTime = DateTime.builder()
-                .date(1)
-                .hour(11)
-                .minute(50)
-                .build();
 
         String title = "스쿼트";
         DayworkDto dayworkDto = DayworkDto.builder()
                 .title(title)
                 .priority(DayworkPriority.FIRST)
-                .dateTime(dateTime)
                 .build();
 
         Integer year = 2023;

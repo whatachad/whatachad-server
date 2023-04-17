@@ -65,7 +65,9 @@ public class ScheduleService {
         Schedule schedule = getOrCreateSchedule(scheduleDto);
         DaySchedule daySchedule = dayScheduleService.createAccountOnDay(date, accountDto, schedule.getId());
         schedule.addDaySchedule(daySchedule);
-        return daySchedule.getLastAccount();
+        Account account = daySchedule.getLastAccount();
+        account.setAccountDate(schedule.getYear(), schedule.getMonth(), daySchedule.getDate());
+        return account;
     }
 
     /**

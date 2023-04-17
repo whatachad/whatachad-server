@@ -1,6 +1,5 @@
 package com.whatachad.app.model.response;
 
-import com.whatachad.app.model.domain.DateTime;
 import com.whatachad.app.type.DayworkPriority;
 import com.whatachad.app.type.Workcheck;
 import lombok.*;
@@ -14,5 +13,4 @@ public class UpdateDayworkResponseDto {
     private String title;
     private DayworkPriority priority;
     private Workcheck status;
-    private DateTime dateTime;
 }
