@@ -36,12 +36,12 @@ public class EntityUtils {
         }
     }
 
-    public static <T, S> void setEntity(String fieldName, T source, S target) {
+    public static <T, S> void setEntity(String fieldName, T target, S source) {
         try {
-            Class<?> sourceClass = source.getClass();
+            Class<?> sourceClass = target.getClass();
             Field field = sourceClass.getDeclaredField(fieldName);
             field.setAccessible(true);
-            field.set(source, target);
+            field.set(target, source);
         } catch (IllegalAccessException e) {
             throw new CommonException(IError.FIELD_NOT_ALLOWED);
         } catch (NoSuchFieldException e) {
