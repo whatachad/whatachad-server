@@ -6,7 +6,7 @@ import lombok.*;
 
 @Builder
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class CreateDayworkResponseDto {
 
     private String title;

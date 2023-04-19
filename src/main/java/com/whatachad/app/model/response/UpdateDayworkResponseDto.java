@@ -5,12 +5,21 @@ import com.whatachad.app.type.Workcheck;
 import lombok.*;
 
 @Builder
-@Getter
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@Getter
 public class UpdateDayworkResponseDto {
 
+    private Long id;
+
     private String title;
+
     private DayworkPriority priority;
+
     private Workcheck status;
+
+    private Integer hour;
+
+    private Integer minute;
+
 }

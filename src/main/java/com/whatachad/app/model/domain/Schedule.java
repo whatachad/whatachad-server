@@ -1,18 +1,17 @@
 package com.whatachad.app.model.domain;
 
 import com.whatachad.app.model.dto.ScheduleDto;
-import com.whatachad.app.util.EntityUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.whatachad.app.util.EntityUtils.*;
+import static com.whatachad.app.util.EntityUtils.setEntity;
 
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Schedule {
@@ -34,6 +33,11 @@ public class Schedule {
     @OneToMany(mappedBy = "schedule")
     List<DaySchedule> daySchedules = new ArrayList<>();
 
+    @PrePersist
+    public void prePersist(){
+        this.budget = this.budget == null ? 0 : this.budget;
+    }
+
     public static Schedule create(ScheduleDto dto, User user) {
         return Schedule.builder()
                 .user(user)
@@ -48,5 +52,4 @@ public class Schedule {
         this.daySchedules.add(daySchedule);
         setEntity("schedule", daySchedule, this);
     }
-
 }

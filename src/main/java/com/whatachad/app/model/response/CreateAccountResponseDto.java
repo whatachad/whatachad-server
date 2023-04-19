@@ -5,7 +5,7 @@ import lombok.*;
 
 @Getter
 @Builder
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 public class CreateAccountResponseDto {
     private String title;
     private Integer cost;

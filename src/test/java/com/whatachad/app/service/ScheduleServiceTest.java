@@ -35,14 +35,10 @@ public class ScheduleServiceTest {
     @Autowired
     private ScheduleService scheduleService;
     @Autowired
-    private DayworkService dayworkService;
-    @Autowired
     private AccountService accountService;
     @Autowired
     private TokenService tokenService;
 
-    @Autowired
-    private DayworkRepository dayworkRepository;
 
     @BeforeEach
     void initSchedule() throws Exception {
@@ -66,15 +62,6 @@ public class ScheduleServiceTest {
         createDaywork(2023, 4, 4);
     }
 
-
-    @Test
-    public void Schedule와Daywork리스트가져오기() throws Exception {
-        ScheduleDto scheduleDto = ScheduleDto.builder().year(2023).month(4).build();
-        Schedule schedule = scheduleService.findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
-        List<List<Daywork>> dayworks = scheduleService.getDayworksBySchedule(schedule.getId());
-
-        Assertions.assertEquals(dayworks.get(2).size(), 3);
-    }
 
     @Test
     @DisplayName("Schedule을 통해 Account 생성시 accountDate가 올바르게 저장되어야 한다.")

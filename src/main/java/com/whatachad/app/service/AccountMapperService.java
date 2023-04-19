@@ -1,8 +1,6 @@
 package com.whatachad.app.service;
 
 import com.whatachad.app.model.domain.Account;
-import com.whatachad.app.model.domain.DaySchedule;
-import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateAccountRequestDto;

@@ -3,12 +3,10 @@ package com.whatachad.app.model.domain;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.type.DayworkPriority;
 import com.whatachad.app.type.Workcheck;
-import com.whatachad.app.util.EntityUtils;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
 
-import static com.whatachad.app.util.EntityUtils.*;
+import static com.whatachad.app.util.EntityUtils.setValueExceptNull;
 
 @Getter
 @Builder
@@ -48,6 +46,11 @@ public class Daywork extends BaseTime{
 
     public void update(DayworkDto dto) {
         setValueExceptNull(this, dto);
+    }
+
+    @PrePersist
+    public void prePersist() {
+        this.status = Workcheck.NOT_COMPLETE;
     }
 
 }

@@ -1,7 +1,7 @@
 package com.whatachad.app.model.domain;
 
+import com.whatachad.app.model.dto.DayScheduleDto;
 import com.whatachad.app.type.Workcheck;
-import com.whatachad.app.util.EntityUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -39,7 +39,11 @@ public class DaySchedule {
         return DaySchedule.builder()
                 .dayworks(new ArrayList<>())
                 .accounts(new ArrayList<>())
-                .date(date)
+                .build();
+    }
+    public static DaySchedule create(DayScheduleDto dto) {
+        return DaySchedule.builder()
+                .date(dto.getDate())
                 .build();
     }
 
@@ -47,8 +51,18 @@ public class DaySchedule {
         accounts.add(account);
     }
 
-    public Account getLastAccount() {
+    public void addDaywork(Daywork daywork) {
+        dayworks.add(daywork);
+    }
+
+    public Account getLastAccount () {
         int accountSize = this.getAccounts().size();
         return this.getAccounts().get(accountSize - 1);
     }
+
+    @PrePersist
+    public void prePersist() {
+        this.totalDayworkStatus = Workcheck.NOT_COMPLETE;
+    }
+
 }

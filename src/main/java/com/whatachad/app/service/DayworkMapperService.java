@@ -13,19 +13,20 @@ import org.springframework.stereotype.Service;
 @Slf4j
 @Service
 public class DayworkMapperService {
-
-    public DayworkDto toDayworkDto(CreateDayworkRequestDto dto, Integer date) {
+    public DayworkDto toDayworkDto(CreateDayworkRequestDto dto) {
         return DayworkDto.builder()
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
                 .build();
     }
 
-    public DayworkDto toDayworkDto(UpdateDayworkRequestDto dto){
+    public DayworkDto toDayworkDto(UpdateDayworkRequestDto requestDto) {
         return DayworkDto.builder()
-                .title(dto.getTitle())
-                .priority(dto.getPriority())
-                .status(dto.getStatus())
+                .title(requestDto.getTitle())
+                .priority(requestDto.getPriority())
+                .status(requestDto.getStatus())
+                .hour(requestDto.getHour())
+                .minute(requestDto.getMinute())
                 .build();
     }
 
@@ -39,19 +40,23 @@ public class DayworkMapperService {
 
     public UpdateDayworkResponseDto toUpdateResponseDto(Daywork daywork) {
         return UpdateDayworkResponseDto.builder()
+                .id(daywork.getId())
                 .title(daywork.getTitle())
                 .priority(daywork.getPriority())
                 .status(daywork.getStatus())
+                .hour(daywork.getHour())
+                .minute(daywork.getMinute())
                 .build();
     }
 
-    public DayworkResponseDto toDayworkResponseDto(Daywork daywork) {
+    public DayworkResponseDto toDayworkResposneDto(Daywork daywork) {
         return DayworkResponseDto.builder()
                 .id(daywork.getId())
                 .title(daywork.getTitle())
                 .priority(daywork.getPriority())
                 .status(daywork.getStatus())
+                .hour(daywork.getHour())
+                .minute(daywork.getMinute())
                 .build();
     }
-
 }
