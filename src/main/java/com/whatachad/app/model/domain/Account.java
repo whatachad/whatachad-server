@@ -1,6 +1,5 @@
 package com.whatachad.app.model.domain;
 
-import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
 import jakarta.persistence.*;
@@ -8,9 +7,9 @@ import lombok.*;
 
 @Getter
 @Builder
-@Entity
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 public class Account extends BaseTime{
 
     @Id @GeneratedValue
@@ -18,8 +17,8 @@ public class Account extends BaseTime{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SCHEDULE_ID")
-    private Schedule schedule;
+    @JoinColumn(name = "DAYSCHEDULE_ID")
+    private DaySchedule daySchedule;
 
     private String title;
 
@@ -31,32 +30,9 @@ public class Account extends BaseTime{
     @Enumerated(EnumType.STRING)
     private AccountCategory category;
 
-    @Embedded
-    private DateTime dateTime;
-
-    public static Account create(AccountDto accountDto) {
-        return Account.builder()
-                .title(accountDto.getTitle())
-                .cost(accountDto.getCost())
-                .type(accountDto.getType())
-                .category(accountDto.getCategory())
-                .dateTime(accountDto.getDateTime())
-                .build();
-    }
-
-    /**
-     * 연관관계 편의 메서드
-     */
-    public void addScheduleInAccount(Schedule schedule) {
-        this.schedule = schedule;
-        schedule.getAccounts().add(this);
-    }
-
-    public void updateAccount(AccountDto dto) {
-        this.title = dto.getTitle();
-        this.type = dto.getType();
-        this.category = dto.getCategory();
-        this.cost = dto.getCost();
-        this.dateTime.changeDateTime(dto.getDateTime().getHour(), dto.getDateTime().getMinute());
+    /* 연관관계 편의 메소드 */
+    public void addDaySchedule(DaySchedule daySchedule) {
+        this.daySchedule = daySchedule;
+        daySchedule.getAccounts().add(this);
     }
 }

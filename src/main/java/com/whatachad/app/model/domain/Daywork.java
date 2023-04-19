@@ -8,18 +8,18 @@ import lombok.*;
 
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Daywork extends BaseTime {
+public class Daywork extends BaseTime{
 
     @Id @GeneratedValue
     @Column(name = "DAYWORK_ID")
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SCHEDULE_ID")
-    private Schedule schedule;
+    @JoinColumn(name = "DAYSCHEDULE_ID")
+    private DaySchedule daySchedule;
 
     private String title;
 
@@ -29,33 +29,35 @@ public class Daywork extends BaseTime {
     @Enumerated(EnumType.STRING)
     private Workcheck status;
 
-    @Embedded
-    private DateTime dateTime;
+    private Integer hour;
+
+    private Integer minute;
 
     public static Daywork create(DayworkDto dto) {
         return Daywork.builder()
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
-                .dateTime(dto.getDateTime())
+                .hour(dto.getHour())
+                .minute(dto.getMinute())
                 .build();
+    }
+
+    public void updateDaywork(DayworkDto dto) {
+        this.title = dto.getTitle();
+        this.priority = dto.getPriority();
+        this.status = dto.getStatus();
+        this.hour = dto.getHour();
+        this.minute = dto.getMinute();
     }
 
     @PrePersist
     public void prePersist() {
         this.status = Workcheck.NOT_COMPLETE;
     }
+    /* 연관관계 편의 메소드 */
 
-    public void updateDaywork(DayworkDto dto) {
-        this.title = dto.getTitle();
-        this.status = dto.getStatus();
-        this.priority = dto.getPriority();
-        this.dateTime.changeDateTime(dto.getDateTime().getHour(), dto.getDateTime().getMinute());
-    }
-
-    /* 연관 관계 편의 메서드*/
-    public void addScheduleInDaywork(Schedule schedule) {
-        this.schedule = schedule;
-        schedule.getDayworks().add(this);
+    public void addDaySchedule(DaySchedule daySchedule) {
+        this.daySchedule = daySchedule;
+        daySchedule.getDayworks().add(this);
     }
 }
-

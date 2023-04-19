@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class ScheduleMapperService {
 
-    public ScheduleDto toScheduleDto(String yearAndMonth){
+    public ScheduleDto toScheduleDto(String yearAndMonth) {
         String year = yearAndMonth.substring(0, 4);
         String month = yearAndMonth.substring(4);
 

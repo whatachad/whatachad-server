@@ -3,7 +3,7 @@ package com.whatachad.app.model.dto;
 import lombok.*;
 
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class ScheduleDto {
@@ -12,5 +12,4 @@ public class ScheduleDto {
     private Integer year;
     private Integer month;
     private Integer budget;
-
 }

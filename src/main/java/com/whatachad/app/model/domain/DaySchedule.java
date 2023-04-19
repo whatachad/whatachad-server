@@ -1,6 +1,6 @@
 package com.whatachad.app.model.domain;
 
-import com.whatachad.app.model.dto.Re_DayScheduleDto;
+import com.whatachad.app.model.dto.DayScheduleDto;
 import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
 import lombok.*;
@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Re_DaySchedule {
+public class DaySchedule {
 
     @Id @GeneratedValue
     @Column(name = "DAYSCHEDULE_ID")
@@ -21,7 +21,7 @@ public class Re_DaySchedule {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SCHEDULE_ID")
-    private Re_Schedule schedule;
+    private Schedule schedule;
 
     private Integer date;
 
@@ -29,14 +29,20 @@ public class Re_DaySchedule {
     private Workcheck totalDayworkStatus;
 
     @OneToMany(mappedBy = "daySchedule")
-    private List<Re_Daywork> dayworks = new ArrayList<>();
+    private List<Daywork> dayworks = new ArrayList<>();
 
     @OneToMany(mappedBy = "daySchedule")
-    private List<Re_Account> accounts = new ArrayList<>();
+    private List<Account> accounts = new ArrayList<>();
 
-    public static Re_DaySchedule create(Re_DayScheduleDto dto) {
-        return Re_DaySchedule.builder()
+    public static DaySchedule create(DayScheduleDto dto) {
+        return DaySchedule.builder()
                 .date(dto.getDate())
+                .build();
+    }
+
+    public static DaySchedule createByDate(Integer date) {
+        return DaySchedule.builder()
+                .date(date)
                 .build();
     }
 
@@ -46,7 +52,7 @@ public class Re_DaySchedule {
     }
 
     /* 연관관계 편의 메소드 */
-    public void addSchedule(Re_Schedule schedule) {
+    public void addSchedule(Schedule schedule) {
         this.schedule = schedule;
         schedule.getDays().add(this);
     }

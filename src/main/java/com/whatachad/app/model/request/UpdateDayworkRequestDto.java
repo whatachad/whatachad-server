@@ -5,7 +5,7 @@ import com.whatachad.app.type.Workcheck;
 import lombok.*;
 
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class UpdateDayworkRequestDto {

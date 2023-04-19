@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Re_DayScheduleDto {
+public class DayScheduleDto {
 
     private Long id;
     private Integer date;

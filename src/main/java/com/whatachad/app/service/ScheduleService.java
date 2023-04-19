@@ -2,12 +2,10 @@ package com.whatachad.app.service;
 
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
-import com.whatachad.app.model.domain.Account;
-import com.whatachad.app.model.domain.Daywork;
+import com.whatachad.app.model.domain.DaySchedule;
 import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.domain.User;
-import com.whatachad.app.model.dto.AccountDto;
-import com.whatachad.app.model.dto.DayworkDto;
+import com.whatachad.app.model.dto.DayScheduleDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,9 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.*;
-import java.util.stream.IntStream;
+import java.util.Optional;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,106 +22,47 @@ public class ScheduleService {
 
     private final UserService userService;
     private final ScheduleRepository scheduleRepository;
-    private final DayworkService dayworkService;
-    private final AccountService accountService;
-
-
-    /**
-     * Daywork Methods
-     */
-    @Transactional
-    public Daywork createDayworkOnSchedule(DayworkDto dayworkDto, ScheduleDto scheduleDto) {
-        Schedule schedule = getOrCreateSchedule(scheduleDto);
-        Daywork daywork = dayworkService.createDaywork(dayworkDto);
-
-        daywork.addScheduleInDaywork(schedule);
-        return daywork;
-    }
-
-    @Transactional(readOnly = true)
-    public Schedule findSchedule(Integer year, Integer month) {
-        return scheduleRepository.findByYearMonth(year, month, getLoginUser().getId())
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
-    }
-
-    @Transactional(readOnly = true)
-    public Schedule findSchedule(Long scheduleId) {
-        return scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
-    }
+    private final DayScheduleService dayScheduleService;
 
     @Transactional
-    public void deleteSchedule(Long scheduleId) {
-        scheduleRepository.deleteById(scheduleId);
-    }
+    public Schedule getOrCreateSchedule(ScheduleDto scheduleDto) {
+//        Re_Schedule findSchedule = scheduleRepository.findByYearAndMonthAndUser_Id(
+//                        scheduleDto.getYear(),
+//                        scheduleDto.getMonth(),
+//                        getLoginUser().getId())
+//        .orElse(scheduleRepository.save(Re_Schedule.create(scheduleDto, getLoginUser())));
+        Optional<Schedule> findSchedule = scheduleRepository.findByYearAndMonthAndUser_Id(
+                        scheduleDto.getYear(),
+                        scheduleDto.getMonth(),
+                        getLoginUser().getId());
 
-    /**
-     * Account Methods
-     */
-    @Transactional
-    public Account createAccountOnSchedule(AccountDto accountDto, ScheduleDto scheduleDto) {
-        Schedule schedule = getOrCreateSchedule(scheduleDto);
-        Account account = accountService.createAccount(accountDto);
-
-        account.addScheduleInAccount(schedule);
-        return account;
-    }
-
-    /**
-     * Schedule Method
-     */
-    @Transactional(readOnly = true)
-    public List<List<Daywork>> getDayworksBySchedule(Long scheduleId) {
-        Schedule schedule = scheduleRepository.findById(scheduleId)
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
-
-        LocalDate lastDayOfMonth = LocalDate.of(schedule.getYear(), schedule.getMonth(), 1).plusMonths(1).minusDays(1);
-        final Integer START_DATE = 1;
-        final Integer END_DATE = lastDayOfMonth.getDayOfMonth();
-
-        List<Daywork> dayworksOfMonth = dayworkService.findDayworkBySchedule(schedule.getId());
-        if (dayworksOfMonth.isEmpty()) return null;
-
-        List<List<Daywork>> filterDayworks = IntStream.rangeClosed(START_DATE, END_DATE + 1)
-                .<List<Daywork>>mapToObj(ArrayList::new)
-                .toList();
-
-        IntStream.rangeClosed(START_DATE, END_DATE).forEach(currentDate -> {
-            dayworksOfMonth.stream()
-                    .filter(daywork -> daywork.getDateTime().getDate() == currentDate)
-                    .limit(3)
-                    .forEach(filterDayworks.get(currentDate)::add);
-        });
-
-        return filterDayworks;
-    }
-
-    /**
-     * private Methods
-     */
-    private Schedule getOrCreateSchedule(ScheduleDto scheduleDto) {
-        boolean existSchedule = existSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
-        Schedule schedule = null;
-
-        if (existSchedule) {
-            schedule = findSchedule(scheduleDto.getYear(), scheduleDto.getMonth());
-        } else {
-            schedule = createSchedule(scheduleDto);
+        if (findSchedule.isEmpty()) {
+            return scheduleRepository.save(Schedule.create(scheduleDto, getLoginUser()));
         }
-        return schedule;
+        return findSchedule.get();
     }
 
-    private Schedule createSchedule(ScheduleDto scheduleDto) {
-        return scheduleRepository.save(Schedule.create(getLoginUser(), scheduleDto));
+    @Transactional
+    public DaySchedule getDaySchedule(DayScheduleDto dayScheduleDto, Long scheduleId) {
+        Schedule schedule = scheduleRepository.findById(scheduleId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "daySchedule"));
+        DaySchedule daySchedule = dayScheduleService.getOrCreateDaySchedule(dayScheduleDto.getDate(), scheduleId);
+
+        daySchedule.addSchedule(schedule);
+        return daySchedule;
     }
 
-    private boolean existSchedule(Integer year, Integer month) {
-        return scheduleRepository.existByYMonth(year, month, getLoginUser().getId());
+    @Transactional(readOnly = true)
+    public Schedule findSchedule(ScheduleDto scheduleDto) {
+        return scheduleRepository.findByYearAndMonthAndUser_Id(scheduleDto.getYear(), scheduleDto.getMonth(), getLoginUser().getId())
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
     }
 
+    /**
+     *  private method
+     * */
     private User getLoginUser() {
         String loginUserId = userService.getLoginUserId();
         return userService.getUser(loginUserId);
     }
-
 }

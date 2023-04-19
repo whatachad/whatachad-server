@@ -3,12 +3,11 @@ package com.whatachad.app.service;
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.DayworkDto;
-import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.repository.DayworkRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,22 +26,12 @@ public class DayworkService {
     }
 
     @Transactional
-    public void updateDaywork(DayworkDto dayworkDto, Long dayworkId) {
+    public Daywork updateDaywork(DayworkDto dayworkDto, Long dayworkId) {
         Daywork findDaywork = dayworkRepository.findById(dayworkId)
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
-
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "daywork"));
         findDaywork.updateDaywork(dayworkDto);
-    }
 
-    @Transactional(readOnly = true)
-    public Daywork findDayworkById(Long dayworkId) {
-        return dayworkRepository.findById(dayworkId)
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
-    }
-
-    @Transactional(readOnly = true)
-    public List<Daywork> findDayworkBySchedule(Long scheduleId) {
-        return dayworkRepository.findAllBySchedule(scheduleId);
+        return findDaywork;
     }
 
     @Transactional
@@ -50,4 +39,9 @@ public class DayworkService {
         dayworkRepository.deleteById(dayworkId);
     }
 
+    @Transactional
+    public List<Daywork> findDayworks(Long dayScheduleId) {
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        return dayworkRepository.findByDaySchedule_Id(dayScheduleId, pageRequest);
+    }
 }
