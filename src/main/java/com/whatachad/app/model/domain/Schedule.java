@@ -31,19 +31,14 @@ public class Schedule {
     private Integer budget;
 
     @OneToMany(mappedBy = "schedule")
-    List<DaySchedule> daySchedules = new ArrayList<>();
-
-    @PrePersist
-    public void prePersist(){
-        this.budget = this.budget == null ? 0 : this.budget;
-    }
+    List<DaySchedule> daySchedules;
 
     public static Schedule create(ScheduleDto dto, User user) {
         return Schedule.builder()
                 .user(user)
                 .year(dto.getYear())
                 .month(dto.getMonth())
-                .budget(dto.getBudget())
+                .budget((dto.getBudget() == null) ? 0 : dto.getBudget())
                 .daySchedules(new ArrayList<>())
                 .build();
     }

@@ -1,12 +1,13 @@
 package com.whatachad.app.model.domain;
 
-import com.whatachad.app.model.dto.DayScheduleDto;
 import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.whatachad.app.util.EntityUtils.*;
 
 @Getter
 @Builder
@@ -24,45 +25,44 @@ public class DaySchedule {
     @JoinColumn(name = "SCHEDULE_ID")
     private Schedule schedule;
 
-    private Integer date;
+    private Integer day;
 
     @Enumerated(EnumType.STRING)
     private Workcheck totalDayworkStatus;
 
     @OneToMany(mappedBy = "daySchedule")
-    private List<Daywork> dayworks = new ArrayList<>();
+    private List<Daywork> dayworks;
 
     @OneToMany(mappedBy = "daySchedule")
-    private List<Account> accounts = new ArrayList<>();
+    private List<Account> accounts;
 
-    public static DaySchedule createByDate(Integer date) {
+    public static DaySchedule create(Integer day) {
         return DaySchedule.builder()
+                .day(day)
                 .dayworks(new ArrayList<>())
                 .accounts(new ArrayList<>())
-                .build();
-    }
-    public static DaySchedule create(DayScheduleDto dto) {
-        return DaySchedule.builder()
-                .date(dto.getDate())
+                .totalDayworkStatus(Workcheck.NOT_COMPLETE)
                 .build();
     }
 
     public void addAccount(Account account) {
         accounts.add(account);
+        setEntity("daySchedule", account, this);
     }
 
     public void addDaywork(Daywork daywork) {
         dayworks.add(daywork);
+        setEntity("daySchedule", daywork, this);
     }
 
     public Account getLastAccount () {
-        int accountSize = this.getAccounts().size();
-        return this.getAccounts().get(accountSize - 1);
+        int lastIndex = this.getAccounts().size() - 1;
+        return this.getAccounts().get(lastIndex);
     }
 
-    @PrePersist
-    public void prePersist() {
-        this.totalDayworkStatus = Workcheck.NOT_COMPLETE;
+    public Daywork getLastDaywork () {
+        int lastIndex = this.getDayworks().size() - 1;
+        return this.getDayworks().get(lastIndex);
     }
 
 }

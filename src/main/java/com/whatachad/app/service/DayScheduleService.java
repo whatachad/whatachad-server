@@ -1,7 +1,5 @@
 package com.whatachad.app.service;
 
-import com.whatachad.app.common.BError;
-import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Account;
 import com.whatachad.app.model.domain.DaySchedule;
 import com.whatachad.app.model.domain.Daywork;
@@ -27,42 +25,30 @@ public class DayScheduleService {
 
 
     @Transactional
-    public DaySchedule createAccountOnDay(Integer date, AccountDto accountDto, Long scheduleId) {
-        DaySchedule daySchedule = callDaySchedule(date, scheduleId);
+    public DaySchedule createAccountOnDay(Integer day, AccountDto accountDto, Long scheduleId) {
+        DaySchedule daySchedule = callDaySchedule(day, scheduleId);
         Account account = accountService.createAccount(accountDto);
         daySchedule.addAccount(account);
         return daySchedule;
     }
 
     @Transactional
-    public Daywork createDayworkOnDay(DayworkDto dayworkDto, Long dayScheduleId) {
-        // TODO : merge 후 수정해야 함
-        DaySchedule daySchedule =  dayScheduleRepository.findById(dayScheduleId)
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "daySchedule"));
-
+    public DaySchedule createDayworkOnDay(Integer day, DayworkDto dayworkDto, Long scheduleId) {
+        DaySchedule daySchedule = callDaySchedule(day, scheduleId);
         Daywork daywork = dayworkService.createDaywork(dayworkDto);
         daySchedule.addDaywork(daywork);
-        return daywork;
+        return daySchedule;
     }
 
     @Transactional(readOnly = true)
     public List<DaySchedule> findDaySchedulesOnSchedule(Long scheduleId) {
-        return dayScheduleRepository.findBySchedule_IdOrderByDateAsc(scheduleId);
+        return dayScheduleRepository.findAllOfMonth(scheduleId);
     }
 
-    private DaySchedule callDaySchedule(Integer date, Long scheduleId) {
-        Optional<DaySchedule> findDaySchedule = dayScheduleRepository.findByDateAndSchedule_Id(date, scheduleId);
-        return dayScheduleRepository.findByDateAndSchedule_Id(date, scheduleId)
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "daySchedule"));
-    }
-
-    // TODO : merge 후 수정해야 함
-    @Transactional
-    public DaySchedule getOrCreateDaySchedule(Integer date, Long scheduleId) {
-        Optional<DaySchedule> findDaySchedule = dayScheduleRepository.findByDateAndSchedule_Id(date, scheduleId);
-
+    private DaySchedule callDaySchedule(Integer day, Long scheduleId) {
+        Optional<DaySchedule> findDaySchedule = dayScheduleRepository.findDaySchedule(day, scheduleId);
         if (findDaySchedule.isEmpty()) {
-            return dayScheduleRepository.save(DaySchedule.createByDate(date));
+            return dayScheduleRepository.save(DaySchedule.create(day));
         }
         return findDaySchedule.get();
     }

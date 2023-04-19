@@ -56,7 +56,6 @@ class FacilityServiceTest {
         processor.rollback();
     }
 
-
     @Test
     @DisplayName("Update Dto를 통해 facility 정보를 수정한다.")
     void updateFacility() {

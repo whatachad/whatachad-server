@@ -6,6 +6,8 @@ import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 import static com.whatachad.app.util.EntityUtils.setValueExceptNull;
 
 @Getter
@@ -15,9 +17,12 @@ import static com.whatachad.app.util.EntityUtils.setValueExceptNull;
 @Entity
 public class Daywork extends BaseTime{
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DAYWORK_ID")
     private Long id;
+
+    private LocalDate dayworkDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DAY_SCHEDULE_ID")
@@ -39,6 +44,7 @@ public class Daywork extends BaseTime{
         return Daywork.builder()
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
+                .status(Workcheck.NOT_COMPLETE)
                 .hour(dto.getHour())
                 .minute(dto.getMinute())
                 .build();
@@ -48,9 +54,8 @@ public class Daywork extends BaseTime{
         setValueExceptNull(this, dto);
     }
 
-    @PrePersist
-    public void prePersist() {
-        this.status = Workcheck.NOT_COMPLETE;
+    public void setDayworkDate(Integer year, Integer month, Integer day) {
+        this.dayworkDate = LocalDate.of(year, month, day);
     }
 
 }

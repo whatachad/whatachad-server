@@ -1,19 +1,15 @@
 package com.whatachad.app.service;
 
 import com.whatachad.app.model.domain.Account;
-import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
-import com.whatachad.app.repository.DayworkRepository;
 import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
 import com.whatachad.app.type.DayworkPriority;
 import io.jsonwebtoken.Claims;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -27,7 +23,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 
 @SpringBootTest
@@ -122,7 +118,7 @@ public class ScheduleServiceTest {
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
 
-    private void createDaywork(int year, int month, int date) {
+    private void createDaywork(int year, int month, int day) {
 
         String title = "스쿼트";
         DayworkDto dayworkDto = DayworkDto.builder()
@@ -134,6 +130,6 @@ public class ScheduleServiceTest {
                 .year(year)
                 .month(month)
                 .build();
-        scheduleService.createDayworkOnSchedule(dayworkDto, scheduleDto);
+        scheduleService.createDayworkOnSchedule(day, dayworkDto, scheduleDto);
     }
 }

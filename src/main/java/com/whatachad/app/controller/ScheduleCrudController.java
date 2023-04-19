@@ -47,13 +47,8 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     @Override
     public ResponseEntity<CreateDayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String yearAndMonth, Integer date) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
-        DayScheduleDto dayScheduleDto = dayScheduleMapper.toDayScheduleDto(date);
         DayworkDto dayworkDto = dayworkMapper.toDayworkDto(requestDto);
-
-        Schedule schedule = scheduleService.getOrCreateSchedule(scheduleDto);
-        DaySchedule daySchedule = scheduleService.getDaySchedule(dayScheduleDto, schedule.getId());
-        Daywork daywork = dayScheduleService.createDayworkOnDay(dayworkDto, daySchedule.getId());
-
+        Daywork daywork = scheduleService.createDayworkOnSchedule(date, dayworkDto, scheduleDto);
         return ResponseEntity.ok(dayworkMapper.toCreateResponseDto(daywork));
     }
 

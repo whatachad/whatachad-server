@@ -19,7 +19,7 @@ public class DayScheduleMapperService {
     public DayScheduleResponseDto toDayScheduleResponseDto(DaySchedule daySchedule) {
         return DayScheduleResponseDto.builder()
                 .id(daySchedule.getId())
-                .date(daySchedule.getDate())
+                .date(daySchedule.getDay())
                 .build();
     }
 }
