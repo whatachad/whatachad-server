@@ -1,6 +1,5 @@
 package com.whatachad.app.service;
 
-import com.whatachad.app.TestInit;
 import com.whatachad.app.model.domain.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.request.FacilityDto;
@@ -8,8 +7,8 @@ import com.whatachad.app.model.request.FindFacilityDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.type.FacilityType;
+import com.whatachad.app.util.TestDataProcessor;
 import io.jsonwebtoken.Claims;
-import jakarta.persistence.EntityManager;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -21,9 +20,6 @@ import org.springframework.data.domain.Slice;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -38,9 +34,7 @@ class FacilityServiceTest {
     @Autowired
     private TokenService tokenService;
     @Autowired
-    private EntityManager em;
-    @Autowired
-    private PlatformTransactionManager txManager;
+    private TestDataProcessor processor;
 
     @BeforeEach
     void initFacility() throws Exception {
@@ -59,11 +53,7 @@ class FacilityServiceTest {
 
     @AfterEach
     void rollback() {
-        TransactionStatus txStatus = txManager.getTransaction(new DefaultTransactionDefinition());
-        em.createQuery("delete from Facility f where f.title not in :title")
-                .setParameter("title", List.of(TestInit.FACILITY_TITLE))
-                .executeUpdate();
-        txManager.commit(txStatus);
+        processor.rollback();
     }
 
 
