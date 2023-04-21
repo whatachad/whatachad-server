@@ -40,7 +40,7 @@ public class AccountService {
 
     @Transactional(readOnly = true)
     public List<Account> findAccountsByDayId(Long dayScheduleId) {
-        return accountRepository.findByDaySchedule_Id(dayScheduleId);
+        return accountRepository.findByDayScheduleId(dayScheduleId);
     }
 
     @Transactional

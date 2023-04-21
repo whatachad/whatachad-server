@@ -55,6 +55,12 @@ public class DayScheduleService {
     }
 
     @Transactional(readOnly = true)
+    public List<Daywork> findLimitDayworksOnDay(Integer day, Long scheduleId){
+        DaySchedule daySchedule = callDaySchedule(day, scheduleId);
+        return dayworkService.findLimitDayworksByDayId(daySchedule.getId());
+    }
+
+    @Transactional(readOnly = true)
     public List<DaySchedule> findDaySchedulesOnSchedule(Long scheduleId) {
         return dayScheduleRepository.findAllOfMonth(scheduleId);
     }

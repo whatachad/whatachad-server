@@ -46,8 +46,12 @@ public class DayworkService {
 
     @Transactional
     public List<Daywork> findDayworksByDayId(Long dayScheduleId) {
-        PageRequest pageRequest = PageRequest.of(0, 3);
+        return dayworkRepository.findByDayId(dayScheduleId);
+    }
 
-        return dayworkRepository.findByDaySchedule_Id(dayScheduleId, pageRequest);
+    @Transactional
+    public List<Daywork> findLimitDayworksByDayId(Long dayScheduleId) {
+        PageRequest pageRequest = PageRequest.of(0, 3);
+        return dayworkRepository.findLimitDayworksByDayId(dayScheduleId, pageRequest);
     }
 }

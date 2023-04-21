@@ -43,7 +43,7 @@ public class ScheduleService {
         List<DaySchedule> daySchedulesOnSchedule = dayScheduleService.findDaySchedulesOnSchedule(schedule.getId());
         List<List<Daywork>> dayworks = new ArrayList<>();
         daySchedulesOnSchedule.stream().forEach(day -> {
-            dayworks.add(dayScheduleService.findDayworksOnDay(day.getDay(), schedule.getId()));
+            dayworks.add(dayScheduleService.findLimitDayworksOnDay(day.getDay(), schedule.getId()));
         });
         return dayworks;
     }

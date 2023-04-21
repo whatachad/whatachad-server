@@ -47,12 +47,10 @@ public class ScheduleMapperService {
     public List<DayworksResponseDto> toDayworksResponseDto(List<List<Daywork>> dayworksByDay) {
         List<DayworksResponseDto> dayworksDto = new ArrayList<>();
         dayworksByDay.stream().forEach(day ->{
-            dayworksDto.add(new DayworksResponseDto());
-            dayworksDto.get(dayworksDto.size() - 1).setDate(day.get(0).getDayworkDate());
-            dayworksDto.get(dayworksDto.size() - 1).setDayworks(
-                    day.stream().map(dayworkMapper::toDayworkResposneDto)
-                            .toList());
-        });
+            dayworksDto.add(new DayworksResponseDto(
+                    day.get(day.size() - 1).getDayworkDate(),
+                    day.stream().map(dayworkMapper::toDayworkResposneDto).toList()));
+       });
         return dayworksDto;
     }
 
