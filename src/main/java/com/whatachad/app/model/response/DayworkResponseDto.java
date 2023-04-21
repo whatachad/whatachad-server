@@ -6,6 +6,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.time.LocalDate;
+
 @Builder
 @Getter
 @AllArgsConstructor
@@ -14,7 +16,4 @@ public class DayworkResponseDto {
     private String title;
     private DayworkPriority priority;
     private Workcheck status;
-    private Integer hour;
-    private Integer minute;
-
 }

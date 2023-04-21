@@ -9,17 +9,8 @@ import lombok.*;
 @NoArgsConstructor
 @Getter
 public class UpdateDayworkResponseDto {
-
     private Long id;
-
     private String title;
-
     private DayworkPriority priority;
-
     private Workcheck status;
-
-    private Integer hour;
-
-    private Integer minute;
-
 }

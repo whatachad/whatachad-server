@@ -16,7 +16,4 @@ public class UpdateDayworkRequestDto {
 
     private Workcheck status;
 
-    private Integer hour;
-
-    private Integer minute;
 }

@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Tag(name = "Schedule API", description = "스케줄 관련 기능")
@@ -92,5 +93,5 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @GetMapping("/{YYYYMM}")
-    public ResponseEntity<Map<String, Object>> getSchedule(@PathVariable("YYYYMM") String yearAndMonth);
+    public ResponseEntity<List<DayworksResponseDto>> getSchedule(@PathVariable("YYYYMM") String yearAndMonth);
 }

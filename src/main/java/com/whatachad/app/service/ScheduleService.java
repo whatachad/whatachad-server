@@ -12,6 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -31,6 +33,17 @@ public class ScheduleService {
         return scheduleRepository.findScheduleOfMonth(scheduleDto.getYear(),
                         scheduleDto.getMonth(), getLoginUser().getId())
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<List<Daywork>> findDayworksOnSchedule(ScheduleDto scheduleDto) {
+        Schedule schedule = callSchedule(scheduleDto);
+        List<DaySchedule> daySchedulesOnSchedule = dayScheduleService.findDaySchedulesOnSchedule(schedule.getId());
+        List<List<Daywork>> dayworks = new ArrayList<>();
+        daySchedulesOnSchedule.stream().forEach(day ->{
+            dayworks.add(dayScheduleService.findDayworksOnDay(day.getDay(), schedule.getId()));
+        });
+        return dayworks;
     }
 
     /**

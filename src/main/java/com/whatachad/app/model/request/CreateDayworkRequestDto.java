@@ -16,7 +16,4 @@ public class CreateDayworkRequestDto {
     @NotBlank
     private DayworkPriority priority;
 
-    private Integer hour;
-
-    private Integer minute;
 }

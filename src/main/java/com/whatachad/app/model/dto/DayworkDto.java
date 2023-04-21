@@ -15,6 +15,4 @@ public class DayworkDto {
     private String title;
     private DayworkPriority priority;
     private Workcheck status;
-    private Integer hour;
-    private Integer minute;
 }

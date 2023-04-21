@@ -36,17 +36,11 @@ public class Daywork extends BaseTime{
     @Enumerated(EnumType.STRING)
     private Workcheck status;
 
-    private Integer hour;
-
-    private Integer minute;
-
     public static Daywork create(DayworkDto dto) {
         return Daywork.builder()
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
                 .status(Workcheck.NOT_COMPLETE)
-                .hour(dto.getHour())
-                .minute(dto.getMinute())
                 .build();
     }
 

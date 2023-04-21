@@ -6,7 +6,6 @@ import com.whatachad.app.model.domain.DaySchedule;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.AccountDto;
-import com.whatachad.app.model.dto.DayScheduleDto;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.CreateAccountRequestDto;
@@ -90,32 +89,23 @@ public class ScheduleCrudController implements ScheduleCrudApi {
         accountService.deleteAccount(account.getId());
     }
 
+    /**
+     * Schedule 관련
+     * */
     @Override
-    public ResponseEntity<Map<String, Object>> getSchedule(String yearAndMonth) {
+    public ResponseEntity<List<DayworksResponseDto>> getSchedule(String yearAndMonth) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
-        Schedule schedule = scheduleService.findSchedule(scheduleDto);
-        ScheduleResponseDto scheduleResponseDto = scheduleMapper.toScheduleResponseDto(schedule);
+        List<List<Daywork>> dayworksOnSchedule = scheduleService.findDayworksOnSchedule(scheduleDto);
 
-        List<DaySchedule> daySchedules = dayScheduleService.findDaySchedulesOnSchedule(schedule.getId());
-
-        List<DayScheduleAndDayworksResponseDto> dayScheduleAndDayworksResponse = new ArrayList<>();
-        daySchedules.forEach(daySchedule -> {
-            DayScheduleAndDayworksResponseDto bindingDayscheduleAndDayworks = new DayScheduleAndDayworksResponseDto();
-            bindingDayscheduleAndDayworks.setDayschedule(dayScheduleMapper.toDayScheduleResponseDto(daySchedule));
-
-            List<Daywork> dayworks = dayworkService.findDayworks(daySchedule.getId());
-            List<DayworkResponseDto> re_dayworkResponseDtos = dayworks.stream()
-                    .map(daywork -> dayworkMapper.toDayworkResposneDto(daywork))
-                    .toList();
-            bindingDayscheduleAndDayworks.setDayworks(re_dayworkResponseDtos);
-
-            dayScheduleAndDayworksResponse.add(bindingDayscheduleAndDayworks);
+        List<DayworksResponseDto> dayworksDto = new ArrayList<>();
+        dayworksOnSchedule.stream().forEach(day ->{
+            dayworksDto.add(new DayworksResponseDto());
+            dayworksDto.get(dayworksDto.size() - 1).setDate(day.get(0).getDayworkDate());
+            dayworksDto.get(dayworksDto.size() - 1).setDayworks(
+                    day.stream().map(dayworkMapper::toDayworkResposneDto)
+                    .toList());
         });
 
-        Map<String, Object> response = new HashMap<>();
-        response.put("schedule", scheduleResponseDto);
-        response.put("dayscheduleAndDayworks", dayScheduleAndDayworksResponse);
-
-        return ResponseEntity.ok().body(response);
+        return ResponseEntity.ok().body(dayworksDto);
     }
 }

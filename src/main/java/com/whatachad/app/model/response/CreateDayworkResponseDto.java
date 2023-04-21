@@ -8,7 +8,6 @@ import lombok.*;
 @Getter
 @AllArgsConstructor
 public class CreateDayworkResponseDto {
-
     private String title;
     private DayworkPriority priority;
     private Workcheck status;
