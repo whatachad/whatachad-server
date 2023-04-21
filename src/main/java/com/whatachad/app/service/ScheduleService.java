@@ -9,6 +9,8 @@ import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,10 +42,25 @@ public class ScheduleService {
         Schedule schedule = callSchedule(scheduleDto);
         List<DaySchedule> daySchedulesOnSchedule = dayScheduleService.findDaySchedulesOnSchedule(schedule.getId());
         List<List<Daywork>> dayworks = new ArrayList<>();
-        daySchedulesOnSchedule.stream().forEach(day ->{
+        daySchedulesOnSchedule.stream().forEach(day -> {
             dayworks.add(dayScheduleService.findDayworksOnDay(day.getDay(), schedule.getId()));
         });
         return dayworks;
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<List<List<Object>>> findAllOnSchedule(Pageable pageable, ScheduleDto scheduleDto) {
+        Schedule schedule = callSchedule(scheduleDto);
+        Slice<DaySchedule> daySchedules = dayScheduleService.findDaySchedulesOnSchedule(pageable, schedule.getId());
+
+        Slice<List<List<Object>>> bundle = daySchedules.map(day -> {
+            return bindDayworkAccountByDay(
+                    dayScheduleService.findAccountOnDay(day.getDay(), schedule.getId()),
+                    dayScheduleService.findDayworksOnDay(day.getDay(), schedule.getId())
+            );
+        });
+
+        return bundle;
     }
 
     /**
@@ -90,5 +107,12 @@ public class ScheduleService {
     private User getLoginUser() {
         String loginUserId = userService.getLoginUserId();
         return userService.getUser(loginUserId);
+    }
+
+    private List<List<Object>> bindDayworkAccountByDay(List<Account> accounts, List<Daywork> dayworks) {
+        List<List<Object>> bundle = new ArrayList<>();
+        bundle.add(new ArrayList<>(accounts));
+        bundle.add(new ArrayList<>(dayworks));
+        return bundle;
     }
 }

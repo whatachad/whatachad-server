@@ -4,6 +4,7 @@ import com.whatachad.app.model.domain.Account;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateAccountRequestDto;
+import com.whatachad.app.model.response.AccountResponseDto;
 import com.whatachad.app.model.response.CreateAccountResponseDto;
 import com.whatachad.app.model.response.UpdateAccountResponseDto;
 import com.whatachad.app.type.AccountCategory;
@@ -50,6 +51,17 @@ public class AccountMapperService {
                 .year(account.getAccountDate().getYear())
                 .month(account.getAccountDate().getMonthValue())
                 .date(account.getAccountDate().getDayOfMonth())
+                .build();
+    }
+
+    public AccountResponseDto toAccountResponseDto(Account account) {
+        return AccountResponseDto.builder()
+                .id(account.getId())
+                .title(account.getTitle())
+                .type(account.getType())
+                .category(account.getCategory().getLabel())
+                .cost(account.getCost())
+                .date(account.getAccountDate())
                 .build();
     }
 }

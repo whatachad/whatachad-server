@@ -8,6 +8,8 @@ import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.repository.DayScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,12 @@ public class DayScheduleService {
         return daySchedule;
     }
 
+    @Transactional(readOnly = true)
+    public List<Account> findAccountOnDay(Integer day, Long scheduleId) {
+        DaySchedule daySchedule = callDaySchedule(day, scheduleId);
+        return accountService.findAccountsByDayId(daySchedule.getId());
+    }
+
     @Transactional
     public DaySchedule createDayworkOnDay(Integer day, DayworkDto dayworkDto, Long scheduleId) {
         DaySchedule daySchedule = callDaySchedule(day, scheduleId);
@@ -43,12 +51,17 @@ public class DayScheduleService {
     @Transactional(readOnly = true)
     public List<Daywork> findDayworksOnDay(Integer day, Long scheduleId){
         DaySchedule daySchedule = callDaySchedule(day, scheduleId);
-        return dayworkService.findDayworks(daySchedule.getId());
+        return dayworkService.findDayworksByDayId(daySchedule.getId());
     }
 
     @Transactional(readOnly = true)
     public List<DaySchedule> findDaySchedulesOnSchedule(Long scheduleId) {
         return dayScheduleRepository.findAllOfMonth(scheduleId);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<DaySchedule> findDaySchedulesOnSchedule(Pageable pageable, Long scheduleId) {
+        return dayScheduleRepository.findRecentDayOfMonth(scheduleId, pageable);
     }
 
     private DaySchedule callDaySchedule(Integer day, Long scheduleId) {

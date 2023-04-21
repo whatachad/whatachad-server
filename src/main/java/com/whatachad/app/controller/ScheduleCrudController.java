@@ -2,9 +2,7 @@ package com.whatachad.app.controller;
 
 import com.whatachad.app.api.ScheduleCrudApi;
 import com.whatachad.app.model.domain.Account;
-import com.whatachad.app.model.domain.DaySchedule;
 import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
@@ -16,14 +14,13 @@ import com.whatachad.app.model.response.*;
 import com.whatachad.app.service.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Slf4j
 @RestController
@@ -96,16 +93,16 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     public ResponseEntity<List<DayworksResponseDto>> getSchedule(String yearAndMonth) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
         List<List<Daywork>> dayworksOnSchedule = scheduleService.findDayworksOnSchedule(scheduleDto);
-
-        List<DayworksResponseDto> dayworksDto = new ArrayList<>();
-        dayworksOnSchedule.stream().forEach(day ->{
-            dayworksDto.add(new DayworksResponseDto());
-            dayworksDto.get(dayworksDto.size() - 1).setDate(day.get(0).getDayworkDate());
-            dayworksDto.get(dayworksDto.size() - 1).setDayworks(
-                    day.stream().map(dayworkMapper::toDayworkResposneDto)
-                    .toList());
-        });
-
+        List<DayworksResponseDto> dayworksDto = scheduleMapper.toDayworksResponseDto(dayworksOnSchedule);
         return ResponseEntity.ok().body(dayworksDto);
     }
+
+    @Override
+    public ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(String yearAndMonth, Pageable pageable) {
+        ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
+        Slice<List<List<Object>>> allOnSchedule = scheduleService.findAllOnSchedule(pageable, scheduleDto);
+        Slice<RecentScheduleResponseDto> scheduleRecentResposneDto = scheduleMapper.toRecentScheduleResponseDto(allOnSchedule);
+        return ResponseEntity.ok(scheduleRecentResposneDto);
+    }
+
 }

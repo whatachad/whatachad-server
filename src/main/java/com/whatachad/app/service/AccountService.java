@@ -10,6 +10,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @RequiredArgsConstructor
 @Service
@@ -34,6 +36,11 @@ public class AccountService {
     public Account findAccountById(Long accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "account"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Account> findAccountsByDayId(Long dayScheduleId) {
+        return accountRepository.findByDaySchedule_Id(dayScheduleId);
     }
 
     @Transactional

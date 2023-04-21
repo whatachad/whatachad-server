@@ -1,6 +1,8 @@
 package com.whatachad.app.repository;
 
 import com.whatachad.app.model.domain.DaySchedule;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -18,4 +20,6 @@ public interface DayScheduleRepository extends JpaRepository<DaySchedule, Long> 
     @Query("select d from DaySchedule d where d.schedule.id = :scheduleId order by d.day asc")
     List<DaySchedule> findAllOfMonth(@Param("scheduleId") Long scheduleId);
 
+    @Query("select d from DaySchedule d where d.schedule.id = :scheduleId")
+    Slice<DaySchedule> findRecentDayOfMonth(@Param("scheduleId") Long scheduleId, Pageable pageable);
 }

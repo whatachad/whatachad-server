@@ -11,11 +11,14 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @Tag(name = "Schedule API", description = "스케줄 관련 기능")
 @RequestMapping("/v1/schedule")
@@ -88,10 +91,29 @@ public interface ScheduleCrudApi {
     @Operation(summary = "캘린더 조회",
             description = "year 과 month 정보를 이용하여 캘린더를 조회한다.")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "OK"),
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = DayworksResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @GetMapping("/{YYYYMM}")
     public ResponseEntity<List<DayworksResponseDto>> getSchedule(@PathVariable("YYYYMM") String yearAndMonth);
+
+
+    @Operation(summary = "최근 내역 조회",
+            description = "year 과 month 정보를 이용하여 최근 내역을 조회한다.")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = ScheduleRecentResponseSlice.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @GetMapping("/{YYYYMM}/recent-history")
+    public ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(@PathVariable("YYYYMM") String yearAndMonth, @PageableDefault(page = 0, size = 5) Pageable pageable);
+
+}
+class ScheduleRecentResponseSlice extends SliceImpl<RecentScheduleResponseDto> {
+    public ScheduleRecentResponseSlice(List<RecentScheduleResponseDto> content, Pageable pageable, boolean hasNext) {
+        super(content, pageable, hasNext);
+    }
 }

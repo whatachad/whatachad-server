@@ -51,6 +51,7 @@ public class DayworkMapperService {
                 .title(daywork.getTitle())
                 .priority(daywork.getPriority())
                 .status(daywork.getStatus())
+                .date(daywork.getDayworkDate())
                 .build();
     }
 }
