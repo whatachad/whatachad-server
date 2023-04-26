@@ -1,6 +1,5 @@
 package com.whatachad.app.model.response;
 
-import com.whatachad.app.model.domain.DateTime;
 import com.whatachad.app.type.AccountType;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -15,5 +14,7 @@ public class UpdateAccountResponseDto {
     private Integer cost;
     private AccountType type;
     private String category;
-    private DateTime dateTime;
+    private Integer year;
+    private Integer month;
+    private Integer date;
 }

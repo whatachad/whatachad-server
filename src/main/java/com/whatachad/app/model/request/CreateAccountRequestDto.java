@@ -1,29 +1,26 @@
 package com.whatachad.app.model.request;
 
-import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class CreateAccountRequestDto {
 
-    @NotNull
+    @NotBlank
     private String title;
     @NotNull
     private AccountType type;
-    @NotNull
+    @NotBlank
     private String category;
     @NotNull
     private Integer cost;
-
+    @NotNull
     private Integer date;
 
-    private Integer hour;
-
-    private Integer minute;
 }

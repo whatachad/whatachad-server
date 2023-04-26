@@ -3,17 +3,18 @@ package com.whatachad.app.model.domain;
 import com.whatachad.app.model.dto.ScheduleDto;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.ColumnDefault;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.whatachad.app.util.EntityUtils.setEntity;
+
 @Getter
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Schedule{
+public class Schedule {
 
     @Id @GeneratedValue
     @Column(name = "SCHEDULE_ID")
@@ -21,31 +22,29 @@ public class Schedule{
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
-    private User user;
+    private  User user;
 
     private Integer year;
+
     private Integer month;
+
     private Integer budget;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-    private List<Daywork> dayworks = new ArrayList<>();
+    @OneToMany(mappedBy = "schedule")
+    List<DaySchedule> daySchedules;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "schedule", cascade = CascadeType.ALL)
-    private List<Account> accounts = new ArrayList<>();
-
-    public static Schedule create(User user, ScheduleDto dto) {
+    public static Schedule create(ScheduleDto dto, User user) {
         return Schedule.builder()
                 .user(user)
                 .year(dto.getYear())
                 .month(dto.getMonth())
-                .budget(dto.getBudget())
+                .budget((dto.getBudget() == null) ? 0 : dto.getBudget())
+                .daySchedules(new ArrayList<>())
                 .build();
     }
 
-    @PrePersist
-    public void prePersist(){
-        this.budget = this.budget == null ? 0 : this.budget;
+    public void addDaySchedule(DaySchedule daySchedule) {
+        this.daySchedules.add(daySchedule);
+        setEntity("schedule", daySchedule, this);
     }
 }

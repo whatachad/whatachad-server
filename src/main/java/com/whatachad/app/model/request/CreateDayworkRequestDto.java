@@ -1,23 +1,19 @@
 package com.whatachad.app.model.request;
 
 import com.whatachad.app.type.DayworkPriority;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class CreateDayworkRequestDto {
 
-    @NotNull
+    @NotBlank
     private String title;
-    @NotNull
+
+    @NotBlank
     private DayworkPriority priority;
 
-    private Integer date;
-
-    private Integer hour;
-
-    private Integer minute;
 }

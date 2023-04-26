@@ -5,8 +5,8 @@ import com.whatachad.app.type.Workcheck;
 import lombok.*;
 
 @Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
+@AllArgsConstructor
 @Getter
 public class UpdateDayworkRequestDto {
 
@@ -16,7 +16,4 @@ public class UpdateDayworkRequestDto {
 
     private Workcheck status;
 
-    private Integer hour;
-
-    private Integer minute;
 }

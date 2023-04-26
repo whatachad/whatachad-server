@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -29,13 +29,18 @@ public class AccountService {
         Account findAccount = accountRepository.findById(accountId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "account"));
 
-        findAccount.updateAccount(accountDto);
+        findAccount.update(accountDto);
     }
 
     @Transactional(readOnly = true)
     public Account findAccountById(Long accountId) {
         return accountRepository.findById(accountId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "account"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Account> findAccountsByDayId(Long dayScheduleId) {
+        return accountRepository.findByDayScheduleId(dayScheduleId);
     }
 
     @Transactional

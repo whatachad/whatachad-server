@@ -6,20 +6,27 @@ import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
+import static com.whatachad.app.util.EntityUtils.setValueExceptNull;
+
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Daywork extends BaseTime {
+public class Daywork extends BaseTime{
 
-    @Id @GeneratedValue
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DAYWORK_ID")
     private Long id;
 
+    private LocalDate dayworkDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SCHEDULE_ID")
-    private Schedule schedule;
+    @JoinColumn(name = "DAY_SCHEDULE_ID")
+    private DaySchedule daySchedule;
 
     private String title;
 
@@ -29,33 +36,20 @@ public class Daywork extends BaseTime {
     @Enumerated(EnumType.STRING)
     private Workcheck status;
 
-    @Embedded
-    private DateTime dateTime;
-
     public static Daywork create(DayworkDto dto) {
         return Daywork.builder()
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
-                .dateTime(dto.getDateTime())
+                .status(Workcheck.NOT_COMPLETE)
                 .build();
     }
 
-    @PrePersist
-    public void prePersist() {
-        this.status = Workcheck.NOT_COMPLETE;
+    public void update(DayworkDto dto) {
+        setValueExceptNull(this, dto);
     }
 
-    public void updateDaywork(DayworkDto dto) {
-        this.title = dto.getTitle();
-        this.status = dto.getStatus();
-        this.priority = dto.getPriority();
-        this.dateTime.changeDateTime(dto.getDateTime().getHour(), dto.getDateTime().getMinute());
+    public void setDayworkDate(Integer year, Integer month, Integer day) {
+        this.dayworkDate = LocalDate.of(year, month, day);
     }
 
-    /* 연관 관계 편의 메서드*/
-    public void addScheduleInDaywork(Schedule schedule) {
-        this.schedule = schedule;
-        schedule.getDayworks().add(this);
-    }
 }
-

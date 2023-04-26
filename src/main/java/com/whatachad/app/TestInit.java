@@ -11,7 +11,6 @@ import com.whatachad.app.type.FacilityType;
 import com.whatachad.app.type.UserMetaType;
 import com.whatachad.app.type.UserRoleType;
 import jakarta.annotation.PostConstruct;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +26,7 @@ public class TestInit {
     public static final String[] FACILITY_TITLE = new String[]
             {"영휘트니스", "짐박스피트니스 신림역점",
             "자마이카 피트니스 신림역점", "스포애니 보라매점",
-            "파운드짐 신림역점", "익스트림에스 신림점", "짐인더하우 2호점"};
+            "파운드짐 신림역점", "익스트림에스 신림점", "짐인더하우스 2호점"};
     public static final double[][] LAT_LNG = new double[][]{
         {37.4846553, 126.9272265},
         {37.4832519, 126.9287583},

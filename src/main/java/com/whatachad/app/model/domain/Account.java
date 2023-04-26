@@ -3,23 +3,28 @@ package com.whatachad.app.model.domain;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
+import com.whatachad.app.util.EntityUtils;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Getter
 @Builder
-@Entity
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@Entity
 public class Account extends BaseTime{
 
     @Id @GeneratedValue
     @Column(name = "ACCOUNT_ID")
     private Long id;
 
+    private LocalDate accountDate;
+
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "SCHEDULE_ID")
-    private Schedule schedule;
+    @JoinColumn(name = "DAY_SCHEDULE_ID")
+    private DaySchedule daySchedule;
 
     private String title;
 
@@ -31,32 +36,21 @@ public class Account extends BaseTime{
     @Enumerated(EnumType.STRING)
     private AccountCategory category;
 
-    @Embedded
-    private DateTime dateTime;
-
-    public static Account create(AccountDto accountDto) {
+    public static Account create(AccountDto dto) {
         return Account.builder()
-                .title(accountDto.getTitle())
-                .cost(accountDto.getCost())
-                .type(accountDto.getType())
-                .category(accountDto.getCategory())
-                .dateTime(accountDto.getDateTime())
+                .title(dto.getTitle())
+                .cost(dto.getCost())
+                .type(dto.getType())
+                .category(dto.getCategory())
                 .build();
     }
 
-    /**
-     * 연관관계 편의 메서드
-     */
-    public void addScheduleInAccount(Schedule schedule) {
-        this.schedule = schedule;
-        schedule.getAccounts().add(this);
+    public void update(AccountDto dto) {
+        EntityUtils.setValueExceptNull(this, dto);
     }
 
-    public void updateAccount(AccountDto dto) {
-        this.title = dto.getTitle();
-        this.type = dto.getType();
-        this.category = dto.getCategory();
-        this.cost = dto.getCost();
-        this.dateTime.changeDateTime(dto.getDateTime().getHour(), dto.getDateTime().getMinute());
+    public void setAccountDate(Integer year, Integer month, Integer day) {
+        this.accountDate = LocalDate.of(year, month, day);
     }
+
 }

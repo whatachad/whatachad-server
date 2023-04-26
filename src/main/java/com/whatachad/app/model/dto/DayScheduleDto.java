@@ -1,15 +1,15 @@
 package com.whatachad.app.model.dto;
 
+import com.whatachad.app.type.Workcheck;
 import lombok.*;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class ScheduleDto {
+public class DayScheduleDto {
 
     private Long id;
-    private Integer year;
-    private Integer month;
-    private Integer budget;
+    private Integer date;
+    private Workcheck totalDayworkStatus;
 }

@@ -1,7 +1,6 @@
 package com.whatachad.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.whatachad.app.TestInit;
 import com.whatachad.app.model.domain.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
@@ -12,8 +11,8 @@ import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.service.FacilityService;
 import com.whatachad.app.service.TokenService;
 import com.whatachad.app.type.FacilityType;
+import com.whatachad.app.util.TestDataProcessor;
 import io.jsonwebtoken.Claims;
-import jakarta.persistence.EntityManager;
 import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -28,10 +27,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -55,9 +50,7 @@ class FacilityControllerTest {
     @Autowired
     private TokenService tokenService;
     @Autowired
-    private EntityManager em;
-    @Autowired
-    private PlatformTransactionManager txManager;
+    private TestDataProcessor processor;
 
     @BeforeEach
     void init() {
@@ -74,13 +67,8 @@ class FacilityControllerTest {
     }
 
     @AfterEach
-    @Transactional
     void rollback() {
-        TransactionStatus txStatus = txManager.getTransaction(new DefaultTransactionDefinition());
-        em.createQuery("delete from Facility f where f.title not in :title")
-                .setParameter("title", List.of(TestInit.FACILITY_TITLE))
-                .executeUpdate();
-        txManager.commit(txStatus);
+        processor.rollback();
     }
 
     @Test
@@ -255,4 +243,6 @@ class FacilityControllerTest {
                 authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
+
 }
+

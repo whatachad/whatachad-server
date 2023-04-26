@@ -1,18 +1,17 @@
 package com.whatachad.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.whatachad.app.model.domain.DateTime;
-import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.dto.DayworkDto;
+import com.whatachad.app.model.domain.Account;
+import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.ScheduleDto;
-import com.whatachad.app.model.request.CreateDayworkRequestDto;
-import com.whatachad.app.model.request.UpdateDayworkRequestDto;
+import com.whatachad.app.model.request.CreateAccountRequestDto;
+import com.whatachad.app.model.request.UpdateAccountRequestDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
-import com.whatachad.app.service.DayworkService;
+import com.whatachad.app.service.ScheduleService;
 import com.whatachad.app.service.TokenService;
-import com.whatachad.app.type.DayworkPriority;
-import com.whatachad.app.type.Workcheck;
+import com.whatachad.app.type.AccountCategory;
+import com.whatachad.app.type.AccountType;
 import io.jsonwebtoken.Claims;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -26,7 +25,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,99 +34,85 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class DayworkControllerTest {
-
-    private final ObjectMapper mapper = new ObjectMapper();
-    private String accessToken;
-    private Integer year, month, date;
-    Daywork daywork;
+public class ScheduleCrudControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private DayworkService dayworkService;
-    @Autowired
     private TokenService tokenService;
+    @Autowired
+    private ScheduleService scheduleService;
 
+    private final ObjectMapper mapper = new ObjectMapper();
+    private String accessToken;
+    private Account account;
 
     @BeforeEach
     void init() {
         authorize();
-        year = 2023; month = 10; date = 5;
 
-        DateTime dateTime = DateTime.builder()
-                .date(date)
-                .hour(10)
-                .minute(10)
+        AccountDto accountDto = AccountDto.builder()
+                .title("장보기")
+                .cost(10000)
+                .type(AccountType.SPEND)
+                .category(AccountCategory.FOOD)
                 .build();
-
-        DayworkDto dayworkDto = DayworkDto.builder()
-                .title("title")
-                .priority(DayworkPriority.FIRST)
-                .dateTime(dateTime)
-                .status(Workcheck.NOT_COMPLETE)
-                .build();
-
         ScheduleDto scheduleDto = ScheduleDto.builder()
-                .year(year)
-                .month(month)
-                .budget(1000)
+                .year(2023)
+                .month(4)
+                .budget(500000)
                 .build();
-
-        //daywork = dayworkService.createDaywork(dayworkDto, scheduleDto);
+        account = scheduleService.createAccountOnSchedule(1, accountDto, scheduleDto);
     }
+
     @Test
-    @DisplayName("daywork를 수정한다. Put /v1/schedules/{YYYYMM}/dayworks/{DD}/{daywork_id}")
-    public void editDaywork() throws Exception{
-        //given
-        String changeTitle = "변경이름";
-        UpdateDayworkRequestDto updateDayworkDto = UpdateDayworkRequestDto.builder()
-                .title(changeTitle)
-                .hour(5)
-                .minute(5)
-                .status(Workcheck.COMPLETE)
-                .priority(DayworkPriority.SECOND)
+    @DisplayName("가계부를 등록한다. POST /v1/schedule/202304/accounts/01")
+    void registerAccount() throws Exception {
+        CreateAccountRequestDto requestDto = CreateAccountRequestDto.builder()
+                .title("장보기")
+                .cost(10000)
+                .type(AccountType.SPEND)
+                .category("식비")
                 .build();
 
-        String request = mapper.writeValueAsString(updateDayworkDto);
-
-        //when, then
-        Long dayworkId = daywork.getId();
-        mockMvc.perform(MockMvcRequestBuilders.put("/v1/schedules/"
-                                + year + month
-                                + "/dayworks/"
-                                + date + "/"
-                                + dayworkId)
+        String request = mapper.writeValueAsString(requestDto);
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/schedule/202304/accounts/01")
                         .content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(changeTitle));
+                .andExpect(jsonPath("$.year").value(2023))
+                .andExpect(jsonPath("$.month").value(4))
+                .andExpect(jsonPath("$.date").value(1))
+                .andExpect(jsonPath("$.title").value("장보기"))
+                .andExpect(jsonPath("$.cost").value(10000))
+                .andExpect(jsonPath("$.type").value("SPEND"))
+                .andExpect(jsonPath("$.category").value("식비"));
     }
 
     @Test
-    @DisplayName("daywork를 등록한다. Post /v1/schedules/{YYYYMM}/dayworks/{DD}")
-    void registerDaywork() throws Exception {
-        String title = "할 일";
-        DayworkPriority dayworkPriority = DayworkPriority.FIRST;
-
-        CreateDayworkRequestDto createDayworkRequestDto = CreateDayworkRequestDto.builder()
-                .title(title)
-                .priority(dayworkPriority)
-                .hour(10)
-                .minute(5)
+    @DisplayName("가계부를 수정한다. PUT /v1/schedule/202304/accounts/01")
+    void updateAccount() throws Exception {
+        UpdateAccountRequestDto requestDto = UpdateAccountRequestDto.builder()
+                .title("장보기")
+                .cost(8000)
+                .type(AccountType.SPEND)
+                .category("식비")
                 .build();
 
-        String YYYYMM = "202305";
-        String DD = "10";
-
-        String request = mapper.writeValueAsString(createDayworkRequestDto);
-        mockMvc.perform(MockMvcRequestBuilders.post("/v1/schedules/" + YYYYMM + "/dayworks/" + DD)
+        String request = mapper.writeValueAsString(requestDto);
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/schedule/202304/accounts/01/{accountId}", account.getId())
                         .content(request)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value(title));
+                .andExpect(jsonPath("$.year").value(2023))
+                .andExpect(jsonPath("$.month").value(4))
+                .andExpect(jsonPath("$.date").value(1))
+                .andExpect(jsonPath("$.title").value("장보기"))
+                .andExpect(jsonPath("$.cost").value(8000))
+                .andExpect(jsonPath("$.type").value("SPEND"))
+                .andExpect(jsonPath("$.category").value("식비"));
     }
 
     private void authorize() {
