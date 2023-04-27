@@ -29,6 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 class FacilityServiceTest {
 
+    private Facility facility;
+
     @Autowired
     private FacilityService facilityService;
     @Autowired
@@ -36,19 +38,21 @@ class FacilityServiceTest {
     @Autowired
     private TestDataProcessor processor;
 
+
     @BeforeEach
-    void initFacility() throws Exception {
+    void initFacility() {
         authorize();
 
         FacilityDto facilityDto = FacilityDto.builder()
                 .address(Address.builder()
                         .jibunAddress("지번 주소")
+                        .roadAddress("도로명 주소")
                         .latitude(0D)
                         .longitude(0D)
                         .build())
                 .category(FacilityType.HEALTH)
                 .build();
-        facilityService.createFacility(facilityDto);
+        facility = facilityService.createFacility(facilityDto);
     }
 
     @AfterEach
@@ -59,9 +63,9 @@ class FacilityServiceTest {
     @Test
     @DisplayName("Update Dto를 통해 facility 정보를 수정한다.")
     void updateFacility() {
-        Facility facility = facilityService.findAllFacilities().get(0);
+        Facility findFacility = facilityService.findFacility(facility.getId());
         FacilityDto updateDto = FacilityDto.builder()
-                .id(facility.getId())
+                .id(findFacility.getId())
                 .address(Address.builder()
                         .jibunAddress("변경된 주소")
                         .latitude(0D)
@@ -71,8 +75,28 @@ class FacilityServiceTest {
                 .build();
         facilityService.updateFacility(updateDto);
 
-        Facility updateFacility = facilityService.findFacility(facility.getId());
+        Facility updateFacility = facilityService.findFacility(findFacility.getId());
         assertThat(updateFacility.getAddress().getJibunAddress()).isEqualTo("변경된 주소");
+    }
+
+    @Test
+    @DisplayName("Update Dto에 null 값이 포함되더라도 기존 필드 값에는 반영되지 않아야 한다. roadAddress=null, category=null")
+    void updateFacilityWithNullValue() {
+        Facility findFacility = facilityService.findFacility(facility.getId());
+        FacilityDto updateDto = FacilityDto.builder()
+                .id(findFacility.getId())
+                .address(Address.builder()
+                        .jibunAddress("변경된 주소")
+                        .latitude(0D)
+                        .longitude(0D)
+                        .build())
+                .build();
+        facilityService.updateFacility(updateDto);
+
+        Facility updateFacility = facilityService.findFacility(findFacility.getId());
+        assertThat(updateFacility.getAddress().getJibunAddress()).isEqualTo("변경된 주소");
+        assertThat(updateFacility.getAddress().getRoadAddress()).isEqualTo("도로명 주소");
+        assertThat(updateFacility.getCategory()).isEqualTo(FacilityType.HEALTH);
     }
 
     @Test

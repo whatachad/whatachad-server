@@ -13,7 +13,6 @@ import com.whatachad.app.service.TokenService;
 import com.whatachad.app.type.FacilityType;
 import com.whatachad.app.util.TestDataProcessor;
 import io.jsonwebtoken.Claims;
-import org.hamcrest.core.IsNull;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -58,6 +57,7 @@ class FacilityControllerTest {
         FacilityDto facilityDto = FacilityDto.builder()
                 .address(Address.builder()
                         .jibunAddress("지번 주소")
+                        .roadAddress("도로명 주소")
                         .latitude(0D)
                         .longitude(0D)
                         .build())
@@ -109,28 +109,6 @@ class FacilityControllerTest {
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address.jibunAddress").value("변경된 주소"));
-    }
-
-    @Test
-    @DisplayName("facility를 수정할 때 변경되는 필드 외에 기존 필드 값을 유지하지 않으면 " +
-            "변경 후에 null 값이 저장된다. PUT /v1/facilities")
-    void editFacilityWithoutExistingField() throws Exception {
-        UpdateFacilityRequestDto updateDto = UpdateFacilityRequestDto.builder()
-                .id(facility.getId())
-                .jibunAddress("변경된 주소")
-                .latitude(0D)
-                .longitude(0D)
-                .category(FacilityType.HEALTH)
-                .build();
-        String request = mapper.writeValueAsString(updateDto);
-        mockMvc.perform(MockMvcRequestBuilders.put("/v1/facilities")
-                        .content(request)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization", "Bearer " + accessToken))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.address.jibunAddress").value("변경된 주소"))
-                .andExpect(jsonPath("$.address.roadAddress").value(IsNull.nullValue()))
-                .andDo(print());
     }
 
     @Test
