@@ -2,6 +2,7 @@ package com.whatachad.app.util;
 
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.common.IError;
+import jakarta.persistence.Embeddable;
 
 import java.lang.reflect.Field;
 import java.util.Objects;
@@ -25,8 +26,12 @@ public class EntityUtils {
                 Field entityField = entityClass.getDeclaredField(dtoField.getName());
                 entityField.setAccessible(true);
                 dtoField.setAccessible(true);
-                if (Objects.nonNull(dtoField.get(dto))) {
-                    entityField.set(entity, dtoField.get(dto));
+                Object fieldValue = dtoField.get(dto);
+                if (Objects.nonNull(fieldValue)) {
+                    if (fieldValue.getClass().isAnnotationPresent(Embeddable.class)) {
+                        fieldValue = getValueObjectExceptNull(entityField.get(entity), fieldValue);
+                    }
+                    entityField.set(entity, fieldValue);
                 }
             }
         } catch (IllegalAccessException e) {
@@ -42,6 +47,27 @@ public class EntityUtils {
             Field field = sourceClass.getDeclaredField(fieldName);
             field.setAccessible(true);
             field.set(target, source);
+        } catch (IllegalAccessException e) {
+            throw new CommonException(IError.FIELD_NOT_ALLOWED);
+        } catch (NoSuchFieldException e) {
+            throw new CommonException(IError.FIELD_NOT_EXIST);
+        }
+    }
+
+    private static <T, S> Object getValueObjectExceptNull(T target, S source) {
+        try {
+            Class<?> targetClass = target.getClass();
+            Class<?> sourceClass = source.getClass();
+            for (Field sourceField : sourceClass.getDeclaredFields()) {
+                Field targetField = targetClass.getDeclaredField(sourceField.getName());
+                targetField.setAccessible(true);
+                sourceField.setAccessible(true);
+                Object fieldValue = sourceField.get(source);
+                if (Objects.nonNull(fieldValue)) {
+                    targetField.set(target, fieldValue);
+                }
+            }
+            return target;
         } catch (IllegalAccessException e) {
             throw new CommonException(IError.FIELD_NOT_ALLOWED);
         } catch (NoSuchFieldException e) {
