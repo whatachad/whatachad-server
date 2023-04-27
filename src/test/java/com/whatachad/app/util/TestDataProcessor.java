@@ -4,9 +4,7 @@ import com.whatachad.app.init.TestInit;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -15,19 +13,15 @@ public class TestDataProcessor {
 
     @Autowired
     private EntityManager em;
-    @Autowired
-    private PlatformTransactionManager txManager;
 
-    public TestDataProcessor(EntityManager em, PlatformTransactionManager txManager) {
+    public TestDataProcessor(EntityManager em) {
         this.em = em;
-        this.txManager = txManager;
     }
 
+    @Transactional
     public void rollback() {
-        TransactionStatus txStatus = txManager.getTransaction(new DefaultTransactionDefinition());
-        em.createQuery("delete from Facility f where f.title not in :title")
+        em.createQuery("delete from Facility f where (f.title not in :title) or (f.title is null)")
                 .setParameter("title", List.of(TestInit.FACILITY_TITLE))
                 .executeUpdate();
-        txManager.commit(txStatus);
     }
 }
