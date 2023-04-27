@@ -1,6 +1,6 @@
 package com.whatachad.app.util;
 
-import com.whatachad.app.TestInit;
+import com.whatachad.app.init.TestInit;
 import jakarta.persistence.EntityManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
