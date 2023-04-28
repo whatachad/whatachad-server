@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @Mapper(componentModel = "spring",
         unmappedTargetPolicy = ReportingPolicy.IGNORE,
         unmappedSourcePolicy = ReportingPolicy.IGNORE)
-public interface DayworkMapper {
+interface DayworkMapper {
 
     DayworkMapper dayworkMapper = Mappers.getMapper(DayworkMapper.class);
 
