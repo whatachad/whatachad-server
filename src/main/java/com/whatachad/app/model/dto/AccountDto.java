@@ -2,15 +2,12 @@ package com.whatachad.app.model.dto;
 
 import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Getter
+@Getter @Setter
 public class AccountDto {
 
     private Long id;

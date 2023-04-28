@@ -6,6 +6,8 @@ import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
+import com.whatachad.app.model.mapper.AccountMapper;
+import com.whatachad.app.model.mapper.DayworkMapper;
 import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateAccountRequestDto;
@@ -29,11 +31,9 @@ import java.util.List;
 public class ScheduleCrudController implements ScheduleCrudApi {
 
     private final ScheduleMapperService scheduleMapper;
-    private final AccountMapperService accountMapper;
-    private final DayScheduleMapperService dayScheduleMapper;
-    private final DayworkMapperService dayworkMapper;
+    private final AccountMapper accountMapper;
+    private final DayworkMapper dayworkMapper;
     private final ScheduleService scheduleService;
-    private final DayScheduleService dayScheduleService;
     private final AccountService accountService;
     private final DayworkService dayworkService;
 
@@ -41,19 +41,19 @@ public class ScheduleCrudController implements ScheduleCrudApi {
      * Daywork 관련
      * */
     @Override
-    public ResponseEntity<CreateDayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String yearAndMonth, Integer date) {
+    public ResponseEntity<DayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String yearAndMonth, Integer date) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
         DayworkDto dayworkDto = dayworkMapper.toDayworkDto(requestDto);
         Daywork daywork = scheduleService.createDayworkOnSchedule(date, dayworkDto, scheduleDto);
-        return ResponseEntity.ok(dayworkMapper.toCreateResponseDto(daywork));
+        return ResponseEntity.ok(dayworkMapper.toDayworkResponseDto(daywork));
     }
 
     @Override
-    public ResponseEntity<UpdateDayworkResponseDto> editDaywork(UpdateDayworkRequestDto requestDto, Long dayworkId) {
+    public ResponseEntity<DayworkResponseDto> editDaywork(UpdateDayworkRequestDto requestDto, Long dayworkId) {
         DayworkDto dayworkDto = dayworkMapper.toDayworkDto(requestDto);
         dayworkService.updateDaywork(dayworkDto, dayworkId);
         Daywork daywork = dayworkService.findDayworkById(dayworkId);
-        return ResponseEntity.ok(dayworkMapper.toUpdateResponseDto(daywork));
+        return ResponseEntity.ok(dayworkMapper.toDayworkResponseDto(daywork));
     }
 
     @Override
@@ -65,19 +65,19 @@ public class ScheduleCrudController implements ScheduleCrudApi {
      * Account 관련
      */
     @Override
-    public ResponseEntity<CreateAccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String yearAndMonth, Integer date) {
+    public ResponseEntity<AccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String yearAndMonth, Integer date) {
         ScheduleDto scheduleDto = scheduleMapper.toScheduleDto(yearAndMonth);
         AccountDto accountDto = accountMapper.toAccountDto(requestDto);
         Account account = scheduleService.createAccountOnSchedule(date, accountDto, scheduleDto);
-        return ResponseEntity.ok(accountMapper.toCreateAccountResponseDto(account));
+        return ResponseEntity.ok(accountMapper.toAccountResponseDto(account));
     }
 
     @Override
-    public ResponseEntity<UpdateAccountResponseDto> editAccount(UpdateAccountRequestDto requestDto, Long accountId) {
+    public ResponseEntity<AccountResponseDto> editAccount(UpdateAccountRequestDto requestDto, Long accountId) {
         AccountDto accountDto = accountMapper.toAccountDto(requestDto);
         accountService.updateAccount(accountDto, accountId);
         Account account = accountService.findAccountById(accountId);
-        return ResponseEntity.ok(accountMapper.toUpdateResponseDto(account));
+        return ResponseEntity.ok(accountMapper.toAccountResponseDto(account));
     }
 
     @Override

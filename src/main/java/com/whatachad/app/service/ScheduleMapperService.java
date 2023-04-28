@@ -4,6 +4,8 @@ import com.whatachad.app.model.domain.Account;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.ScheduleDto;
+import com.whatachad.app.model.mapper.AccountMapper;
+import com.whatachad.app.model.mapper.DayworkMapper;
 import com.whatachad.app.model.response.DayworksResponseDto;
 import com.whatachad.app.model.response.RecentScheduleResponseDto;
 import com.whatachad.app.model.response.ScheduleResponseDto;
@@ -15,15 +17,14 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Slf4j
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Service
 public class ScheduleMapperService {
 
-    private final DayworkMapperService dayworkMapper;
-    private final AccountMapperService accountMapper;
+    private final DayworkMapper dayworkMapper;
+    private final AccountMapper accountMapper;
 
     public ScheduleDto toScheduleDto(String yearAndMonth) {
         String year = yearAndMonth.substring(0, 4);
@@ -49,7 +50,7 @@ public class ScheduleMapperService {
         dayworksByDay.stream().forEach(day ->{
             dayworksDto.add(new DayworksResponseDto(
                     day.get(day.size() - 1).getDayworkDate(),
-                    day.stream().map(dayworkMapper::toDayworkResposneDto).toList()));
+                    day.stream().map(dayworkMapper::toDayworkResponseDto).toList()));
        });
         return dayworksDto;
     }
@@ -66,14 +67,12 @@ public class ScheduleMapperService {
             scheduleRecentDto.setDayworks(
                     day.get(1).stream()
                             .map(object -> (Daywork) object)
-                            .map(dayworkMapper::toDayworkResposneDto).toList()
+                            .map(dayworkMapper::toDayworkResponseDto).toList()
             );
 
             scheduleRecentDto.setDate(scheduleRecentDto.getAccounts().isEmpty()?
-                    scheduleRecentDto.getDayworks().get(0).getDate() : scheduleRecentDto.getAccounts().get(0).getDate());
+                    scheduleRecentDto.getDayworks().get(0).getDate() : scheduleRecentDto.getAccounts().get(0).getAccountDate());
             return scheduleRecentDto;
         });
     }
-
-
 }

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 /**
  * package-private
- * (주의) mapper는 adaptor를 통해 사용해야 한다.
+ * (주의) FacilityMapper는 FacilityConverter를 통해 사용해야 한다.
  */
 @Component
 @Mapper(componentModel = "spring",

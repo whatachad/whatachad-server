@@ -29,6 +29,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -81,13 +82,12 @@ public class ScheduleCrudControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.year").value(2023))
-                .andExpect(jsonPath("$.month").value(4))
-                .andExpect(jsonPath("$.date").value(1))
+                .andExpect(jsonPath("$.accountDate").value("2023-04-01"))
                 .andExpect(jsonPath("$.title").value("장보기"))
                 .andExpect(jsonPath("$.cost").value(10000))
                 .andExpect(jsonPath("$.type").value("SPEND"))
-                .andExpect(jsonPath("$.category").value("식비"));
+                .andExpect(jsonPath("$.category").value("식비"))
+                .andDo(print());
     }
 
     @Test
@@ -106,9 +106,7 @@ public class ScheduleCrudControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.year").value(2023))
-                .andExpect(jsonPath("$.month").value(4))
-                .andExpect(jsonPath("$.date").value(1))
+                .andExpect(jsonPath("$.accountDate").value("2023-04-01"))
                 .andExpect(jsonPath("$.title").value("장보기"))
                 .andExpect(jsonPath("$.cost").value(8000))
                 .andExpect(jsonPath("$.type").value("SPEND"))
