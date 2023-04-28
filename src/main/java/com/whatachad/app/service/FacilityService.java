@@ -4,7 +4,7 @@ import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.domain.User;
-import com.whatachad.app.model.request.FacilityDto;
+import com.whatachad.app.model.dto.FacilityDto;
 import com.whatachad.app.model.request.FindFacilityDto;
 import com.whatachad.app.repository.FacilityRepository;
 import lombok.RequiredArgsConstructor;

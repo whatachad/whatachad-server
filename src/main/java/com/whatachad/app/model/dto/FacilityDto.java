@@ -1,20 +1,19 @@
-package com.whatachad.app.model.response;
+package com.whatachad.app.model.dto;
 
 import com.whatachad.app.model.domain.Address;
 import com.whatachad.app.type.FacilityType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @Builder
-@Getter
-@Setter
+@NoArgsConstructor
 @AllArgsConstructor
-public class UpdateFacilityResponseDto {
+@Getter @Setter
+public class FacilityDto {
 
+    private Long id;
     private Address address;
     private FacilityType category;
     private String title;
     private String description;
+
 }

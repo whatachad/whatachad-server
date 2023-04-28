@@ -3,7 +3,7 @@ package com.whatachad.app.init;
 import com.whatachad.app.model.domain.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.domain.User;
-import com.whatachad.app.model.request.FacilityDto;
+import com.whatachad.app.model.dto.FacilityDto;
 import com.whatachad.app.repository.FacilityRepository;
 import com.whatachad.app.security.AuthConstant;
 import com.whatachad.app.service.UserService;

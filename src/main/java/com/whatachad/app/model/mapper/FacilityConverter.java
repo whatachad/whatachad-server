@@ -1,61 +1,72 @@
-package com.whatachad.app.service;
+package com.whatachad.app.model.mapper;
 
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
-import com.whatachad.app.model.request.FacilityDto;
+import com.whatachad.app.model.dto.FacilityDto;
 import com.whatachad.app.model.request.FindFacilityDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
-import com.whatachad.app.model.response.CreateFacilityResponseDto;
 import com.whatachad.app.model.response.FacilityResponseDto;
-import com.whatachad.app.model.response.UpdateFacilityResponseDto;
 import com.whatachad.app.type.FacilityType;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
 import java.util.stream.IntStream;
 
-@Slf4j
+@Component
 @RequiredArgsConstructor
-@Service
-public class FacilityMapperService {
+public class FacilityConverter {
 
     public static final Map<String, String> REGION_CODE = new HashMap<>(); // <ADDRESS, REGION_CODE>
 
     private final ResourceLoader resourceLoader;
+    private final FacilityMapper facilityMapper;
 
-    // TODO : 아래 코드를 추상화할 해결책은?
+    //== initialization methods ==//
+    @PostConstruct
+    void initRegionCode() throws IOException {
+        String filePath = "static/region-code.csv";
+        Resource resource = resourceLoader.getResource("classpath:" + filePath);
+        InputStream inputStream = resource.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        String currentLine = reader.readLine(); // 첫 줄은 column명이므로 skip
+        while ((currentLine = reader.readLine()) != null) {
+            String[] splitLine = currentLine.split(",");
+            String regionCode = splitLine[0];
+            String area = String.join(" ",
+                    splitLine[1], splitLine[2], splitLine[3], splitLine[4]).trim();
+            REGION_CODE.put(area, regionCode);
+        }
+        reader.close();
+    }
 
+    // dto -> adaptee 변환
     public FacilityDto toFacilityDto(CreateFacilityRequestDto dto) {
-        return FacilityDto.builder()
-                .address(createAddress(dto))
-                .category(dto.getCategory())
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .build();
+        FacilityDto adaptee = facilityMapper.preprocess(dto);
+        adaptee.setAddress(createAddress(dto));
+        return adaptee;
     }
 
     public FacilityDto toFacilityDto(UpdateFacilityRequestDto dto) {
-        return FacilityDto.builder()
-                .id(dto.getId())
-                .address(createAddress(dto))
-                .category(dto.getCategory())
-                .title(dto.getTitle())
-                .description(dto.getDescription())
-                .build();
+        FacilityDto adaptee = facilityMapper.preprocess(dto);
+        adaptee.setAddress(createAddress(dto));
+        return adaptee;
     }
 
+    // 조회용 dto 변환
     public FindFacilityDto toFindFacilityDto(Map<String, String> findFacilityParam) {
         Map<String, String> validParam = new HashMap<>();
         String[] keys = new String[]{"category", "latitude", "longitude", "distance"};
@@ -74,34 +85,13 @@ public class FacilityMapperService {
                 .build();
     }
 
-    public CreateFacilityResponseDto toCreateResponseDto(Facility entity) {
-        return CreateFacilityResponseDto.builder()
-                .address(entity.getAddress())
-                .category(entity.getCategory())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .build();
-    }
-
+    // 클라이언트 응답 dto 변환
     public FacilityResponseDto toResponseDto(Facility entity) {
-        return FacilityResponseDto.builder()
-                .id(entity.getId())
-                .address(entity.getAddress())
-                .category(entity.getCategory())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .build();
+        return facilityMapper.toResponseDto(entity);
     }
 
-    public UpdateFacilityResponseDto toUpdateResponseDto(Facility entity) {
-        return UpdateFacilityResponseDto.builder()
-                .address(entity.getAddress())
-                .category(entity.getCategory())
-                .title(entity.getTitle())
-                .description(entity.getDescription())
-                .build();
-    }
 
+    //== private methods ==//
     private Address createAddress(CreateFacilityRequestDto dto) {
         return Address.builder()
                 .regionCode(getRegionCode(dto.getJibunAddress()))
@@ -149,22 +139,5 @@ public class FacilityMapperService {
                     validAddress.add(addressArr[i]);
                 });
         return REGION_CODE.get(String.valueOf(validAddress));
-    }
-
-    @PostConstruct
-    void initRegionCode() throws IOException {
-        String filePath = "static/region-code.csv";
-        Resource resource = resourceLoader.getResource("classpath:" + filePath);
-        InputStream inputStream = resource.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String currentLine = reader.readLine(); // 첫 줄은 column명이므로 skip
-        while ((currentLine = reader.readLine()) != null) {
-            String[] splitLine = currentLine.split(",");
-            String regionCode = splitLine[0];
-            String area = String.join(" ",
-                    splitLine[1], splitLine[2], splitLine[3], splitLine[4]).trim();
-            REGION_CODE.put(area, regionCode);
-        }
-        reader.close();
     }
 }

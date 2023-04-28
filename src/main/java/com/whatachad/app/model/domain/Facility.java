@@ -1,6 +1,6 @@
 package com.whatachad.app.model.domain;
 
-import com.whatachad.app.model.request.FacilityDto;
+import com.whatachad.app.model.dto.FacilityDto;
 import com.whatachad.app.type.FacilityType;
 import com.whatachad.app.util.EntityUtils;
 import jakarta.persistence.*;
@@ -31,17 +31,17 @@ public class Facility extends BaseTime {
 
     private String description;
 
-    public static Facility create(User user, FacilityDto dto) {
+    public static Facility create(User user, FacilityDto facilityDto) {
         return Facility.builder()
                 .user(user)
-                .address(dto.getAddress())
-                .category(dto.getCategory())
-                .title(dto.getTitle())
-                .description(dto.getDescription())
+                .address(facilityDto.getAddress())
+                .category(facilityDto.getCategory())
+                .title(facilityDto.getTitle())
+                .description(facilityDto.getDescription())
                 .build();
     }
 
-    public void update(FacilityDto dto) {
-        EntityUtils.setValueExceptNull(this, dto);
+    public void update(FacilityDto facilityDto) {
+        EntityUtils.setValueExceptNull(this, facilityDto);
     }
 }
