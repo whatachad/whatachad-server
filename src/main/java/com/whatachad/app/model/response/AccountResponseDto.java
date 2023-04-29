@@ -18,5 +18,5 @@ public class AccountResponseDto {
     private Integer cost;
     private AccountType type;
     private String category;
-    private LocalDate date;
+    private LocalDate accountDate;
 }

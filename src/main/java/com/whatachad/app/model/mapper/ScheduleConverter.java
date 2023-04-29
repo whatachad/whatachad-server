@@ -1,29 +1,23 @@
-package com.whatachad.app.service;
+package com.whatachad.app.model.mapper;
 
 import com.whatachad.app.model.domain.Account;
 import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.domain.Schedule;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.response.DayworksResponseDto;
 import com.whatachad.app.model.response.RecentScheduleResponseDto;
-import com.whatachad.app.model.response.ScheduleResponseDto;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
-@Slf4j
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
-@Service
-public class ScheduleMapperService {
+@Component
+@RequiredArgsConstructor
+public class ScheduleConverter {
 
-    private final DayworkMapperService dayworkMapper;
-    private final AccountMapperService accountMapper;
+    private final DayworkConverter dayworkConverter;
+    private final AccountConverter accountConverter;
 
     public ScheduleDto toScheduleDto(String yearAndMonth) {
         String year = yearAndMonth.substring(0, 4);
@@ -35,45 +29,34 @@ public class ScheduleMapperService {
                 .build();
     }
 
-    public ScheduleResponseDto toScheduleResponseDto(Schedule schedule) {
-        return ScheduleResponseDto.builder()
-                .id(schedule.getId())
-                .year(schedule.getYear())
-                .month(schedule.getMonth())
-                .budget(schedule.getBudget())
-                .build();
-    }
-
     public List<DayworksResponseDto> toDayworksResponseDto(List<List<Daywork>> dayworksByDay) {
         List<DayworksResponseDto> dayworksDto = new ArrayList<>();
-        dayworksByDay.stream().forEach(day ->{
+        dayworksByDay.stream().forEach(day -> {
             dayworksDto.add(new DayworksResponseDto(
                     day.get(day.size() - 1).getDayworkDate(),
-                    day.stream().map(dayworkMapper::toDayworkResposneDto).toList()));
-       });
+                    day.stream().map(dayworkConverter::toDayworkResponseDto).toList()));
+        });
         return dayworksDto;
     }
 
     public Slice<RecentScheduleResponseDto> toRecentScheduleResponseDto(Slice<List<List<Object>>> allOnSchedule) {
-         return allOnSchedule.map(day -> {
+        return allOnSchedule.map(day -> {
             RecentScheduleResponseDto scheduleRecentDto = new RecentScheduleResponseDto();
             scheduleRecentDto.setAccounts(
                     day.get(0).stream()
                             .map(object -> (Account) object)
-                            .map(accountMapper::toAccountResponseDto).toList()
+                            .map(accountConverter::toAccountResponseDto).toList()
             );
 
             scheduleRecentDto.setDayworks(
                     day.get(1).stream()
                             .map(object -> (Daywork) object)
-                            .map(dayworkMapper::toDayworkResposneDto).toList()
+                            .map(dayworkConverter::toDayworkResponseDto).toList()
             );
 
             scheduleRecentDto.setDate(scheduleRecentDto.getAccounts().isEmpty()?
-                    scheduleRecentDto.getDayworks().get(0).getDate() : scheduleRecentDto.getAccounts().get(0).getDate());
+                    scheduleRecentDto.getDayworks().get(0).getDate() : scheduleRecentDto.getAccounts().get(0).getAccountDate());
             return scheduleRecentDto;
         });
     }
-
-
 }

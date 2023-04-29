@@ -2,9 +2,7 @@ package com.whatachad.app.api;
 
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
-import com.whatachad.app.model.response.CreateFacilityResponseDto;
 import com.whatachad.app.model.response.FacilityResponseDto;
-import com.whatachad.app.model.response.UpdateFacilityResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -30,12 +28,12 @@ public interface FacilityApi {
             description = "유저가 직접 주소 정보나 지도 api 마커를 이용해 스포츠 시설을 등록")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(schema = @Schema(implementation = CreateFacilityResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = FacilityResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping
-    ResponseEntity<CreateFacilityResponseDto> registerFacility(@RequestBody @Valid CreateFacilityRequestDto requestDto);
+    ResponseEntity<FacilityResponseDto> registerFacility(@RequestBody @Valid CreateFacilityRequestDto requestDto);
 
 
     @Operation(summary = "주변 스포츠 시설 조회",
@@ -85,12 +83,12 @@ public interface FacilityApi {
             description = "해당 시설을 등록한 유저가 시설 정보를 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
-                    content = @Content(schema = @Schema(implementation = UpdateFacilityResponseDto.class))),
+                    content = @Content(schema = @Schema(implementation = FacilityResponseDto.class))),
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PutMapping(consumes = "application/json")
-    ResponseEntity<UpdateFacilityResponseDto> editFacility(@RequestBody @Valid UpdateFacilityRequestDto requestDto);
+    ResponseEntity<FacilityResponseDto> editFacility(@RequestBody @Valid UpdateFacilityRequestDto requestDto);
 
 
 
