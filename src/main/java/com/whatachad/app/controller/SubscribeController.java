@@ -18,8 +18,15 @@ public class SubscribeController implements SubscribeApi {
     private final SubscribeService subscribeService;
 
     @Override
-    public ResponseEntity<String> registerFollow(String followingId) {
+    public ResponseEntity<String> follow(String followingId) {
         Follow follow = subscribeService.createFollow(followingId);
         return ResponseEntity.ok().body("SUCCESS");
     }
+
+    @Override
+    public ResponseEntity<String> unFollow(String followingId) {
+        subscribeService.deleteFollow(followingId);
+        return ResponseEntity.ok().body("SUCCESS");
+    }
+
 }

@@ -14,9 +14,10 @@ public class Follow extends BaseTime{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "USER_ID")
+    @JoinColumn(name = "FOLLOWER")
     private User follower;
 
+    @Column(name = "FOLLOWING")
     private String followingId;
 
     public static Follow create(User loginUser, String followingId){

@@ -77,6 +77,29 @@ public class TestInit {
             userService.createUser(user);
         }
     }
+    @Component
+    @Order(3)
+    @RequiredArgsConstructor
+    static class UserInit2 implements OrderedPostConstruct {
+
+        private final UserService userService;
+        private final PasswordEncoder passwordEncoder;
+
+        @Override
+        public void init() {
+            User user2 = User.builder()
+                    .id("user")
+                    .password(passwordEncoder.encode("user"))
+                    .email("khjung1654@gmail.com")
+                    .name("user")
+                    .phone("01012345679")
+                    .valid(true)
+                    .meta(new HashMap<>())
+                    .build();
+            user2.getMeta().put(UserMetaType.ROLE, UserRoleType.ROLE_CUSTOMER.name());
+            userService.createUser(user2);
+        }
+    }
 
     @Component
     @Order(2)

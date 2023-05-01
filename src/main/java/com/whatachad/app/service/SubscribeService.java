@@ -26,10 +26,16 @@ public class SubscribeService {
     }
 
     @Transactional
-    public boolean existFollow(String followId, String followingId){
-        log.info("신청ID: {}, 로그인아이디: {}", followId, followingId);
-        boolean b = subscribeRepository.existsFollow(followId, followingId);
-        return b;
+    public void deleteFollow(String followingId) {
+        User follower = getLoginUser();
+        Follow findFollow = subscribeRepository.findByFollow(follower.getId(), followingId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Follow"));
+        subscribeRepository.delete(findFollow);
+    }
+
+    @Transactional
+    private boolean existFollow(String followId, String followingId){
+        return subscribeRepository.existsFollow(followId, followingId);
     }
 
     private User getLoginUser() {
