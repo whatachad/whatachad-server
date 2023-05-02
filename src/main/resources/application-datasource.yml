@@ -1,0 +1,21 @@
+# default 공통 설정
+spring:
+  jpa:
+    hibernate:
+      ddl-auto: create # TODO : test 환경에서만 쓸 것
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+    generate-ddl: true
+#    show-sql: true
+--- # local 설정
+spring:
+  config:
+    activate:
+      on-profile: local, dev # TODO: test profile 추가
+  datasource:
+    url: jdbc:postgresql://localhost:5432/whatachad
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: postgres
+# TODO: dev 설정, RDS 설정 필요
