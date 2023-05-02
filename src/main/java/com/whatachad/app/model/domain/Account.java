@@ -1,9 +1,10 @@
 package com.whatachad.app.model.domain;
 
 import com.whatachad.app.model.dto.AccountDto;
+import com.whatachad.app.model.vo.BaseTime;
 import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
-import com.whatachad.app.util.EntityUtils;
+import com.whatachad.app.util.EntityUtil;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Account extends BaseTime{
+public class Account extends BaseTime {
 
     @Id @GeneratedValue
     @Column(name = "ACCOUNT_ID")
@@ -46,7 +47,7 @@ public class Account extends BaseTime{
     }
 
     public void update(AccountDto dto) {
-        EntityUtils.setValueExceptNull(this, dto);
+        EntityUtil.setValueExceptNull(this, dto);
     }
 
     public void setAccountDate(Integer year, Integer month, Integer day) {

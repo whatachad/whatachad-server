@@ -7,7 +7,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.whatachad.app.util.EntityUtils.*;
+import static com.whatachad.app.util.EntityUtil.setEntity;
 
 @Getter
 @Builder
@@ -31,10 +31,10 @@ public class DaySchedule {
     private Workcheck totalDayworkStatus;
 
     @OneToMany(mappedBy = "daySchedule")
-    private List<Daywork> dayworks;
+    private List<Account> accounts;
 
     @OneToMany(mappedBy = "daySchedule")
-    private List<Account> accounts;
+    private List<Daywork> dayworks;
 
     public static DaySchedule create(Integer day) {
         return DaySchedule.builder()
