@@ -1,6 +1,6 @@
 package com.whatachad.app.service;
 
-import com.whatachad.app.model.domain.Address;
+import com.whatachad.app.model.vo.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.dto.FacilityDto;
 import com.whatachad.app.model.request.FindFacilityDto;
