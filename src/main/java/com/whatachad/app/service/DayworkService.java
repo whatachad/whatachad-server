@@ -14,16 +14,29 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Slf4j
-
 @RequiredArgsConstructor
 @Service
 public class DayworkService {
+
+    private static final int LIMIT_COUNT = 3;
 
     private final DayworkRepository dayworkRepository;
 
     @Transactional
     public Daywork createDaywork(DayworkDto dayworkDto) {
         return dayworkRepository.save(Daywork.create(dayworkDto));
+    }
+
+    @Transactional(readOnly = true)
+    public Daywork findDayworkById(Long dayworkId) {
+        return dayworkRepository.findById(dayworkId)
+                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Daywork> findLimitDayworksByDay(Long dayScheduleId) {
+        PageRequest pageRequest = PageRequest.of(0, LIMIT_COUNT);
+        return dayworkRepository.findLimitDayworksByDayId(dayScheduleId, pageRequest);
     }
 
     @Transactional
@@ -33,25 +46,9 @@ public class DayworkService {
         findDaywork.update(dayworkDto);
     }
 
-    @Transactional(readOnly = true)
-    public Daywork findDayworkById(Long dayworkId) {
-        return dayworkRepository.findById(dayworkId)
-                .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
-    }
-
     @Transactional
     public void deleteDaywork(Long dayworkId) {
         dayworkRepository.deleteById(dayworkId);
     }
 
-    @Transactional
-    public List<Daywork> findDayworksByDayId(Long dayScheduleId) {
-        return dayworkRepository.findByDayId(dayScheduleId);
-    }
-
-    @Transactional
-    public List<Daywork> findLimitDayworksByDayId(Long dayScheduleId) {
-        PageRequest pageRequest = PageRequest.of(0, 3);
-        return dayworkRepository.findLimitDayworksByDayId(dayScheduleId, pageRequest);
-    }
 }

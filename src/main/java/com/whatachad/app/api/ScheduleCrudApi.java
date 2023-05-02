@@ -4,7 +4,10 @@ import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
-import com.whatachad.app.model.response.*;
+import com.whatachad.app.model.response.AccountResponseDto;
+import com.whatachad.app.model.response.DayworkResponseDto;
+import com.whatachad.app.model.response.DayworksResponseDto;
+import com.whatachad.app.model.response.RecentScheduleResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -14,7 +17,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -115,9 +117,8 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @GetMapping("/{YYYYMM}/recent-history")
-    ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(@PathVariable("YYYYMM") String yearAndMonth,
-                                                                       @PageableDefault(page = 0, size = 5) Pageable pageable);
+    @GetMapping("/{YYYYMM}/recent")
+    ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(@PathVariable("YYYYMM") String yearAndMonth);
 
 }
 class ScheduleRecentResponseSlice extends SliceImpl<RecentScheduleResponseDto> {
