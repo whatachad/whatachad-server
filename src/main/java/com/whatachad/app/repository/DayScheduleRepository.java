@@ -17,9 +17,7 @@ public interface DayScheduleRepository extends JpaRepository<DaySchedule, Long> 
     @Query("select d from DaySchedule d where d.day = :day and d.schedule.id = :scheduleId")
     Optional<DaySchedule> findDaySchedule(@Param(value = "day") Integer day, @Param(value = "scheduleId") Long scheduleId);
 
-    @Query("select d from DaySchedule d where d.schedule.id = :scheduleId order by d.day asc")
-    List<DaySchedule> findAllOfMonth(@Param("scheduleId") Long scheduleId);
-
-    @Query("select d from DaySchedule d where d.schedule.id = :scheduleId")
-    Slice<DaySchedule> findRecentDayOfMonth(@Param("scheduleId") Long scheduleId, Pageable pageable);
+    @Query("select d from DaySchedule d where d.schedule.id = :scheduleId and d.day <= :today order by d.day desc")
+    Slice<DaySchedule> findRecentDaySchedules(@Param("scheduleId") Long scheduleId,
+                                              @Param("today") int today, Pageable pageable);
 }
