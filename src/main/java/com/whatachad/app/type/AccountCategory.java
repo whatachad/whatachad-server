@@ -13,7 +13,7 @@ public enum AccountCategory {
     ALLOWANCE("용돈", AccountType.INCOME),
 
     FOOD("식비", AccountType.SPEND),
-    UTILITIES("거주비", AccountType.SPEND),
+    RESIDENCE("거주비", AccountType.SPEND),
     INSURANCE("보험", AccountType.SPEND);
 
     private final String label;
