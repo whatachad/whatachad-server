@@ -16,5 +16,5 @@ public class DayworkResponseDto {
     private String title;
     private DayworkPriority priority;
     private Workcheck status;
-    private LocalDate date;
+    private LocalDate dayworkDate;
 }
