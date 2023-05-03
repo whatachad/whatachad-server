@@ -173,4 +173,9 @@ public class UserService {
         }
         return executeUser.getId().equals(originUser.getId());
     }
+
+    public List<User> getFollowingUser(){
+        String loginUserId = getLoginUserId();
+        return userRepository.findFollowingUser(loginUserId);
+    }
 }

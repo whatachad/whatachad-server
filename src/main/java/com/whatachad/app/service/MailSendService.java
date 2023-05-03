@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class MailSendService {
 
-    @Value("whatachad.site") // TODO : 추후에 profile 분리하고 application.yml에서 변수 관리
+    @Value("localhost") // TODO : 추후에 profile 분리하고 application.yml에서 변수 관리
     private String ip;
     @Value("${server.port:8080}")
     private int port;
