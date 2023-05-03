@@ -48,6 +48,17 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+//// profile 값이 없을 경우 dev 설정
+//ext.profile = (!project.hasProperty('profile') || !profile) ? 'dev' : profile
+//
+//sourceSets {
+//    main {
+//        resources {
+//            srcDirs "src/main/resources"
+//        }
+//    }
+//}
+
 jar {
     enabled = false // plain jar 파일 빌드 x
 }

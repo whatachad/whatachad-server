@@ -1,8 +1,10 @@
 package com.whatachad.app.model.domain;
 
 import com.whatachad.app.model.dto.FacilityDto;
+import com.whatachad.app.model.vo.Address;
+import com.whatachad.app.model.vo.BaseTime;
 import com.whatachad.app.type.FacilityType;
-import com.whatachad.app.util.EntityUtils;
+import com.whatachad.app.util.EntityUtil;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -42,6 +44,6 @@ public class Facility extends BaseTime {
     }
 
     public void update(FacilityDto facilityDto) {
-        EntityUtils.setValueExceptNull(this, facilityDto);
+        EntityUtil.setValueExceptNull(this, facilityDto);
     }
 }

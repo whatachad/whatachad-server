@@ -13,11 +13,16 @@ import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
-import com.whatachad.app.model.response.*;
-import com.whatachad.app.service.*;
+import com.whatachad.app.model.response.AccountResponseDto;
+import com.whatachad.app.model.response.DayworkResponseDto;
+import com.whatachad.app.model.response.DayworksResponseDto;
+import com.whatachad.app.model.response.RecentScheduleResponseDto;
+import com.whatachad.app.model.vo.AccountDayworkByDay;
+import com.whatachad.app.service.AccountService;
+import com.whatachad.app.service.DayworkService;
+import com.whatachad.app.service.ScheduleService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -99,11 +104,11 @@ public class ScheduleCrudController implements ScheduleCrudApi {
     }
 
     @Override
-    public ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(String yearAndMonth, Pageable pageable) {
+    public ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(String yearAndMonth) {
         ScheduleDto scheduleDto = scheduleConverter.toScheduleDto(yearAndMonth);
-        Slice<List<List<Object>>> allOnSchedule = scheduleService.findAllOnSchedule(pageable, scheduleDto);
-        Slice<RecentScheduleResponseDto> scheduleRecentResposneDto = scheduleConverter.toRecentScheduleResponseDto(allOnSchedule);
-        return ResponseEntity.ok(scheduleRecentResposneDto);
+        Slice<AccountDayworkByDay> allOnSchedule = scheduleService.findAllOnSchedule(scheduleDto);
+        Slice<RecentScheduleResponseDto> scheduleRecentResponseDto = scheduleConverter.toRecentScheduleResponseDto(allOnSchedule);
+        return ResponseEntity.ok(scheduleRecentResponseDto);
     }
 
 }

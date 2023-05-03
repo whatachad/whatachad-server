@@ -1,0 +1,17 @@
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+server:
+  address: localhost
+  port: 3000
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+server:
+  address: whatachad.site
+  port: 3001
+

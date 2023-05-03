@@ -2,7 +2,7 @@ package com.whatachad.app.model.mapper;
 
 import com.whatachad.app.common.BError;
 import com.whatachad.app.common.CommonException;
-import com.whatachad.app.model.domain.Address;
+import com.whatachad.app.model.vo.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.dto.FacilityDto;

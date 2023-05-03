@@ -1,4 +1,4 @@
-package com.whatachad.app.model.domain;
+package com.whatachad.app.model.vo;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

@@ -1,7 +1,7 @@
 package com.whatachad.app.model.mapper;
 
-import com.whatachad.app.model.domain.Account;
 import com.whatachad.app.model.domain.Daywork;
+import com.whatachad.app.model.vo.AccountDayworkByDay;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.response.DayworksResponseDto;
 import com.whatachad.app.model.response.RecentScheduleResponseDto;
@@ -39,24 +39,23 @@ public class ScheduleConverter {
         return dayworksDto;
     }
 
-    public Slice<RecentScheduleResponseDto> toRecentScheduleResponseDto(Slice<List<List<Object>>> allOnSchedule) {
+    public Slice<RecentScheduleResponseDto> toRecentScheduleResponseDto(Slice<AccountDayworkByDay> allOnSchedule) {
         return allOnSchedule.map(day -> {
-            RecentScheduleResponseDto scheduleRecentDto = new RecentScheduleResponseDto();
-            scheduleRecentDto.setAccounts(
-                    day.get(0).stream()
-                            .map(object -> (Account) object)
+            RecentScheduleResponseDto recentScheduleResponseDto = new RecentScheduleResponseDto();
+            recentScheduleResponseDto.setAccounts(
+                    day.getAccounts().stream()
                             .map(accountConverter::toAccountResponseDto).toList()
             );
 
-            scheduleRecentDto.setDayworks(
-                    day.get(1).stream()
-                            .map(object -> (Daywork) object)
+            recentScheduleResponseDto.setDayworks(
+                    day.getDayworks().stream()
                             .map(dayworkConverter::toDayworkResponseDto).toList()
             );
 
-            scheduleRecentDto.setDate(scheduleRecentDto.getAccounts().isEmpty()?
-                    scheduleRecentDto.getDayworks().get(0).getDate() : scheduleRecentDto.getAccounts().get(0).getAccountDate());
-            return scheduleRecentDto;
+            recentScheduleResponseDto.setDate(day.getDate());
+            return recentScheduleResponseDto;
         });
     }
+
+
 }

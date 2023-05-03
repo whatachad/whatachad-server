@@ -1,25 +1,43 @@
 package com.whatachad.app.init;
 
-import com.whatachad.app.model.domain.Address;
+import com.whatachad.app.model.vo.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.domain.User;
+import com.whatachad.app.model.dto.AccountDto;
+import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.FacilityDto;
+import com.whatachad.app.model.dto.ScheduleDto;
+import com.whatachad.app.model.request.UserLoginRequestDto;
+import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.repository.FacilityRepository;
 import com.whatachad.app.security.AuthConstant;
+import com.whatachad.app.service.ScheduleService;
+import com.whatachad.app.service.TokenService;
 import com.whatachad.app.service.UserService;
-import com.whatachad.app.type.FacilityType;
-import com.whatachad.app.type.UserMetaType;
-import com.whatachad.app.type.UserRoleType;
+import com.whatachad.app.type.*;
+import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+import java.time.Month;
+import java.time.Year;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
+
+import static com.whatachad.app.type.AccountCategory.*;
+import static com.whatachad.app.type.DayworkPriority.*;
 
 @Component
 @RequiredArgsConstructor
@@ -61,6 +79,7 @@ public class TestInit {
     static class UserInit implements OrderedPostConstruct {
 
         private final UserService userService;
+        private final TokenService tokenService;
         private final PasswordEncoder passwordEncoder;
 
         @Override
@@ -75,6 +94,23 @@ public class TestInit {
                     .build();
             user.getMeta().put(UserMetaType.ROLE, UserRoleType.ROLE_ADMIN.name());
             userService.createUser(user);
+            authorize();
+        }
+
+        private void authorize() {
+            UserLoginRequestDto loginDto = UserLoginRequestDto.builder()
+                    .id("admin")
+                    .password("admin")
+                    .build();
+            UserTokenResponseDto token = UserTokenResponseDto.builder()
+                    .accessToken(tokenService.genAccessToken(loginDto.getId()))
+                    .refreshToken(tokenService.genRefreshToken(loginDto.getId()))
+                    .build();
+            Claims claims = tokenService.validateToken(token.getAccessToken());
+            List<String> authorities = (List) claims.get("authorities");
+            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(claims.getSubject(), null,
+                    authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
+            SecurityContextHolder.getContext().setAuthentication(auth);
         }
     }
 
@@ -106,4 +142,57 @@ public class TestInit {
                     });
         }
     }
+
+    @Component
+    @Order(3)
+    @RequiredArgsConstructor
+    static class ScheduleInit implements OrderedPostConstruct {
+
+        private static final int YEAR = LocalDate.now().getYear();
+        private static final int MONTH = LocalDate.now().getMonthValue();
+        private static final AccountCategory[] CATEGORIES = {SALARY, INTEREST, ALLOWANCE, FOOD, RESIDENCE, INSURANCE};
+        private static final DayworkPriority[] PRIORITIES = {FIRST, SECOND, THIRD};
+        private static final int BUDGET = 500000;
+
+        private final ScheduleService scheduleService;
+
+        @Override
+        public void init() {
+            Random rand = new Random();
+            // account 테스트 데이터 50개
+            IntStream.rangeClosed(1, 50)
+                    .forEach(tryCount -> {
+                        int day = 1 + rand.nextInt(30); // 1 ~ 30일 중 하나
+                        AccountCategory accountCategory = CATEGORIES[rand.nextInt(CATEGORIES.length)];
+                        AccountDto accountDto = AccountDto.builder()
+                                .title("ACCOUNT-" + tryCount)
+                                .category(accountCategory)
+                                .type(accountCategory.getType())
+                                .cost(10000 + rand.nextInt(901) * 100) // 10,000 ~ 100,000 원
+                                .build();
+                        ScheduleDto scheduleDto = ScheduleDto.builder()
+                                .year(YEAR)
+                                .month(MONTH)
+                                .budget(BUDGET)
+                                .build();
+                        scheduleService.createAccountOnSchedule(day, accountDto, scheduleDto);
+                    });
+
+            // daywork 테스트 데이터 50개
+            IntStream.rangeClosed(1, 50)
+                    .forEach(tryCount -> {
+                        int day = 1 + rand.nextInt(30); // 1 ~ 30일 중 하나
+                        DayworkDto dayworkDto = DayworkDto.builder()
+                                .title("DAYWORK-" + tryCount)
+                                .priority(PRIORITIES[rand.nextInt(PRIORITIES.length)])
+                                .build();
+                        ScheduleDto scheduleDto = ScheduleDto.builder()
+                                .year(YEAR)
+                                .month(MONTH)
+                                .build();
+                        scheduleService.createDayworkOnSchedule(day, dayworkDto, scheduleDto);
+                    });
+        }
+    }
+
 }

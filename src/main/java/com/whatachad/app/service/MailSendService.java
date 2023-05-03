@@ -3,7 +3,7 @@ package com.whatachad.app.service;
 import java.io.UnsupportedEncodingException;
 
 
-import com.whatachad.app.util.MailUtils;
+import com.whatachad.app.util.MailUtil;
 import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -18,9 +18,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class MailSendService {
 
-    @Value("whatachad.site") // TODO : 추후에 profile 분리하고 application.yml에서 변수 관리
-    private String ip;
-    @Value("${server.port:8080}")
+    @Value("${server.address}") // TODO : 추후에 profile 분리하고 application.yml에서 변수 관리
+    private String address;
+    @Value("${server.port}")
     private int port;
 
     private final JavaMailSender mailSender;
@@ -32,11 +32,11 @@ public class MailSendService {
         String authKey = tokenService.genSignUpAuthToken(email);
         //인증메일 보내기
         try {
-            MailUtils sendMail = new MailUtils(mailSender);
+            MailUtil sendMail = new MailUtil(mailSender);
             sendMail.setSubject("회원가입 이메일 인증");
             sendMail.setText(new StringBuffer().append("<h1>[이메일 인증]</h1>")
                     .append("<p>아래 링크를 클릭하시면 이메일 인증이 완료됩니다.</p>")
-                    .append("<a href='http://" + ip + ":" + port + "/v1/signUpConfirm?email=")
+                    .append("<a href='http://" + address + ":" + port + "/v1/signUpConfirm?email=")
                     .append(email)
                     .append("&authKey=")
                     .append(authKey)

@@ -5,6 +5,8 @@ import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.repository.AccountRepository;
 import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
+import com.whatachad.app.util.TestDataProcessor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,6 +22,8 @@ public class AccountServiceTest {
     private AccountService accountService;
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private TestDataProcessor processor;
 
     private Account accountEx;
 
@@ -32,6 +36,11 @@ public class AccountServiceTest {
                 .category(AccountCategory.FOOD)
                 .build();
         accountEx = accountRepository.save(account);
+    }
+
+    @AfterEach
+    void rollback() {
+        processor.rollback();
     }
 
     @Test
