@@ -16,7 +16,7 @@ spring:
   jpa:
     hibernate:
       ddl-auto: create # test 환경에서만 쓸 것
-#    show-sql: true
+    show-sql: true
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
     open-in-view: false

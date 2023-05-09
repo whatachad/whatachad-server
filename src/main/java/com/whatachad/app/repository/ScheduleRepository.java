@@ -20,10 +20,9 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Long> {
     @Query("select s from Schedule s" +
             " join fetch s.daySchedules d" +
             " join fetch s.user u" +
-            " where s.user.id in (select m.id from User m, Follow f1 where m.id in" +
-            " (select f2.followingId from Follow f2 where f2.follower.id = :loginId))" +
-            " and s.year = :year and s.month = :month")
-    List<Schedule> findFollowingSchedule(@Param("year") Integer year,
-                                         @Param("month") Integer month,
-                                         @Param("loginId") String loginId);
+            " where s.year = :year and s.month = :month and d.day = :day and s.user.id in :followingsIds")
+    List<Schedule> findFollowingTodaySchedule(@Param("year")int year,
+                                              @Param("month")int monthValue,
+                                              @Param("day")int day,
+                                              @Param("followingsIds") List<String> followingsIds);
 }

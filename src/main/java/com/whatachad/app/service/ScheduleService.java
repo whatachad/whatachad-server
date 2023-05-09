@@ -65,10 +65,9 @@ public class ScheduleService {
     }
 
     @Transactional(readOnly = true)
-    public List<Schedule> findFollowingSchedule(){
-        User loginUser = getLoginUser();
+    public List<Schedule> findFollowingTodaySchedule(List<String> followingsIds) {
         LocalDateTime now = LocalDateTime.now();
-        return scheduleRepository.findFollowingSchedule(now.getYear(), now.getMonthValue(), loginUser.getId());
+        return scheduleRepository.findFollowingTodaySchedule(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), followingsIds);
     }
 
     /**

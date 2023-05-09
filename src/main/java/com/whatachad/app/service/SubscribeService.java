@@ -12,10 +12,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -41,37 +40,19 @@ public class SubscribeService {
         subscribeRepository.delete(findFollow);
     }
 
-    @Transactional
-    public List<User> getFollowoings() {
+    @Transactional(readOnly = true)
+    public List<User> getFollowingUsers() {
         return userService.getFollowingUser();
     }
 
+
     @Transactional
-    public Map<User, DaySchedule> getTodayStatusOfFollowings() {
-        LocalDate today = LocalDate.now();
-
-        // 오늘에 대한 DaySchedule이 있는 Schedule만 남김
-        List<Schedule> followingSchedule = scheduleService.findFollowingSchedule();
-        List<Schedule> todayFollowingSchedule =
-                followingSchedule.stream()
-                .filter(schedule ->
-                        schedule.getDaySchedules()
-                                .stream()
-                                .filter(daySchedule ->
-                                        daySchedule.getDay().equals(today.getDayOfWeek().getValue()))
-                                .findFirst().isPresent()
-                )
-                .toList();
-
-        Map<User, DaySchedule> todayUsersDaySchedule = new HashMap<>();
-        todayFollowingSchedule.stream()
-                .forEach(schedule ->
-                        todayUsersDaySchedule.put(
-                                schedule.getUser(),
-                                schedule.getDaySchedules().get(0)
-                        )
-                );
-        return todayUsersDaySchedule;
+    public Map<String, DaySchedule> getFollowingsAndTodayStatus(List<String> followingsIds) {
+        List<Schedule> followingsTodaySchedules = scheduleService.findFollowingTodaySchedule(followingsIds);
+        return followingsTodaySchedules.stream()
+                .collect(Collectors.toMap(
+                        schedule -> schedule.getUser().getId(),
+                        schedule -> schedule.getDaySchedules().get(0)));
     }
 
     /**

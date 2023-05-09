@@ -23,7 +23,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     void deleteByEmail(String email);
 
-    @Query("select m from User m, Follow f1 where m.id in " +
+    @Query("select distinct m from User m, Follow f1 where m.id in " +
             "(select f2.followingId from Follow f2 where f2.follower.id = :loginId)")
     List<User> findFollowingUser(@Param("loginId") String loginId);
 }

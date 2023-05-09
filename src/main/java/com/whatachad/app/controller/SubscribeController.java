@@ -4,6 +4,7 @@ import com.whatachad.app.api.SubscribeApi;
 import com.whatachad.app.model.domain.DaySchedule;
 import com.whatachad.app.model.domain.Follow;
 import com.whatachad.app.model.domain.User;
+import com.whatachad.app.model.mapper.SubscribeConverter;
 import com.whatachad.app.model.response.FollowingsResponseDto;
 import com.whatachad.app.service.SubscribeService;
 import lombok.RequiredArgsConstructor;
@@ -12,7 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +23,7 @@ import java.util.Map;
 public class SubscribeController implements SubscribeApi {
 
     private final SubscribeService subscribeService;
+    private final SubscribeConverter subscribeConverter;
 
     @Override
     public ResponseEntity<String> follow(String followingId) {
@@ -38,16 +39,15 @@ public class SubscribeController implements SubscribeApi {
 
     @Override
     public ResponseEntity<List<FollowingsResponseDto>> getFollowings() {
-        List<User> followings = subscribeService.getFollowoings();
-        Map<User, DaySchedule> todayStatusOfFollowings = subscribeService.getTodayStatusOfFollowings();
-        int day = LocalDate.now().getDayOfWeek().getValue();
-
-        List<FollowingsResponseDto> followingsResponseDtos = followings.stream().map(following ->
-                new FollowingsResponseDto(following.getId(),
-                        following.getName(),
-                        todayStatusOfFollowings.getOrDefault(following, DaySchedule.create(day)).getTotalDayworkStatus())
-        ).toList();
-
+        List<User> followings = subscribeService.getFollowingUsers();
+        Map<String, DaySchedule> followingsAndTodayStatus = subscribeService.getFollowingsAndTodayStatus(toFollowingIds(followings));
+        List<FollowingsResponseDto> followingsResponseDtos = subscribeConverter.toFollowingsResponseDtos(followings, followingsAndTodayStatus);
         return ResponseEntity.ok(followingsResponseDtos);
+    }
+
+    private List<String> toFollowingIds(List<User> followings) {
+        return followings.stream()
+                .map(user -> user.getId())
+                .toList();
     }
 }
