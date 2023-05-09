@@ -14,9 +14,8 @@ import com.whatachad.app.type.DayworkPriority;
 import com.whatachad.app.type.UserMetaType;
 import com.whatachad.app.type.UserRoleType;
 import io.jsonwebtoken.Claims;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +26,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -35,15 +33,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class SubScribeControllerTest {
     private static final int YEAR = LocalDateTime.now().getYear();
     private static final int MONTH = LocalDateTime.now().getMonthValue();
-    private static final int DAY = LocalDate.now().getDayOfWeek().getValue();
+    private static final int DAY = LocalDate.now().getDayOfMonth();
     private final ObjectMapper mapper = new ObjectMapper();
     private String accessToken;
 
@@ -60,38 +60,67 @@ public class SubScribeControllerTest {
     @Autowired
     ScheduleService scheduleService;
 
-
-    @BeforeEach
+    @BeforeAll
     void initSchedule() {
         // 유저 생성
         User userA = createUserA();
-        User userB = createUserB();
 
-        // Daywork 생성
+        // UserA의 Daywork 생성
         loginUserA();
         DayworkDto dayworkDto = DayworkDto.builder().title("밥먹기").priority(DayworkPriority.FIRST).build();
         ScheduleDto scheduleDto = ScheduleDto.builder().year(YEAR).month(MONTH).build();
         scheduleService.createDayworkOnSchedule(DAY, dayworkDto, scheduleDto);
-
-        loginUserB();
-        scheduleService.createDayworkOnSchedule(DAY, dayworkDto, scheduleDto);
+        scheduleService.createDayworkOnSchedule(DAY + 1, dayworkDto, scheduleDto);
+        scheduleService.createDayworkOnSchedule(DAY + 2, dayworkDto, scheduleDto);
 
         // 팔로우 관계 만들기
         loginAdmin();
         subscribeService.createFollow("userA");
-        subscribeService.createFollow("userB");
+    }
+
+    @BeforeEach
+    void init() {
+        loginAdmin();
     }
 
     @Test
-    @DisplayName("팔로우된 유저들의 리스트와 각각의 오늘 할 일 완료 여부를 확인한다. /v1/subscribe/followings")
-    void getFollowings() throws Exception {
+    @Order(1)
+    @DisplayName("로그인 유저가 다른 유저를 follow 한다." +
+            "POST /v1/subscribe/follow/{followingId}")
+    void follow() throws Exception {
+        User userB = createUserB();
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/subscribe/follow/" + userB.getId())
+                .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(content().string("SUCCESS"))
+                .andDo(print());
+    }
+
+    @Test
+    @Order(2)
+    @DisplayName("기존에 follow한 유저를 unfollow 한다." +
+            "DELETE /v1/subscribe/unfollow/{followingId}")
+    void unfollow() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.delete("/v1/subscribe/unfollow/" + "userB")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(content().string("SUCCESS"))
+                .andDo(print());
+    }
+
+    @Test
+    @Order(3)
+    @DisplayName("로그인 유저가 팔로우한 유저 목록과 함께 각 유저가 오늘 할 일을 완료했는지의 여부를 확인한다. " +
+            "GET /v1/subscribe/followings")
+    void getFollowingUsersAndTodayDayScheduleComplete() throws Exception {
         String expectByUserId = "$.[?(@.id == '%s')]";
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/subscribe/followings")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(expectByUserId, "userA").exists())
-                .andExpect(jsonPath(expectByUserId, "userB").exists());
+                .andExpect(jsonPath("$.[?(@.id == 'userA')].todayDayworkStatus").value("NOT_COMPLETE"))
+                .andDo(print());
     }
 
     /**

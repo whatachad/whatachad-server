@@ -1,5 +1,6 @@
 package com.whatachad.app.service;
 
+import com.whatachad.app.model.domain.DaySchedule;
 import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
@@ -22,13 +23,17 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @SpringBootTest
 public class SubscribeServiceTest {
     private static final int YEAR = LocalDateTime.now().getYear();
     private static final int MONTH = LocalDateTime.now().getMonthValue();
-    private static final int DAY = LocalDate.now().getDayOfWeek().getValue();
+    private static final int DAY = LocalDate.now().getDayOfMonth();
 
     @Autowired
     private TokenService tokenService;
@@ -44,25 +49,30 @@ public class SubscribeServiceTest {
     @Autowired
     private TestDataProcessor processor;
 
-    @BeforeEach
+    @BeforeAll
     void initSchedule() {
         // 유저 생성
         User userA = createUserA();
         User userB = createUserB();
 
-        // Daywork 생성
+        // userA의 Daywork 생성
         loginUserA();
         DayworkDto dayworkDto = DayworkDto.builder().title("밥먹기").priority(DayworkPriority.FIRST).build();
         ScheduleDto scheduleDto = ScheduleDto.builder().year(YEAR).month(MONTH).build();
         scheduleService.createDayworkOnSchedule(DAY, dayworkDto, scheduleDto);
+        scheduleService.createDayworkOnSchedule(DAY + 1, dayworkDto, scheduleDto);
+        scheduleService.createDayworkOnSchedule(DAY + 2, dayworkDto, scheduleDto);
 
-        loginUserB();
-        scheduleService.createDayworkOnSchedule(DAY, dayworkDto, scheduleDto);
 
         // 팔로우 관계 만들기
         loginAdmin();
         subscribeService.createFollow("userA");
         subscribeService.createFollow("userB");
+    }
+
+    @BeforeEach
+    void init() {
+        loginAdmin();
     }
 
     @AfterEach
@@ -71,16 +81,24 @@ public class SubscribeServiceTest {
     }
 
     @Test
-    @DisplayName("로그인된 유저의 following목록을 가져온다.")
-    public void followingList가져오기() {
+    @DisplayName("로그인된 유저가 following한 유저 목록을 가져온다.")
+    public void getFollowingUsers() {
         List<User> followingUser = userService.getFollowingUser();
-        followingUser.forEach(i -> System.out.println(i.getId()));
-        Assertions.assertEquals(followingUser.size(), 2);
+        assertThat(followingUser)
+                .hasSize(2)
+                .extracting(User::getId)
+                .containsExactlyInAnyOrder("userA", "userB");
     }
 
     @Test
-    @DisplayName("팔로우 유저의 Schedule 가져오기")
-    public void ScheduleGet() {
+    @DisplayName("로그인된 유저가 following한 유저가 오늘 날짜의 DaySchedule을 생성했다면 조회한다.")
+    public void getFollowingUsersTodayDaySchedule() {
+        List<User> followingUser = userService.getFollowingUser();
+        List<String> followingsId = followingUser.stream().map(following -> following.getId()).toList();
+        Map<String, DaySchedule> followingsAndTodayStatus = subscribeService.getFollowingsAndTodayStatus(followingsId);
+        assertThat(followingsAndTodayStatus).hasSize(1);
+        assertThat(followingsAndTodayStatus.keySet()).contains("userA");
+        assertThat(followingsAndTodayStatus.get("userA").getDay()).isEqualTo(DAY);
     }
 
     /**
