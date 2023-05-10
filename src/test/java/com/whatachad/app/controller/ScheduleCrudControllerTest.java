@@ -1,12 +1,16 @@
 package com.whatachad.app.controller;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.whatachad.app.model.domain.Account;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.CreateAccountRequestDto;
 import com.whatachad.app.model.request.UpdateAccountRequestDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
+import com.whatachad.app.model.response.DayworksResponseDto;
+import com.whatachad.app.model.response.RecentScheduleResponseDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.service.ScheduleService;
 import com.whatachad.app.service.TokenService;
@@ -26,12 +30,15 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -52,7 +59,7 @@ public class ScheduleCrudControllerTest {
     @Autowired
     private TestDataProcessor processor;
 
-    private final ObjectMapper mapper = new ObjectMapper();
+    private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
     private String accessToken;
     private Account account;
 
@@ -129,6 +136,57 @@ public class ScheduleCrudControllerTest {
                 .andExpect(jsonPath("$.category").value("식비"));
     }
 
+    @Test
+    @DisplayName("캘린더 조회 시 일별로 최대 3개의 Daywork가 조회된다. GET /v1/schedule/{YYYYMM}")
+    void retrieve_calendar() throws Exception {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/v1/schedule/{YYYYMM}",
+                                String.format("%d%02d", YEAR, MONTH))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andReturn();
+        String json = result.getResponse().getContentAsString();
+        List<DayworksResponseDto> response = mapper.readValue(json, new TypeReference<>(){});
+
+        assertThat(response).isSortedAccordingTo((o1, o2) -> {
+            if (o1.getDate().isBefore(o2.getDate())) return -1;
+            if (o1.getDate().isAfter(o2.getDate())) return 1;
+            return 0;
+        });
+        response.forEach(res -> {
+            assertThat(res.getDayworks().size()).isLessThanOrEqualTo(3);
+            assertThat(res.getDayworks()).isSortedAccordingTo(Comparator.comparingInt(o -> o.getPriority().getValue()));
+        });
+
+    }
+
+    @Test
+    @DisplayName("최근 내역 조회 시 조회일을 기준으로 최근 5일의 Account와 Daywork를 조회한다." +
+            "GET /v1/schedule/{YYYYMM}/recent/0")
+    void retrieve_recent_accounts_and_dayworks() throws Exception {
+        MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/v1/schedule/{YYYYMM}/recent",
+                                String.format("%d%02d", YEAR, MONTH))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String json = result.getResponse().getContentAsString();
+        String content = mapper.readTree(json).get("content").toString();
+        List<RecentScheduleResponseDto> response = mapper.readValue(content, new TypeReference<>(){});
+
+        assertThat(response.size()).isLessThanOrEqualTo(5);
+        assertThat(response).isSortedAccordingTo((o1, o2) -> {
+            if (o1.getDate().isBefore(o2.getDate())) return 1;
+            if (o1.getDate().isAfter(o2.getDate())) return -1;
+            return 0;
+        });
+        response.forEach(res -> {
+            assertThat(res.getAccounts()).isSortedAccordingTo(Comparator.comparingInt(o -> o.getType().getValue()));
+            assertThat(res.getDayworks()).isSortedAccordingTo(Comparator.comparingInt(o -> o.getPriority().getValue()));
+        });
+    }
+
     private void authorize() {
         UserLoginRequestDto loginDto = UserLoginRequestDto.builder()
                 .id("admin")
@@ -145,4 +203,5 @@ public class ScheduleCrudControllerTest {
                 authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()));
         SecurityContextHolder.getContext().setAuthentication(auth);
     }
+
 }

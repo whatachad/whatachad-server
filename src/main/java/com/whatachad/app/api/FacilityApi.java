@@ -101,10 +101,11 @@ public interface FacilityApi {
     @DeleteMapping("/{facilityId}")
     void deleteFacility(@PathVariable Long facilityId);
 
-}
-
-class FacilityResponseSlice extends SliceImpl<FacilityResponseDto> {
-    public FacilityResponseSlice(List<FacilityResponseDto> content, Pageable pageable, boolean hasNext) {
-        super(content, pageable, hasNext);
+    class FacilityResponseSlice extends SliceImpl<FacilityResponseDto> {
+        public FacilityResponseSlice(List<FacilityResponseDto> content, Pageable pageable, boolean hasNext) {
+            super(content, pageable, hasNext);
+        }
     }
 }
+
+
