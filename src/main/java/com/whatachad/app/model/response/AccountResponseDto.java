@@ -1,16 +1,14 @@
 package com.whatachad.app.model.response;
 
 import com.whatachad.app.type.AccountType;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @Setter
 @Getter
 @Builder
+@NoArgsConstructor
 @AllArgsConstructor
 public class AccountResponseDto {
     private Long id;
