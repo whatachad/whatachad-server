@@ -18,6 +18,7 @@ import com.whatachad.app.model.response.DayworkResponseDto;
 import com.whatachad.app.model.response.DayworksResponseDto;
 import com.whatachad.app.model.response.RecentScheduleResponseDto;
 import com.whatachad.app.model.vo.AccountDayworkByDay;
+import com.whatachad.app.model.vo.DayworkByDay;
 import com.whatachad.app.service.AccountService;
 import com.whatachad.app.service.DayworkService;
 import com.whatachad.app.service.ScheduleService;
@@ -45,7 +46,7 @@ public class ScheduleCrudController implements ScheduleCrudApi {
 
     /**
      * Daywork 관련
-     * */
+     */
     @Override
     public ResponseEntity<DayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String yearAndMonth, Integer date) {
         ScheduleDto scheduleDto = scheduleConverter.toScheduleDto(yearAndMonth);
@@ -94,19 +95,19 @@ public class ScheduleCrudController implements ScheduleCrudApi {
 
     /**
      * Schedule 관련
-     * */
+     */
     @Override
     public ResponseEntity<List<DayworksResponseDto>> getSchedule(String yearAndMonth) {
         ScheduleDto scheduleDto = scheduleConverter.toScheduleDto(yearAndMonth);
-        List<List<Daywork>> dayworksOnSchedule = scheduleService.findDayworksOnSchedule(scheduleDto);
+        List<DayworkByDay> dayworksOnSchedule = scheduleService.findDayworksOnSchedule(scheduleDto);
         List<DayworksResponseDto> dayworksDto = scheduleConverter.toDayworksResponseDto(dayworksOnSchedule);
         return ResponseEntity.ok().body(dayworksDto);
     }
 
     @Override
-    public ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(String yearAndMonth) {
+    public ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(String yearAndMonth, Integer page) {
         ScheduleDto scheduleDto = scheduleConverter.toScheduleDto(yearAndMonth);
-        Slice<AccountDayworkByDay> allOnSchedule = scheduleService.findAllOnSchedule(scheduleDto);
+        Slice<AccountDayworkByDay> allOnSchedule = scheduleService.findAllOnSchedule(scheduleDto, page);
         Slice<RecentScheduleResponseDto> scheduleRecentResponseDto = scheduleConverter.toRecentScheduleResponseDto(allOnSchedule);
         return ResponseEntity.ok(scheduleRecentResponseDto);
     }

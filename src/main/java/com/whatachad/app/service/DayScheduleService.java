@@ -43,12 +43,6 @@ public class DayScheduleService {
         return daySchedule;
     }
 
-    @Transactional
-    public List<Daywork> findDayworksOnDay(Integer day, Long scheduleId){
-        DaySchedule daySchedule = callDaySchedule(day, scheduleId);
-        return dayworkService.findLimitDayworksByDay(daySchedule.getId());
-    }
-
     @Transactional(readOnly = true)
     public Slice<DaySchedule> findRecentDaySchedules(Long scheduleId, Pageable pageable) {
         int today = LocalDate.now().getDayOfMonth();

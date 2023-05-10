@@ -3,6 +3,8 @@ package com.whatachad.app.model.domain;
 import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +33,11 @@ public class DaySchedule {
     private Workcheck totalDayworkStatus;
 
     @OneToMany(mappedBy = "daySchedule")
+    @Fetch(FetchMode.SUBSELECT)
     private List<Account> accounts;
 
     @OneToMany(mappedBy = "daySchedule")
+    @Fetch(FetchMode.SUBSELECT)
     private List<Daywork> dayworks;
 
     public static DaySchedule create(Integer day) {
