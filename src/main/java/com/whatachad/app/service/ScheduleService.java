@@ -15,6 +15,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -61,6 +62,12 @@ public class ScheduleService {
                 new AccountDayworkByDay(LocalDate.of(schedule.getYear(), schedule.getMonth(), daySchedule.getDay()),
                         daySchedule.getAccounts(), daySchedule.getDayworks())
         );
+    }
+
+    @Transactional(readOnly = true)
+    public List<Schedule> findFollowingTodaySchedule(List<String> followingsIds) {
+        LocalDate now = LocalDate.now();
+        return scheduleRepository.findFollowingTodaySchedule(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), followingsIds);
     }
 
     /**

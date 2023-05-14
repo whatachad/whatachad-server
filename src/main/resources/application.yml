@@ -9,7 +9,7 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
-
+--- # local 설정
 springdoc:
   swagger-ui:
     path: /index.html
