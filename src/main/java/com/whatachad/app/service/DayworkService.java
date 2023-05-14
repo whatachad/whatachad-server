@@ -7,18 +7,13 @@ import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.repository.DayworkRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
 @Service
 public class DayworkService {
-
-    private static final int LIMIT_COUNT = 3;
 
     private final DayworkRepository dayworkRepository;
 
@@ -31,12 +26,6 @@ public class DayworkService {
     public Daywork findDayworkById(Long dayworkId) {
         return dayworkRepository.findById(dayworkId)
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "Daywork"));
-    }
-
-    @Transactional(readOnly = true)
-    public List<Daywork> findLimitDayworksByDay(Long dayScheduleId) {
-        PageRequest pageRequest = PageRequest.of(0, LIMIT_COUNT);
-        return dayworkRepository.findLimitDayworksByDayId(dayScheduleId, pageRequest);
     }
 
     @Transactional

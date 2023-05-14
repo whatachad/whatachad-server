@@ -117,12 +117,14 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "400", description = "Bad Request"),
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
-    @GetMapping("/{YYYYMM}/recent")
-    ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(@PathVariable("YYYYMM") String yearAndMonth);
+    @GetMapping({"/{YYYYMM}/recent/{page}", "/{YYYYMM}/recent"})
+    ResponseEntity<Slice<RecentScheduleResponseDto>> getRecentSchedule(@PathVariable("YYYYMM") String yearAndMonth,
+                                                                       @PathVariable(required = false) Integer page);
 
-}
-class ScheduleRecentResponseSlice extends SliceImpl<RecentScheduleResponseDto> {
-    public ScheduleRecentResponseSlice(List<RecentScheduleResponseDto> content, Pageable pageable, boolean hasNext) {
-        super(content, pageable, hasNext);
+    class ScheduleRecentResponseSlice extends SliceImpl<RecentScheduleResponseDto> {
+        public ScheduleRecentResponseSlice(List<RecentScheduleResponseDto> content, Pageable pageable, boolean hasNext) {
+            super(content, pageable, hasNext);
+        }
     }
 }
+

@@ -7,6 +7,7 @@ import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.vo.AccountDayworkByDay;
+import com.whatachad.app.model.vo.DayworkByDay;
 import com.whatachad.app.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Slf4j
@@ -26,7 +27,7 @@ import java.util.Optional;
 @Service
 public class ScheduleService {
 
-    private static final int RECENT_DAYS_UNIT = 5;
+    private static final int DAYS_UNIT = 5;
 
     private final ScheduleRepository scheduleRepository;
     private final UserService userService;
@@ -43,20 +44,20 @@ public class ScheduleService {
     }
 
     @Transactional
-    public List<List<Daywork>> findDayworksOnSchedule(ScheduleDto scheduleDto) {
+    public List<DayworkByDay> findDayworksOnSchedule(ScheduleDto scheduleDto) {
         Schedule schedule = callSchedule(scheduleDto);
         List<DaySchedule> daySchedulesOnSchedule = schedule.getDaySchedules();
-        List<List<Daywork>> dayworks = new ArrayList<>();
-        daySchedulesOnSchedule.forEach(day ->
-            dayworks.add(dayScheduleService.findDayworksOnDay(day.getDay(), schedule.getId()))
-        );
-        return dayworks;
+        return daySchedulesOnSchedule.stream()
+                .map(daySchedule -> new DayworkByDay(
+                        LocalDate.of(schedule.getYear(), schedule.getMonth(), daySchedule.getDay()),
+                        daySchedule.getDayworks()))
+                .toList();
     }
 
     @Transactional
-    public Slice<AccountDayworkByDay> findAllOnSchedule(ScheduleDto scheduleDto) {
+    public Slice<AccountDayworkByDay> findAllOnSchedule(ScheduleDto scheduleDto, Integer page) {
         Schedule schedule = callSchedule(scheduleDto);
-        PageRequest pageRequest = PageRequest.of(0, RECENT_DAYS_UNIT);
+        PageRequest pageRequest = PageRequest.of(Objects.requireNonNullElse(page, 0), DAYS_UNIT);
         Slice<DaySchedule> daySchedules = dayScheduleService.findRecentDaySchedules(schedule.getId(), pageRequest);
         return daySchedules.map(daySchedule ->
                 new AccountDayworkByDay(LocalDate.of(schedule.getYear(), schedule.getMonth(), daySchedule.getDay()),
@@ -101,12 +102,13 @@ public class ScheduleService {
      * private Methods
      */
     private Schedule callSchedule(ScheduleDto scheduleDto) {
+        User loginUser = getLoginUser();
         Optional<Schedule> findSchedule = scheduleRepository.findScheduleOfMonth(
                 scheduleDto.getYear(),
                 scheduleDto.getMonth(),
-                getLoginUser().getId());
+                loginUser.getId());
         if (findSchedule.isEmpty()) {
-            return scheduleRepository.save(Schedule.create(scheduleDto, getLoginUser()));
+            return scheduleRepository.save(Schedule.create(scheduleDto, loginUser));
         }
         return findSchedule.get();
     }

@@ -1,6 +1,5 @@
 package com.whatachad.app.init;
 
-import com.whatachad.app.model.vo.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.dto.AccountDto;
@@ -9,6 +8,7 @@ import com.whatachad.app.model.dto.FacilityDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
+import com.whatachad.app.model.vo.Address;
 import com.whatachad.app.repository.FacilityRepository;
 import com.whatachad.app.security.AuthConstant;
 import com.whatachad.app.service.ScheduleService;
@@ -28,8 +28,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
-import java.time.Month;
-import java.time.Year;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;

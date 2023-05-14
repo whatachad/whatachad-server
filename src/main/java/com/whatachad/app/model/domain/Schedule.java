@@ -6,12 +6,13 @@ import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static com.whatachad.app.util.EntityUtil.setEntity;
 
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 public class Schedule {
@@ -39,7 +40,7 @@ public class Schedule {
                 .user(user)
                 .year(dto.getYear())
                 .month(dto.getMonth())
-                .budget((dto.getBudget() == null) ? 0 : dto.getBudget())
+                .budget(Objects.requireNonNullElse(dto.getBudget(), 0))
                 .daySchedules(new ArrayList<>())
                 .build();
     }

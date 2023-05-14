@@ -1,15 +1,15 @@
 package com.whatachad.app.model.mapper;
 
-import com.whatachad.app.model.domain.Daywork;
-import com.whatachad.app.model.vo.AccountDayworkByDay;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.response.DayworksResponseDto;
 import com.whatachad.app.model.response.RecentScheduleResponseDto;
+import com.whatachad.app.model.vo.AccountDayworkByDay;
+import com.whatachad.app.model.vo.DayworkByDay;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Component
@@ -29,14 +29,15 @@ public class ScheduleConverter {
                 .build();
     }
 
-    public List<DayworksResponseDto> toDayworksResponseDto(List<List<Daywork>> dayworksByDay) {
-        List<DayworksResponseDto> dayworksDto = new ArrayList<>();
-        dayworksByDay.stream().forEach(day -> {
-            dayworksDto.add(new DayworksResponseDto(
-                    day.get(day.size() - 1).getDayworkDate(),
-                    day.stream().map(dayworkConverter::toDayworkResponseDto).toList()));
-        });
-        return dayworksDto;
+    public List<DayworksResponseDto> toDayworksResponseDto(List<DayworkByDay> dayworksByDay) {
+        return dayworksByDay.stream()
+                .map(dayworks -> new DayworksResponseDto(
+                        dayworks.getDate(),
+                        dayworks.getDayworks().stream()
+                                .sorted(Comparator.comparingInt(o -> o.getPriority().getValue()))
+                                .limit(3)
+                                .map(dayworkConverter::toDayworkResponseDto).toList()))
+                .toList();
     }
 
     public Slice<RecentScheduleResponseDto> toRecentScheduleResponseDto(Slice<AccountDayworkByDay> allOnSchedule) {
@@ -44,11 +45,13 @@ public class ScheduleConverter {
             RecentScheduleResponseDto recentScheduleResponseDto = new RecentScheduleResponseDto();
             recentScheduleResponseDto.setAccounts(
                     day.getAccounts().stream()
+                            .sorted(Comparator.comparingInt(o -> o.getType().getValue()))
                             .map(accountConverter::toAccountResponseDto).toList()
             );
 
             recentScheduleResponseDto.setDayworks(
                     day.getDayworks().stream()
+                            .sorted(Comparator.comparingInt(o -> o.getPriority().getValue()))
                             .map(dayworkConverter::toDayworkResponseDto).toList()
             );
 

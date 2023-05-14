@@ -7,6 +7,7 @@ import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.model.vo.AccountDayworkByDay;
+import com.whatachad.app.model.vo.DayworkByDay;
 import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
 import io.jsonwebtoken.Claims;
@@ -51,6 +52,7 @@ public class ScheduleServiceTest {
                 .month(MONTH)
                 .build();
         schedule = scheduleService.findSchedule(scheduleDto);
+        System.out.println("\n==========test===========\n");
     }
 
     @Test
@@ -71,6 +73,23 @@ public class ScheduleServiceTest {
 
         String localDate = LocalDate.of(YEAR, MONTH, 1).toString();
         assertThat(account.getAccountDate()).isEqualTo(localDate);
+    }
+
+    @Test
+    @DisplayName("Schedule을 통해 특정 월의 Daywork를 날짜 순으로 가져온다.")
+    void retrieve_dayworks_by_day_through_schedule() {
+        ScheduleDto scheduleDto = ScheduleDto.builder()
+                .id(schedule.getId())
+                .year(YEAR)
+                .month(MONTH)
+                .build();
+
+        List<DayworkByDay> dayworksOnSchedule = scheduleService.findDayworksOnSchedule(scheduleDto);
+        assertThat(dayworksOnSchedule).isSortedAccordingTo((o1, o2) -> {
+            if (o1.getDate().isBefore(o2.getDate())) return -1;
+            if (o1.getDate().isAfter(o2.getDate())) return 1;
+            return 0;
+        });
     }
 
     @Test
@@ -102,7 +121,7 @@ public class ScheduleServiceTest {
                 .year(YEAR)
                 .month(MONTH)
                 .build();
-        Slice<AccountDayworkByDay> allOnSchedule = scheduleService.findAllOnSchedule(scheduleDto);
+        Slice<AccountDayworkByDay> allOnSchedule = scheduleService.findAllOnSchedule(scheduleDto, null);
         List<AccountDayworkByDay> content = allOnSchedule.getContent();
 
         assertThat(content.size()).isLessThanOrEqualTo(5);
@@ -122,7 +141,7 @@ public class ScheduleServiceTest {
                 .month((MONTH + 1) % 12)
                 .build();
 
-        Slice<AccountDayworkByDay> allOnSchedule = scheduleService.findAllOnSchedule(scheduleDto);
+        Slice<AccountDayworkByDay> allOnSchedule = scheduleService.findAllOnSchedule(scheduleDto, null);
         List<AccountDayworkByDay> content = allOnSchedule.getContent();
         assertThat(content).isEmpty();
     }
