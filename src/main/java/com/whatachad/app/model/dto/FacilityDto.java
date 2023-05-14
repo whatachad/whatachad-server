@@ -1,6 +1,6 @@
 package com.whatachad.app.model.dto;
 
-import com.whatachad.app.model.domain.Address;
+import com.whatachad.app.model.vo.Address;
 import com.whatachad.app.type.FacilityType;
 import lombok.*;
 

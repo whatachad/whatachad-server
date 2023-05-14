@@ -22,7 +22,6 @@ import java.util.Map;
 public class FacilityController implements FacilityApi {
 
     private final FacilityService facilityService;
-//    private final FacilityMapperService facilityAdaptor;
     private final FacilityConverter facilityConverter;
 
     @Override

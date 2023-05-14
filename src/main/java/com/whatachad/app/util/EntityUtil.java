@@ -7,7 +7,7 @@ import jakarta.persistence.Embeddable;
 import java.lang.reflect.Field;
 import java.util.Objects;
 
-public class EntityUtils {
+public class EntityUtil {
 
     /**
      * note :

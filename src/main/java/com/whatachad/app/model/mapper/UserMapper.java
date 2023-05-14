@@ -6,10 +6,14 @@ import com.whatachad.app.model.request.UserUpdateRequestDto;
 import com.whatachad.app.model.response.UserResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.ReportingPolicy;
 import org.springframework.stereotype.Component;
 
 @Component
-@Mapper(componentModel = "spring", uses = UserQualifier.class)
+@Mapper(componentModel = "spring",
+		uses = UserQualifier.class,
+		unmappedTargetPolicy = ReportingPolicy.IGNORE,
+		unmappedSourcePolicy = ReportingPolicy.IGNORE)
 public interface UserMapper {
 
 	@Mapping(source = "password", target = "password", qualifiedByName = {"EncodePassword"})

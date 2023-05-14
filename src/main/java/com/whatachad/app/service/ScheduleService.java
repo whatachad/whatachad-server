@@ -6,15 +6,17 @@ import com.whatachad.app.model.domain.*;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
+import com.whatachad.app.model.vo.AccountDayworkByDay;
 import com.whatachad.app.repository.ScheduleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +25,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Service
 public class ScheduleService {
+
+    private static final int RECENT_DAYS_UNIT = 5;
 
     private final ScheduleRepository scheduleRepository;
     private final UserService userService;
@@ -38,35 +42,31 @@ public class ScheduleService {
                 .orElseThrow(() -> new CommonException(BError.NOT_EXIST, "schedule"));
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<List<Daywork>> findDayworksOnSchedule(ScheduleDto scheduleDto) {
         Schedule schedule = callSchedule(scheduleDto);
-        List<DaySchedule> daySchedulesOnSchedule = dayScheduleService.findDaySchedulesOnSchedule(schedule.getId());
+        List<DaySchedule> daySchedulesOnSchedule = schedule.getDaySchedules();
         List<List<Daywork>> dayworks = new ArrayList<>();
-        daySchedulesOnSchedule.stream().forEach(day -> {
-            dayworks.add(dayScheduleService.findLimitDayworksOnDay(day.getDay(), schedule.getId()));
-        });
+        daySchedulesOnSchedule.forEach(day ->
+            dayworks.add(dayScheduleService.findDayworksOnDay(day.getDay(), schedule.getId()))
+        );
         return dayworks;
     }
 
-    @Transactional(readOnly = true)
-    public Slice<List<List<Object>>> findAllOnSchedule(Pageable pageable, ScheduleDto scheduleDto) {
+    @Transactional
+    public Slice<AccountDayworkByDay> findAllOnSchedule(ScheduleDto scheduleDto) {
         Schedule schedule = callSchedule(scheduleDto);
-        Slice<DaySchedule> daySchedules = dayScheduleService.findDaySchedulesOnSchedule(pageable, schedule.getId());
-
-        Slice<List<List<Object>>> bundle = daySchedules.map(day -> {
-            return bindDayworkAccountByDay(
-                    dayScheduleService.findAccountOnDay(day.getDay(), schedule.getId()),
-                    dayScheduleService.findDayworksOnDay(day.getDay(), schedule.getId())
-            );
-        });
-
-        return bundle;
+        PageRequest pageRequest = PageRequest.of(0, RECENT_DAYS_UNIT);
+        Slice<DaySchedule> daySchedules = dayScheduleService.findRecentDaySchedules(schedule.getId(), pageRequest);
+        return daySchedules.map(daySchedule ->
+                new AccountDayworkByDay(LocalDate.of(schedule.getYear(), schedule.getMonth(), daySchedule.getDay()),
+                        daySchedule.getAccounts(), daySchedule.getDayworks())
+        );
     }
 
     @Transactional(readOnly = true)
     public List<Schedule> findFollowingTodaySchedule(List<String> followingsIds) {
-        LocalDateTime now = LocalDateTime.now();
+        LocalDate now = LocalDate.now();
         return scheduleRepository.findFollowingTodaySchedule(now.getYear(), now.getMonthValue(), now.getDayOfMonth(), followingsIds);
     }
 
@@ -74,9 +74,9 @@ public class ScheduleService {
      * Account Methods
      */
     @Transactional
-    public Account createAccountOnSchedule(Integer date, AccountDto accountDto, ScheduleDto scheduleDto) {
+    public Account createAccountOnSchedule(Integer day, AccountDto accountDto, ScheduleDto scheduleDto) {
         Schedule schedule = callSchedule(scheduleDto);
-        DaySchedule daySchedule = dayScheduleService.createAccountOnDay(date, accountDto, schedule.getId());
+        DaySchedule daySchedule = dayScheduleService.createAccountOnDay(day, accountDto, schedule.getId());
         schedule.addDaySchedule(daySchedule);
         Account account = daySchedule.getLastAccount();
         account.setAccountDate(schedule.getYear(), schedule.getMonth(), daySchedule.getDay());
@@ -114,12 +114,5 @@ public class ScheduleService {
     private User getLoginUser() {
         String loginUserId = userService.getLoginUserId();
         return userService.getUser(loginUserId);
-    }
-
-    private List<List<Object>> bindDayworkAccountByDay(List<Account> accounts, List<Daywork> dayworks) {
-        List<List<Object>> bundle = new ArrayList<>();
-        bundle.add(new ArrayList<>(accounts));
-        bundle.add(new ArrayList<>(dayworks));
-        return bundle;
     }
 }

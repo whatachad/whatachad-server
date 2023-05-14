@@ -13,6 +13,7 @@ import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,12 +35,6 @@ public class DayScheduleService {
         return daySchedule;
     }
 
-    @Transactional(readOnly = true)
-    public List<Account> findAccountOnDay(Integer day, Long scheduleId) {
-        DaySchedule daySchedule = callDaySchedule(day, scheduleId);
-        return accountService.findAccountsByDayId(daySchedule.getId());
-    }
-
     @Transactional
     public DaySchedule createDayworkOnDay(Integer day, DayworkDto dayworkDto, Long scheduleId) {
         DaySchedule daySchedule = callDaySchedule(day, scheduleId);
@@ -48,26 +43,16 @@ public class DayScheduleService {
         return daySchedule;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public List<Daywork> findDayworksOnDay(Integer day, Long scheduleId){
         DaySchedule daySchedule = callDaySchedule(day, scheduleId);
-        return dayworkService.findDayworksByDayId(daySchedule.getId());
+        return dayworkService.findLimitDayworksByDay(daySchedule.getId());
     }
 
     @Transactional(readOnly = true)
-    public List<Daywork> findLimitDayworksOnDay(Integer day, Long scheduleId){
-        DaySchedule daySchedule = callDaySchedule(day, scheduleId);
-        return dayworkService.findLimitDayworksByDayId(daySchedule.getId());
-    }
-
-    @Transactional(readOnly = true)
-    public List<DaySchedule> findDaySchedulesOnSchedule(Long scheduleId) {
-        return dayScheduleRepository.findAllOfMonth(scheduleId);
-    }
-
-    @Transactional(readOnly = true)
-    public Slice<DaySchedule> findDaySchedulesOnSchedule(Pageable pageable, Long scheduleId) {
-        return dayScheduleRepository.findRecentDayOfMonth(scheduleId, pageable);
+    public Slice<DaySchedule> findRecentDaySchedules(Long scheduleId, Pageable pageable) {
+        int today = LocalDate.now().getDayOfMonth();
+        return dayScheduleRepository.findRecentDaySchedules(scheduleId, today, pageable);
     }
 
     private DaySchedule callDaySchedule(Integer day, Long scheduleId) {

@@ -7,32 +7,46 @@ import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.repository.ScheduleRepository;
 import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
+import com.whatachad.app.util.TestDataProcessor;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.LocalDate;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 public class DayScheduleServiceTest {
 
+    private static final int YEAR = LocalDate.now().getYear();
+    private static final int MONTH = LocalDate.now().getMonthValue();
+
     @Autowired
     private DayScheduleService dayScheduleService;
     @Autowired
     private ScheduleRepository scheduleRepository;
+    @Autowired
+    private TestDataProcessor processor;
 
     private Schedule schedule;
 
     @BeforeEach
     void initSchedule() {
         schedule = Schedule.builder()
-                .year(2023)
-                .month(4)
+                .year(YEAR)
+                .month(MONTH)
                 .budget(500000)
                 .build();
         scheduleRepository.save(schedule);
+    }
+
+    @AfterEach
+    void rollback() {
+        processor.rollback();
     }
 
     @Test

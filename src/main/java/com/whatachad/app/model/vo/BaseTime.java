@@ -1,4 +1,4 @@
-package com.whatachad.app.model.domain;
+package com.whatachad.app.model.vo;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.EntityListeners;
@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseTime {
 
-    @Column(name = "CREATE_AT", nullable = false, updatable = false)
+    @Column(name = "CREATED_AT", nullable = false, updatable = false)
     @CreationTimestamp
-    private LocalDateTime createAt;
+    private LocalDateTime createdAt;
 
-    @Column(name = "UPDATE_AT")
+    @Column(name = "UPDATED_AT")
     @UpdateTimestamp
-    private LocalDateTime updateAt;
+    private LocalDateTime updatedAt;
 
 }

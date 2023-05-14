@@ -7,7 +7,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.whatachad.app.util.EntityUtils.setEntity;
+import static com.whatachad.app.util.EntityUtil.setEntity;
 
 @Getter
 @Builder
@@ -31,6 +31,7 @@ public class Schedule {
     private Integer budget;
 
     @OneToMany(mappedBy = "schedule")
+    @OrderBy("day asc")
     List<DaySchedule> daySchedules;
 
     public static Schedule create(ScheduleDto dto, User user) {

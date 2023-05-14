@@ -1,6 +1,7 @@
 package com.whatachad.app.model.domain;
 
 import com.whatachad.app.model.dto.DayworkDto;
+import com.whatachad.app.model.vo.BaseTime;
 import com.whatachad.app.type.DayworkPriority;
 import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
@@ -8,14 +9,14 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-import static com.whatachad.app.util.EntityUtils.setValueExceptNull;
+import static com.whatachad.app.util.EntityUtil.setValueExceptNull;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-public class Daywork extends BaseTime{
+public class Daywork extends BaseTime {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

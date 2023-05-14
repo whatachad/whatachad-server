@@ -20,7 +20,5 @@ public class CreateAccountRequestDto {
     private String category;
     @NotNull
     private Integer cost;
-    @NotNull
-    private Integer date;
 
 }

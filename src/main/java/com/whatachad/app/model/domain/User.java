@@ -1,5 +1,6 @@
 package com.whatachad.app.model.domain;
 
+import com.whatachad.app.model.vo.BaseTime;
 import com.whatachad.app.security.AuthConstant;
 import com.whatachad.app.type.UserMetaType;
 import jakarta.persistence.*;

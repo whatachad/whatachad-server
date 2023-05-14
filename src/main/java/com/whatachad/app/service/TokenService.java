@@ -57,7 +57,7 @@ public class TokenService {
 
 	public String genAccessToken(String username) {
 		User user = userService.getUser(username);
-		setUserCode(username, user.getUpdateAt());
+		setUserCode(username, user.getUpdatedAt());
 		List<GrantedAuthority> grantedAuthorities = AuthorityUtils
 			.commaSeparatedStringToAuthorityList(user.getMeta().get(UserMetaType.ROLE));
 

@@ -13,8 +13,5 @@ import java.util.List;
 public interface DayworkRepository extends JpaRepository<Daywork, Long> {
 
     @Query("select d from Daywork d where d.daySchedule.id = :dayScheduleId order by d.id asc")
-    List<Daywork> findByDayId(@Param("dayScheduleId") Long dayScheduleId);
-
-    @Query("select d from Daywork d where d.daySchedule.id = :dayScheduleId order by d.id asc")
     List<Daywork> findLimitDayworksByDayId(@Param("dayScheduleId") Long dayScheduleId, Pageable pageable);
 }
