@@ -7,6 +7,8 @@ import com.whatachad.app.type.AccountType;
 import com.whatachad.app.util.EntityUtil;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 
@@ -25,6 +27,7 @@ public class Account extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DAY_SCHEDULE_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private DaySchedule daySchedule;
 
     private String title;
@@ -39,6 +42,7 @@ public class Account extends BaseTime {
 
     public static Account create(AccountDto dto) {
         return Account.builder()
+                .accountDate(dto.getAccountDate())
                 .title(dto.getTitle())
                 .cost(dto.getCost())
                 .type(dto.getType())
@@ -48,10 +52,6 @@ public class Account extends BaseTime {
 
     public void update(AccountDto dto) {
         EntityUtil.setValueExceptNull(this, dto);
-    }
-
-    public void setAccountDate(Integer year, Integer month, Integer day) {
-        this.accountDate = LocalDate.of(year, month, day);
     }
 
 }

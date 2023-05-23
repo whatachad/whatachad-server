@@ -116,8 +116,7 @@ class FacilityControllerTest {
     void deleteFacility() throws Exception {
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/facilities/" + facility.getId())
                         .header("Authorization", "Bearer " + accessToken))
-                .andExpect(status().isOk())
-                .andDo(print());
+                .andExpect(status().isOk());
     }
 
     @Test
@@ -127,8 +126,7 @@ class FacilityControllerTest {
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.address.jibunAddress").value("지번 주소"))
-                .andExpect(jsonPath("$.category").value("HEALTH"))
-                .andDo(print());
+                .andExpect(jsonPath("$.category").value("HEALTH"));
     }
 
     @Test
@@ -144,8 +142,7 @@ class FacilityControllerTest {
                         .param("distance", "100")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content.length()").value(2))
-                .andDo(print());
+                .andExpect(jsonPath("$.content.length()").value(2));
     }
 
     @Test
@@ -161,8 +158,7 @@ class FacilityControllerTest {
                         .param("distance", "100")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].reason").value("category is not valid."))
-                .andDo(print());
+                .andExpect(jsonPath("$.errors[0].reason").value("category is not valid."));
     }
 
     @Test
@@ -177,8 +173,7 @@ class FacilityControllerTest {
                         .param("longitude", "126.929699")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.errors[0].reason").value("distance does not exist."))
-                .andDo(print());
+                .andExpect(jsonPath("$.errors[0].reason").value("distance does not exist."));
     }
 
     @Test
@@ -199,8 +194,7 @@ class FacilityControllerTest {
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.content[0].address.jibunAddress")
-                        .value("서울특별시 강남구 청담동 92-22"))
-                .andDo(print());
+                        .value("서울특별시 강남구 청담동 92-22"));
     }
 
     // TODO : 예외 상황에 대한 테스트 필요 -> 하나의 기능에 대한 여러 파라미터 값으로 테스트 (Parameterized Test)

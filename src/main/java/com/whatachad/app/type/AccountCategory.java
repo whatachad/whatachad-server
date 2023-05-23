@@ -1,5 +1,7 @@
 package com.whatachad.app.type;
 
+import com.whatachad.app.common.BError;
+import com.whatachad.app.common.CommonException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -34,9 +36,15 @@ public enum AccountCategory {
         }
     }
 
-    // todo: Category와 매칭되는 Label이 들어오지 않는다면? 그런 상황을 안 만들 수 있는 방법?
-    public static AccountCategory valueOfLabel(String label) {
-        return BY_LABEL.get(label);
+    public static AccountCategory valueOfLabel(AccountType type, String label) {
+        AccountCategory accountCategory = BY_LABEL.get(label);
+        if (accountCategory == null) {
+            throw new CommonException(BError.NOT_VALID, "category");
+        }
+        if (accountCategory.getType() != type) {
+            throw new CommonException(BError.NOT_MATCHES, "account type", "account category");
+        }
+        return accountCategory;
     }
 
 }

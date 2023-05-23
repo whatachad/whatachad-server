@@ -4,6 +4,8 @@ import com.whatachad.app.type.AccountCategory;
 import com.whatachad.app.type.AccountType;
 import lombok.*;
 
+import java.time.LocalDate;
+
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -11,6 +13,7 @@ import lombok.*;
 public class AccountDto {
 
     private Long id;
+    private LocalDate accountDate;
     private String title;
     private AccountType type;
     private AccountCategory category;

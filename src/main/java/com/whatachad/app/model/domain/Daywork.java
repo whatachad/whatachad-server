@@ -6,6 +6,8 @@ import com.whatachad.app.type.DayworkPriority;
 import com.whatachad.app.type.Workcheck;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 
@@ -27,6 +29,7 @@ public class Daywork extends BaseTime {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "DAY_SCHEDULE_ID")
+    @OnDelete(action = OnDeleteAction.CASCADE)
     private DaySchedule daySchedule;
 
     private String title;
@@ -39,6 +42,7 @@ public class Daywork extends BaseTime {
 
     public static Daywork create(DayworkDto dto) {
         return Daywork.builder()
+                .dayworkDate(dto.getDayworkDate())
                 .title(dto.getTitle())
                 .priority(dto.getPriority())
                 .status(Workcheck.NOT_COMPLETE)

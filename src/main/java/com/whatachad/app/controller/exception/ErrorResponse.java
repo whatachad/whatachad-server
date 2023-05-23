@@ -1,6 +1,7 @@
 package com.whatachad.app.controller.exception;
 
 import com.whatachad.app.common.CommonException;
+import jakarta.validation.ConstraintViolation;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,6 +11,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Getter
@@ -36,8 +39,11 @@ public class ErrorResponse {
 	}
 
 	public static ErrorResponse of(final ErrorCode code, final BindingResult bindingResult) {
-
 		return new ErrorResponse(code, FieldError.of(bindingResult));
+	}
+
+	public static ErrorResponse of(final ErrorCode code, final Set<ConstraintViolation<?>> constraintViolations) {
+		return new ErrorResponse(code, FieldError.of(constraintViolations));
 	}
 
 	public static ErrorResponse of(final ErrorCode code) {
@@ -60,13 +66,13 @@ public class ErrorResponse {
 
 	public static ErrorResponse of(CommonException e) {
 		if (e.isBError()) {
-			final String value = e.getMessage() == null ? "" : e.getMessage();
-			final List<FieldError> errors = FieldError.of("Business Error", e.getCode(), value);
+			final String reason = e.getMessage() == null ? "" : e.getMessage();
+			final List<FieldError> errors = FieldError.of("Business Error", e.getCode(), reason);
 			return new ErrorResponse(ErrorCode.BUSINESS_ERROR, errors);
 		}
 		if (e.isIError()) {
-			final String value = e.getMessage() == null ? "" : e.getMessage();
-			final List<FieldError> errors = FieldError.of("Internal Error", e.getCode(), value);
+			final String reason = e.getMessage() == null ? "" : e.getMessage();
+			final List<FieldError> errors = FieldError.of("Internal Error", e.getCode(), reason);
 			return new ErrorResponse(ErrorCode.INTERNAL_SERVER_ERROR, errors);
 		}
 
@@ -100,6 +106,18 @@ public class ErrorResponse {
 					error.getRejectedValue() == null ? "" : error.getRejectedValue().toString(),
 					error.getDefaultMessage()))
 				.collect(Collectors.toList());
+		}
+
+		private static List<FieldError> of(final Set<ConstraintViolation<?>> constraintViolations) {
+			final List<FieldError> fieldErrors = new ArrayList<>();
+			constraintViolations.forEach(violation -> {
+				fieldErrors.add(new FieldError(
+						violation.getPropertyPath().toString(),
+						violation.getInvalidValue().toString(),
+						violation.getMessage()
+				));
+			});
+			return fieldErrors;
 		}
 	}
 }

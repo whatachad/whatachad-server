@@ -8,14 +8,20 @@ import com.whatachad.app.model.response.DayworkResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
+
 @Component
 @RequiredArgsConstructor
 public class DayworkConverter {
 
     private final DayworkMapper dayworkMapper;
 
-    public DayworkDto toDayworkDto(CreateDayworkRequestDto dto) {
-        return dayworkMapper.toDayworkDto(dto);
+    public DayworkDto toDayworkDto(String yearAndMonth, Integer day, CreateDayworkRequestDto dto) {
+        DayworkDto dayworkDto = dayworkMapper.toDayworkDto(dto);
+        int year = Integer.parseInt(yearAndMonth.substring(0, 4));
+        int month = Integer.parseInt(yearAndMonth.substring(4));
+        dayworkDto.setDayworkDate(LocalDate.of(year, month, day));
+        return dayworkDto;
     }
 
     public DayworkDto toDayworkDto(UpdateDayworkRequestDto dto) {

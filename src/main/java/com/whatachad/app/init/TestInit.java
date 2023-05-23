@@ -163,6 +163,7 @@ public class TestInit {
                         int day = 1 + rand.nextInt(30); // 1 ~ 30일 중 하나
                         AccountCategory accountCategory = CATEGORIES[rand.nextInt(CATEGORIES.length)];
                         AccountDto accountDto = AccountDto.builder()
+                                .accountDate(LocalDate.of(YEAR, MONTH, day))
                                 .title("ACCOUNT-" + tryCount)
                                 .category(accountCategory)
                                 .type(accountCategory.getType())
@@ -181,6 +182,7 @@ public class TestInit {
                     .forEach(tryCount -> {
                         int day = 1 + rand.nextInt(30); // 1 ~ 30일 중 하나
                         DayworkDto dayworkDto = DayworkDto.builder()
+                                .dayworkDate(LocalDate.of(YEAR, MONTH, day))
                                 .title("DAYWORK-" + tryCount)
                                 .priority(PRIORITIES[rand.nextInt(PRIORITIES.length)])
                                 .build();

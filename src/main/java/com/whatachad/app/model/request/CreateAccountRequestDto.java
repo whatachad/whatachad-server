@@ -1,8 +1,7 @@
 package com.whatachad.app.model.request;
 
 import com.whatachad.app.type.AccountType;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
 
@@ -12,13 +11,19 @@ import lombok.*;
 @Getter
 public class CreateAccountRequestDto {
 
-    @NotBlank
+    @NotBlank(message = "{account.title.blank}")
+    @Size(min = 1, message = "{account.title.size}")
+    @Size(max = 50, message = "{account.title.size}")
     private String title;
-    @NotNull
-    private AccountType type;
-    @NotBlank
-    private String category;
-    @NotNull
-    private Integer cost;
 
+    @NotNull(message = "{account.type.null}")
+    private AccountType type;
+
+    @NotBlank(message = "{account.category.blank}")
+    private String category;
+
+    @NotNull(message = "{account.cost.null}")
+    @Min(value = 0, message = "{account.cost.range}")
+    @Max(value = 99999999, message = "{account.cost.range}")
+    private Integer cost;
 }

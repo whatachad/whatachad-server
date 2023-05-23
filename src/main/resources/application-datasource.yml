@@ -23,5 +23,5 @@ logging:
 decorator:
   datasource:
     p6spy:
-      enable-logging: true
+      enable-logging: false # sql 추적이 필요할 때 true
 # TODO: dev 설정, RDS 설정 필요
