@@ -9,6 +9,9 @@ spring:
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
+  messages:
+    basename: messages/validation
+    cache-duration: -1
 --- # local 설정
 springdoc:
   swagger-ui:

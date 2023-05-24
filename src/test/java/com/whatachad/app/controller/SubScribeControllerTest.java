@@ -1,6 +1,5 @@
 package com.whatachad.app.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
@@ -13,8 +12,8 @@ import com.whatachad.app.service.UserService;
 import com.whatachad.app.type.DayworkPriority;
 import com.whatachad.app.type.UserMetaType;
 import com.whatachad.app.type.UserRoleType;
+import com.whatachad.app.util.TestDataProcessor;
 import io.jsonwebtoken.Claims;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -44,7 +43,6 @@ public class SubScribeControllerTest {
     private static final int YEAR = LocalDateTime.now().getYear();
     private static final int MONTH = LocalDateTime.now().getMonthValue();
     private static final int DAY = LocalDate.now().getDayOfMonth();
-    private final ObjectMapper mapper = new ObjectMapper();
     private String accessToken;
 
     @Autowired
@@ -59,6 +57,8 @@ public class SubScribeControllerTest {
     private SubscribeService subscribeService;
     @Autowired
     ScheduleService scheduleService;
+    @Autowired
+    TestDataProcessor processor;
 
     @BeforeAll
     void initSchedule() {
@@ -78,6 +78,11 @@ public class SubScribeControllerTest {
         subscribeService.createFollow("userA");
     }
 
+    @AfterAll
+    void rollback() {
+        processor.rollback();
+    }
+
     @BeforeEach
     void init() {
         loginAdmin();
@@ -92,8 +97,7 @@ public class SubScribeControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/subscribe/follow/" + userB.getId())
                 .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(content().string("SUCCESS"))
-                .andDo(print());
+                .andExpect(content().string("SUCCESS"));
     }
 
     @Test
@@ -104,8 +108,7 @@ public class SubScribeControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/v1/subscribe/unfollow/" + "userB")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(content().string("SUCCESS"))
-                .andDo(print());
+                .andExpect(content().string("SUCCESS"));
     }
 
     @Test
@@ -119,8 +122,7 @@ public class SubScribeControllerTest {
                 .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath(expectByUserId, "userA").exists())
-                .andExpect(jsonPath("$.[?(@.id == 'userA')].todayDayworkStatus").value("NOT_COMPLETE"))
-                .andDo(print());
+                .andExpect(jsonPath("$.[?(@.id == 'userA')].todayDayworkStatus").value("NOT_COMPLETE"));
     }
 
     /**

@@ -70,16 +70,16 @@ public class SubscribeServiceTest {
         subscribeService.createFollow("userB");
     }
 
-    @BeforeEach
-    void init() {
-        loginAdmin();
-    }
-
-    @AfterEach
+    @AfterAll
     void rollback() {
         processor.rollback();
     }
 
+    @BeforeEach
+    void init() {
+        loginAdmin();
+    }
+    
     @Test
     @DisplayName("로그인된 유저가 following한 유저 목록을 가져온다.")
     public void getFollowingUsers() {
@@ -94,7 +94,7 @@ public class SubscribeServiceTest {
     @DisplayName("로그인된 유저가 following한 유저가 오늘 날짜의 DaySchedule을 생성했다면 조회한다.")
     public void getFollowingUsersTodayDaySchedule() {
         List<User> followingUser = userService.getFollowingUser();
-        List<String> followingsId = followingUser.stream().map(following -> following.getId()).toList();
+        List<String> followingsId = followingUser.stream().map(User::getId).toList();
         Map<String, DaySchedule> followingsAndTodayStatus = subscribeService.getFollowingsAndTodayStatus(followingsId);
         assertThat(followingsAndTodayStatus).hasSize(1);
         assertThat(followingsAndTodayStatus.keySet()).contains("userA");

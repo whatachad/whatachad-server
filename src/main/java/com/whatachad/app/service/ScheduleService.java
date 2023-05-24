@@ -79,9 +79,7 @@ public class ScheduleService {
         Schedule schedule = callSchedule(scheduleDto);
         DaySchedule daySchedule = dayScheduleService.createAccountOnDay(day, accountDto, schedule.getId());
         schedule.addDaySchedule(daySchedule);
-        Account account = daySchedule.getLastAccount();
-        account.setAccountDate(schedule.getYear(), schedule.getMonth(), daySchedule.getDay());
-        return account;
+        return daySchedule.getLastAccount();
     }
 
     /**
@@ -92,9 +90,7 @@ public class ScheduleService {
         Schedule schedule = callSchedule(scheduleDto);
         DaySchedule daySchedule = dayScheduleService.createDayworkOnDay(day, dayworkDto, schedule.getId());
         schedule.addDaySchedule(daySchedule);
-        Daywork daywork = daySchedule.getLastDaywork();
-        daywork.setDayworkDate(schedule.getYear(), schedule.getMonth(), daySchedule.getDay());
-        return daywork;
+        return daySchedule.getLastDaywork();
     }
 
 

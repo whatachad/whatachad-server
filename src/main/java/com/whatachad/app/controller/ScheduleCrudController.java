@@ -48,10 +48,10 @@ public class ScheduleCrudController implements ScheduleCrudApi {
      * Daywork 관련
      */
     @Override
-    public ResponseEntity<DayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String yearAndMonth, Integer date) {
+    public ResponseEntity<DayworkResponseDto> registerDaywork(CreateDayworkRequestDto requestDto, String yearAndMonth, Integer day) {
         ScheduleDto scheduleDto = scheduleConverter.toScheduleDto(yearAndMonth);
-        DayworkDto dayworkDto = dayworkConverter.toDayworkDto(requestDto);
-        Daywork daywork = scheduleService.createDayworkOnSchedule(date, dayworkDto, scheduleDto);
+        DayworkDto dayworkDto = dayworkConverter.toDayworkDto(yearAndMonth, day, requestDto);
+        Daywork daywork = scheduleService.createDayworkOnSchedule(day, dayworkDto, scheduleDto);
         return ResponseEntity.ok(dayworkConverter.toDayworkResponseDto(daywork));
     }
 
@@ -72,10 +72,10 @@ public class ScheduleCrudController implements ScheduleCrudApi {
      * Account 관련
      */
     @Override
-    public ResponseEntity<AccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String yearAndMonth, Integer date) {
+    public ResponseEntity<AccountResponseDto> registerAccount(CreateAccountRequestDto requestDto, String yearAndMonth, Integer day) {
         ScheduleDto scheduleDto = scheduleConverter.toScheduleDto(yearAndMonth);
-        AccountDto accountDto = accountConverter.toAccountDto(requestDto);
-        Account account = scheduleService.createAccountOnSchedule(date, accountDto, scheduleDto);
+        AccountDto accountDto = accountConverter.toAccountDto(yearAndMonth, day, requestDto);
+        Account account = scheduleService.createAccountOnSchedule(day, accountDto, scheduleDto);
         return ResponseEntity.ok(accountConverter.toAccountResponseDto(account));
     }
 

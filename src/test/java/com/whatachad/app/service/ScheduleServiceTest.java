@@ -52,13 +52,13 @@ public class ScheduleServiceTest {
                 .month(MONTH)
                 .build();
         schedule = scheduleService.findSchedule(scheduleDto);
-        System.out.println("\n==========test===========\n");
     }
 
     @Test
     @DisplayName("Schedule을 통해 Account 생성시 accountDate가 올바르게 저장되어야 한다.")
     void exists_account_date_when_created_by_schedule() {
         AccountDto accountDto = AccountDto.builder()
+                .accountDate(LocalDate.of(YEAR, MONTH, 1))
                 .title("장보기")
                 .cost(10000)
                 .type(AccountType.SPEND)
@@ -96,6 +96,7 @@ public class ScheduleServiceTest {
     @DisplayName("Schedule을 통해 Account 생성 후 DB에서 Account 조회하면 accountDate가 저장되어 있어야 한다.")
     void must_have_account_date_when_retrieving_account_from_db() {
         AccountDto accountDto = AccountDto.builder()
+                .accountDate(LocalDate.of(YEAR, MONTH, 1))
                 .title("장보기")
                 .cost(10000)
                 .type(AccountType.SPEND)
