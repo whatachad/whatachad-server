@@ -80,6 +80,7 @@ public class ErrorResponse {
 	}
 
 	@Getter
+
 	@NoArgsConstructor(access = AccessLevel.PROTECTED)
 	public static class FieldError {
 		private String field;
