@@ -14,16 +14,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Pattern;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.domain.SliceImpl;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Tag(name = "Schedule API", description = "스케줄 관련 기능")
 @RequestMapping("/v1/schedule")
+@Validated
 public interface ScheduleCrudApi {
 
     @Operation(summary = "일정(daywork) 등록",
@@ -35,9 +39,11 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping("/{YYYYMM}/dayworks/{DD}")
-    ResponseEntity<DayworkResponseDto> registerDaywork(@RequestBody CreateDayworkRequestDto requestDto,
-                                                             @PathVariable("YYYYMM") String yearAndMonth,
-                                                             @PathVariable("DD") Integer date);
+    ResponseEntity<DayworkResponseDto> registerDaywork(@Valid @RequestBody CreateDayworkRequestDto requestDto,
+                                                       @PathVariable("YYYYMM")
+                                                       @Pattern(regexp = "[0-9]{6}",
+                                                               message = "pattern.year_and_month") String yearAndMonth,
+                                                       @PathVariable("DD") Integer date);
 
     @Operation(summary = "일정(daywork) 수정",
             description = "일정의 title, priority, status, hour, minute 를 수정할 수 있다.")
@@ -48,8 +54,8 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PutMapping("/{YYYYMM}/dayworks/{DD}/{dayworkId}")
-    ResponseEntity<DayworkResponseDto> editDaywork(@RequestBody UpdateDayworkRequestDto requestDto,
-                                                         @PathVariable Long dayworkId);
+    ResponseEntity<DayworkResponseDto> editDaywork(@Valid @RequestBody UpdateDayworkRequestDto requestDto,
+                                                   @PathVariable Long dayworkId);
 
     @Operation(summary = "일정(daywork) 삭제",
             description = "daywork_id를 이용해 일정을 삭제한다.")
@@ -71,8 +77,8 @@ public interface ScheduleCrudApi {
     })
     @PostMapping("/{YYYYMM}/accounts/{DD}")
     ResponseEntity<AccountResponseDto> registerAccount(@RequestBody CreateAccountRequestDto requestDto,
-                                                             @PathVariable("YYYYMM") String yearAndMonth,
-                                                             @PathVariable("DD") Integer date);
+                                                       @PathVariable("YYYYMM") String yearAndMonth,
+                                                       @PathVariable("DD") Integer date);
 
     @Operation(summary = "가계부 수정",
             description = "가계부의 title, cost, type, category, hour, minute 를 수정할 수 있다.")
@@ -84,7 +90,7 @@ public interface ScheduleCrudApi {
     })
     @PutMapping("/{YYYYMM}/accounts/{DD}/{accountId}")
     ResponseEntity<AccountResponseDto> editAccount(@RequestBody UpdateAccountRequestDto requestDto,
-                                                         @PathVariable Long accountId);
+                                                   @PathVariable Long accountId);
 
 
     @Operation(summary = "가계부 삭제",

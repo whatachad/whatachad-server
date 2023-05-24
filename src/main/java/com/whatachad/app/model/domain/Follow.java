@@ -1,5 +1,6 @@
 package com.whatachad.app.model.domain;
 
+import com.whatachad.app.model.vo.BaseTime;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -8,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class Follow extends BaseTime{
+public class Follow extends BaseTime {
     @Id @GeneratedValue
     @Column(name = "FOLLOW_ID")
     private Long id;
