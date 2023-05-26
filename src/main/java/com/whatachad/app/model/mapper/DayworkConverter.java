@@ -1,5 +1,7 @@
 package com.whatachad.app.model.mapper;
 
+import com.whatachad.app.common.BError;
+import com.whatachad.app.common.CommonException;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
@@ -8,6 +10,7 @@ import com.whatachad.app.model.response.DayworkResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.DateTimeException;
 import java.time.LocalDate;
 
 @Component
@@ -20,7 +23,11 @@ public class DayworkConverter {
         DayworkDto dayworkDto = dayworkMapper.toDayworkDto(dto);
         int year = Integer.parseInt(yearAndMonth.substring(0, 4));
         int month = Integer.parseInt(yearAndMonth.substring(4));
-        dayworkDto.setDayworkDate(LocalDate.of(year, month, day));
+        try {
+            dayworkDto.setDayworkDate(LocalDate.of(year, month, day));
+        } catch (DateTimeException e) {
+            throw new CommonException(BError.NOT_VALID, "day");
+        }
         return dayworkDto;
     }
 

@@ -6,7 +6,6 @@ import com.whatachad.app.controller.exception.ErrorCode;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
-import com.whatachad.app.model.request.CreateDayworkRequestDto;
 import com.whatachad.app.model.request.UpdateDayworkRequestDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
@@ -87,9 +86,8 @@ public class UpdateDayworkValidationTest {
     }
 
     @Test
-    @DisplayName("daywork를 수정할 때 title 길이가 30자 이상이면 BAD REQUEST 에러가 발생한다." +
-            "PUT /v1/schedule/{YYYYMM}/dayworks/01")
-    void validate_update_dayworks_title_length() throws Exception {
+    @DisplayName("일정 수정 시 제목은 30자 이상 입력이 불가능하다.")
+    void daywork_title_length_is_limited_to_30() throws Exception {
         UpdateDayworkRequestDto requestDto = UpdateDayworkRequestDto.builder()
                 .title("장보기,밥먹기,학교가기,티비보기,공부하기,드라마보기,장보기,밥먹기,학교가기,티비보기,공부하기,드라마보기")
                 .priority(DayworkPriority.FIRST)
@@ -104,29 +102,118 @@ public class UpdateDayworkValidationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("Length.daywork.title",null,null)))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.errors[0].field").value("title"))
+                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("Length.daywork.title", null, null)))
                 .andDo(print());
     }
 
+    @Test
+    @DisplayName("일정 수정 시 제목이 입력되지 않거나, blank가 입력될 수 없다.")
+    void daywork_title_must_be_required() throws Exception {
+        UpdateDayworkRequestDto requestDto_null = UpdateDayworkRequestDto.builder()
+                .priority(DayworkPriority.FIRST)
+                .status(Workcheck.NOT_COMPLETE)
+                .build();
+        UpdateDayworkRequestDto requestDto_blank = UpdateDayworkRequestDto.builder()
+                .title(" ")
+                .priority(DayworkPriority.FIRST)
+                .status(Workcheck.NOT_COMPLETE)
+                .build();
 
-    private static class BadDayworkDto{
+        String request_null = mapper.writeValueAsString(requestDto_null);
+        String request_blank = mapper.writeValueAsString(requestDto_blank);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/schedule/{YYYYMM}/dayworks/01/{dayworkId}",
+                                String.format("%d%02d", YEAR, MONTH), daywork.getId())
+                        .content(request_null)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.errors[0].field").value("title"))
+                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("NotBlank.daywork.title", null, null)))
+                .andDo(print());
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/schedule/{YYYYMM}/dayworks/01/{dayworkId}",
+                                String.format("%d%02d", YEAR, MONTH), daywork.getId())
+                        .content(request_blank)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.errors[0].field").value("title"))
+                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("NotBlank.daywork.title", null, null)))
+                .andDo(print());
+
+    }
+
+    @Test
+    @DisplayName("일정 수정 시 일정의 우선순위가 반드시 입력되어야 한다.")
+    void daywork_priority_must_be_required() throws Exception {
+        UpdateDayworkRequestDto requestDto = UpdateDayworkRequestDto.builder()
+                .title("밥먹기")
+                .status(Workcheck.NOT_COMPLETE)
+                .build();
+
+        String request = mapper.writeValueAsString(requestDto);
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/schedule/{YYYYMM}/dayworks/01/{dayworkId}",
+                                String.format("%d%02d", YEAR, MONTH), daywork.getId())
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.errors[0].field").value("priority"))
+                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("NotNull.daywork.priority", null, null)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("일정을 생성할 때 정해놓은 우선순위에 포함되지 않은 값이 올 수 없다.")
+    void daywork_priority_must_be_defined_value() throws Exception {
+        String badPriority = "first";
+        BadDayworkDto requestDto = new BadDayworkDto("밥먹기", badPriority, "NOT_COMPLETE");
+
+        String request = mapper.writeValueAsString(requestDto);
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/schedule/{YYYYMM}/dayworks/01/{dayworkId}",
+                                String.format("%d%02d", YEAR, MONTH), daywork.getId())
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_TYPE_VALUE.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andDo(print());
+    }
+
+    private static class BadDayworkDto {
         private String title;
         private String priority;
+        private String status;
 
-        public void setTitle(String title) {
+        public BadDayworkDto(String title, String priority, String status) {
             this.title = title;
+            this.priority = priority;
+            this.status = status;
         }
 
         public String getTitle() {
             return title;
         }
 
-        public void setPriority(String priority) {
-            this.priority = priority;
-        }
-
         public String getPriority() {
             return priority;
+        }
+
+        public String getStatus() {
+            return status;
         }
     }
 

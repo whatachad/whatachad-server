@@ -2,6 +2,7 @@ package com.whatachad.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.whatachad.app.common.BError;
 import com.whatachad.app.controller.exception.ErrorCode;
 import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.dto.DayworkDto;
@@ -87,8 +88,8 @@ public class CreateDayworkValidationTest {
     }
 
     @Test
-    @DisplayName("title이 30자 이상 입력되면 BAD REQUEST 에러가 발생한다.")
-    void validate_create_dayworks_title_length() throws Exception {
+    @DisplayName("일정 등록 시 제목이 30자 이상 입력될 수 없다.")
+    void daywork_title_length_is_limited_to_30() throws Exception {
         CreateDayworkRequestDto requestDto = CreateDayworkRequestDto.builder()
                 .title("장보기,밥먹기,학교가기,티비보기,공부하기,드라마보기,장보기,밥먹기,학교가기,티비보기,공부하기,드라마보기")
                 .priority(DayworkPriority.FIRST)
@@ -103,14 +104,16 @@ public class CreateDayworkValidationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.errors[0].field").value("title"))
                 .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("Length.daywork.title", null, null)))
                 .andDo(print());
     }
 
 
     @Test
-    @DisplayName("title이 입력되지 않거나 blank만 입력되면 BAD_REQUEST 에러가 발생한다.")
-    void validate_create_dayworks_title_notBlank() throws Exception {
+    @DisplayName("일정 등록 시 제목이 입력되지 않거나 blank만 입력될 수 없다.")
+    void daywork_title_must_be_required() throws Exception {
         CreateDayworkRequestDto requestDto_null = CreateDayworkRequestDto.builder()
                 .priority(DayworkPriority.FIRST)
                 .build();
@@ -130,7 +133,9 @@ public class CreateDayworkValidationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
-                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("pattern.year_and_month", null, null)))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.errors[0].field").value("title"))
+                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("NotBlank.daywork.title", null, null)))
                 .andDo(print());
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/schedule/{YYYYMM}/dayworks/01",
@@ -141,13 +146,15 @@ public class CreateDayworkValidationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.errors[0].field").value("title"))
                 .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("NotBlank.daywork.title", null, null)))
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("priority가 입력되지 않으면 BAD_REQUEST 에러가 발생한다.")
-    void validate_create_dayworks_priority_notNull() throws Exception {
+    @DisplayName("일정등록 시 일정의 우선순위가 반드시 입력되어야 한다.")
+    void daywork_priority_must_be_required() throws Exception {
         CreateDayworkRequestDto requestDto = CreateDayworkRequestDto.builder()
                 .title("밥먹기")
                 .build();
@@ -161,13 +168,15 @@ public class CreateDayworkValidationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.errors[0].field").value("priority"))
                 .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("NotNull.daywork.priority", null, null)))
                 .andDo(print());
     }
 
     @Test
-    @DisplayName("daywork를 생성할 때 priority에 속하지 않는 값이 오면 BAD_REQUEST 에러가 발생한다.")
-    void validate_create_dayworks_priority_typeMisMatch() throws Exception {
+    @DisplayName("일정 등록 시 우선순위 값은 정의되지 않은 값이 올 수 없다.")
+    void daywork_priority_must_be_defined_value() throws Exception {
         BadDayworkDto requestDto = new BadDayworkDto();
         requestDto.setTitle("밥먹기");
         requestDto.setPriority("first");
@@ -181,6 +190,51 @@ public class CreateDayworkValidationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_TYPE_VALUE.getMessage()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("일정 등록 시 URL의 yearAndMonth이 {YYYYMM} 형태로 요청되어야 한다.")
+    void year_and_month_must_be_pattern_of_YYYYMM() throws Exception {
+        CreateDayworkRequestDto requestDto = CreateDayworkRequestDto.builder()
+                .title("밥먹기")
+                .priority(DayworkPriority.FIRST)
+                .build();
+
+        String request = mapper.writeValueAsString(requestDto);
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/schedule/{YYYMM}/dayworks/01",
+                                String.format("%d%03d", YEAR, MONTH))
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
+                .andExpect(jsonPath("$.errors[0].field").value("registerDaywork.arg1"))
+                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("pattern.year_and_month", null, null)))
+                .andDo(print());
+    }
+
+    @Test
+    @DisplayName("일정 등록 시 URL의 day는 해당 월에 존재하지 않으면 Buisiness Error이 발생한다.")
+    void day_must_be_valid_value() throws Exception {
+        CreateDayworkRequestDto requestDto = CreateDayworkRequestDto.builder()
+                .title("밥먹기")
+                .priority(DayworkPriority.FIRST)
+                .build();
+        int possibleDay = 35;
+
+        String request = mapper.writeValueAsString(requestDto);
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/schedule/{YYYYMM}/dayworks/{day}",
+                                String.format("%d%02d", YEAR, MONTH), possibleDay)
+                        .content(request)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.message").value(ErrorCode.BUSINESS_ERROR.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.errors[0].reason").value(BError.NOT_VALID.getMessage("day")))
                 .andDo(print());
     }
 

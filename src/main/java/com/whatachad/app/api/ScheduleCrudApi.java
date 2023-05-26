@@ -42,7 +42,8 @@ public interface ScheduleCrudApi {
     ResponseEntity<DayworkResponseDto> registerDaywork(@Valid @RequestBody CreateDayworkRequestDto requestDto,
                                                        @PathVariable("YYYYMM")
                                                        @Pattern(regexp = "[0-9]{6}",
-                                                               message = "pattern.year_and_month") String yearAndMonth,
+                                                               message = "{pattern.year_and_month}")
+                                                       String yearAndMonth,
                                                        @PathVariable("DD") Integer date);
 
     @Operation(summary = "일정(daywork) 수정",
