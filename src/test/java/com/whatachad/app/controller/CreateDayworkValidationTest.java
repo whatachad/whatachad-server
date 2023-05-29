@@ -8,7 +8,6 @@ import com.whatachad.app.model.domain.Daywork;
 import com.whatachad.app.model.dto.DayworkDto;
 import com.whatachad.app.model.dto.ScheduleDto;
 import com.whatachad.app.model.request.CreateDayworkRequestDto;
-import com.whatachad.app.model.request.UpdateDayworkRequestDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
 import com.whatachad.app.service.ScheduleService;
@@ -202,7 +201,7 @@ public class CreateDayworkValidationTest {
                 .build();
 
         String request = mapper.writeValueAsString(requestDto);
-        mockMvc.perform(MockMvcRequestBuilders.post("/v1/schedule/{YYYMM}/dayworks/01",
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/schedule/{YYYYMM}/dayworks/01",
                                 String.format("%d%03d", YEAR, MONTH))
                         .content(request)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -211,7 +210,7 @@ public class CreateDayworkValidationTest {
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
-                .andExpect(jsonPath("$.errors[0].field").value("registerDaywork.arg1"))
+                .andExpect(jsonPath("$.errors[0].field").value("registerDaywork.yearAndMonth"))
                 .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("pattern.year_and_month", null, null)))
                 .andDo(print());
     }
