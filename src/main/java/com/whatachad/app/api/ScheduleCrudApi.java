@@ -39,9 +39,12 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PostMapping("/{YYYYMM}/dayworks/{DD}")
-    ResponseEntity<DayworkResponseDto> registerDaywork(@RequestBody CreateDayworkRequestDto requestDto,
-                                                             @PathVariable("YYYYMM") String yearAndMonth,
-                                                             @PathVariable("DD") Integer day);
+    ResponseEntity<DayworkResponseDto> registerDaywork(@Valid @RequestBody CreateDayworkRequestDto requestDto,
+                                                       @PathVariable("YYYYMM")
+                                                       @Pattern(regexp = "[0-9]{6}",
+                                                               message = "{pattern.year_and_month}")
+                                                       String yearAndMonth,
+                                                       @PathVariable("DD") Integer date);
 
     @Operation(summary = "일정(daywork) 수정",
             description = "일정의 title, priority, status, hour, minute 를 수정할 수 있다.")
@@ -52,8 +55,8 @@ public interface ScheduleCrudApi {
             @ApiResponse(responseCode = "405", description = "Method Not Allowed")
     })
     @PutMapping("/{YYYYMM}/dayworks/{DD}/{dayworkId}")
-    ResponseEntity<DayworkResponseDto> editDaywork(@RequestBody UpdateDayworkRequestDto requestDto,
-                                                         @PathVariable Long dayworkId);
+    ResponseEntity<DayworkResponseDto> editDaywork(@Valid @RequestBody UpdateDayworkRequestDto requestDto,
+                                                   @PathVariable Long dayworkId);
 
     @Operation(summary = "일정(daywork) 삭제",
             description = "daywork_id를 이용해 일정을 삭제한다.")
@@ -80,6 +83,7 @@ public interface ScheduleCrudApi {
                                                                message = "{account.year_and_month.pattern}")
                                                                String yearAndMonth,
                                                        @PathVariable("DD") Integer day);
+
 
     @Operation(summary = "가계부 수정",
             description = "가계부의 title, cost, type, category, hour, minute 를 수정할 수 있다.")
