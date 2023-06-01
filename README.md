@@ -38,6 +38,10 @@
 - 빠른 authorization을 원한다면 debug만 입력
 
 -----------------------------------
+## ERD
+![WaC ERD](https://github.com/whatachad/whatachad-server/assets/93817551/69abb86c-ea92-49cc-be65-47f9a0eedc4e)
+
+
 ## 예외처리 계층 구조
 <img width="2899" alt="예외처리 계층 구조" src="https://github.com/whatachad/whatachad-server/assets/93817551/3a07b8ec-780c-412b-908e-3e7d713548f6">
 
