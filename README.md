@@ -1,3 +1,24 @@
+# 🔱 What a Chad
+## 프로젝트 소개
+What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들에게 도움이 될 수 있는 서비스를 구현하기 위해 시작되었습니다.   
+
+주변 스포츠 시설을 검색하고, 해당 스포츠 시설에 대한 사용자의 리뷰도 찾아볼 수 있습니다.   
+뿐만 아니라 철봉이나 평행봉 같은 야외 운동 기구에 대한 위치 정보와 사용 후기 등을 유저가 직접 등록하여 많은 사람들이 공유할 수 있도록 합니다.   
+
+캘린더 형식으로 매일 가계부를 관리하고, 오늘 할 일을 기록하고 체크하는 기능을 제공합니다.   
+팔로우된 유저끼리는 서로 할 일을 완수했는지 확인하여 더욱 의지를 불태울 수 있습니다.
+
+
+## ERD
+![WaC ERD (1)](https://github.com/whatachad/whatachad-server/assets/93817551/ce0f144d-42b0-4298-bc91-0f3774c6ffb5)
+
+
+## 예외처리 계층 구조
+<img width="2899" alt="예외처리 계층 구조" src="https://github.com/whatachad/whatachad-server/assets/93817551/3a07b8ec-780c-412b-908e-3e7d713548f6">
+
+
+-----------------------------------
+
 # Project Setting
 
 ## Pull Request
@@ -36,12 +57,3 @@
 - 배포 : http://whatachad.site:3000/swagger-ui/index.html 
 - 위 링크에서 자물쇠 모양을 누르고 Bearer(한 칸 띄우고)access token 입력
 - 빠른 authorization을 원한다면 debug만 입력
-
------------------------------------
-## ERD
-![WaC ERD](https://github.com/whatachad/whatachad-server/assets/93817551/69abb86c-ea92-49cc-be65-47f9a0eedc4e)
-
-
-## 예외처리 계층 구조
-<img width="2899" alt="예외처리 계층 구조" src="https://github.com/whatachad/whatachad-server/assets/93817551/3a07b8ec-780c-412b-908e-3e7d713548f6">
-
