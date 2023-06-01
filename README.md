@@ -8,6 +8,15 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 캘린더 형식으로 매일 가계부를 관리하고, 오늘 할 일을 기록하고 체크하는 기능을 제공합니다.   
 팔로우된 유저끼리는 서로 할 일을 완수했는지 확인하여 더욱 의지를 불태울 수 있습니다.
 
+## 👨‍💻 Contributors
+
+| Contributor                                      | Role     |
+| ------------------------------------------------ | -------- |
+| [Seongyeon Ha](https://github.com/iDevBrandon)   | Frontend |
+| [GyeongSeok Lee](https://github.com/lekosk2001)  | Frontend |
+| [Jinhyeon Kwak](https://github.com/JinhyeonKwak) | Backend  |
+| [HyunJung Kim](https://github.com/HyunJng)       | Backend  |
+
 
 ## ERD
 ![WaC ERD (1)](https://github.com/whatachad/whatachad-server/assets/93817551/ce0f144d-42b0-4298-bc91-0f3774c6ffb5)
