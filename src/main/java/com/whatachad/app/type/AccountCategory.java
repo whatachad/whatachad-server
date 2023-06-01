@@ -39,7 +39,7 @@ public enum AccountCategory {
     public static AccountCategory valueOfLabel(AccountType type, String label) {
         AccountCategory accountCategory = BY_LABEL.get(label);
         if (accountCategory == null) {
-            throw new CommonException(BError.NOT_VALID, "category");
+            throw new CommonException(BError.NOT_VALID, "account category");
         }
         if (accountCategory.getType() != type) {
             throw new CommonException(BError.NOT_MATCHES, "account type", "account category");

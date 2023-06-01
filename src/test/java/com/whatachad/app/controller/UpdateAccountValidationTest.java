@@ -2,6 +2,8 @@ package com.whatachad.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import com.whatachad.app.common.BError;
+import com.whatachad.app.controller.exception.ErrorCode;
 import com.whatachad.app.model.domain.Account;
 import com.whatachad.app.model.dto.AccountDto;
 import com.whatachad.app.model.dto.ScheduleDto;
@@ -21,6 +23,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.MessageSource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -48,6 +52,8 @@ public class UpdateAccountValidationTest {
     private TokenService tokenService;
     @Autowired
     private ScheduleService scheduleService;
+    @Autowired
+    private MessageSource messageSource;
     @Autowired
     private TestDataProcessor processor;
 
@@ -96,12 +102,12 @@ public class UpdateAccountValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Invalid Input Value"))
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value("C001"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
                 .andExpect(jsonPath("$.errors[0].field").value("title"))
                 .andExpect(jsonPath("$.errors[0].value").value("제목입니다".repeat(11)))
-                .andExpect(jsonPath("$.errors[0].reason").value("제목은 1~50자 이내 입력 가능합니다."));
+                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("account.title.size", null, null)));
     }
 
     @Test
@@ -122,12 +128,12 @@ public class UpdateAccountValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Business Error"))
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value("B000"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.BUSINESS_ERROR.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.BUSINESS_ERROR.getCode()))
                 .andExpect(jsonPath("$.errors[0].field").value("Business Error"))
-                .andExpect(jsonPath("$.errors[0].value").value("NOT_VALID"))
-                .andExpect(jsonPath("$.errors[0].reason").value("category is not valid."));
+                .andExpect(jsonPath("$.errors[0].value").value(BError.NOT_VALID.getCode()))
+                .andExpect(jsonPath("$.errors[0].reason").value(BError.NOT_VALID.getMessage("account category")));
     }
 
     @Test
@@ -148,12 +154,12 @@ public class UpdateAccountValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Business Error"))
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value("B000"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.BUSINESS_ERROR.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.BUSINESS_ERROR.getCode()))
                 .andExpect(jsonPath("$.errors[0].field").value("Business Error"))
-                .andExpect(jsonPath("$.errors[0].value").value("NOT_MATCHES"))
-                .andExpect(jsonPath("$.errors[0].reason").value("account type and account category do not match."));
+                .andExpect(jsonPath("$.errors[0].value").value(BError.NOT_MATCHES.getCode()))
+                .andExpect(jsonPath("$.errors[0].reason").value(BError.NOT_MATCHES.getMessage("account type", "account category")));
     }
 
     @Test
@@ -174,12 +180,12 @@ public class UpdateAccountValidationTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("Invalid Input Value"))
-                .andExpect(jsonPath("$.status").value(400))
-                .andExpect(jsonPath("$.code").value("C001"))
+                .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
+                .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
+                .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
                 .andExpect(jsonPath("$.errors[0].field").value("cost"))
                 .andExpect(jsonPath("$.errors[0].value").value(100000000))
-                .andExpect(jsonPath("$.errors[0].reason").value("범위를 초과합니다."));
+                .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("account.cost.range", null, null)));
     }
 
     private void authorize() {
