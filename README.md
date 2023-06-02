@@ -34,6 +34,44 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 ### Cloud
 ![Oracle](https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white)
 
+## 기능 목록
+### ⭐️ 주요 기능 ⭐️
+- 사용자 위치를 기준으로 반경 거리를 설정하여 스포츠 시설을 조회
+- 야외 운동 기구 사용 후 위치 정보 등록하고 후기 남기기
+- (추후 업데이트)
+
+#### 기타 기능
+<details>
+<summary>유저</summary>
+<div markdown="1">
+
+</div>
+</details>
+
+<details>
+<summary>스포츠 시설</summary>
+<div markdown="1">
+
+</div>
+</details>
+
+<details>
+<summary>가계부</summary>
+<div markdown="1">
+
+</div>
+</details>
+
+<details>
+<summary>할 일</summary>
+<div markdown="1">
+
+</div>
+</details>
+
+
+
+
 ## ERD
 ![WaC ERD (1)](https://github.com/whatachad/whatachad-server/assets/93817551/ce0f144d-42b0-4298-bc91-0f3774c6ffb5)
 
