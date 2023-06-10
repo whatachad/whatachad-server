@@ -20,37 +20,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.StringJoiner;
-import java.util.stream.IntStream;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
 public class FacilityConverter {
 
     public static final Map<String, String> REGION_CODE = new HashMap<>(); // <ADDRESS, REGION_CODE>
+    public static final Map<String, String> SIDO_FULL_NAME = new HashMap<>(); // <ABBREVIATION_NAME, FULL_NAME>
 
     private final ResourceLoader resourceLoader;
     private final FacilityMapper facilityMapper;
 
     //== initialization methods ==//
     @PostConstruct
-    void initRegionCode() throws IOException {
-        String filePath = "static/region-code.csv";
-        Resource resource = resourceLoader.getResource("classpath:" + filePath);
-        InputStream inputStream = resource.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        String currentLine = reader.readLine(); // 첫 줄은 column명이므로 skip
-        while ((currentLine = reader.readLine()) != null) {
-            String[] splitLine = currentLine.split(",");
-            String regionCode = splitLine[0];
-            String area = String.join(" ",
-                    splitLine[1], splitLine[2], splitLine[3], splitLine[4]).trim();
-            REGION_CODE.put(area, regionCode);
-        }
-        reader.close();
+    void init() throws IOException {
+        initRegionCode();
+        initRegionAbbreviation();
     }
 
     // dto -> adaptee 변환
@@ -82,18 +69,53 @@ public class FacilityConverter {
         return facilityMapper.toResponseDto(entity);
     }
 
-    // TODO : <주의> 올바르지 않은 지번 주소에 대해서는 null을 반환한다. 이에 대한 예외 처리가 필요하다.
     public String getRegionCode(String jibunAddress) {
-        String[] addressArr = jibunAddress.split(" ");
-        StringJoiner validAddress = new StringJoiner(" ");
-        IntStream.range(0, addressArr.length - 1)
-                .forEach(i -> {
-                    validAddress.add(addressArr[i]);
-                });
-        return REGION_CODE.get(String.valueOf(validAddress));
+        String[] splitAddress = jibunAddress.split(" ");
+        splitAddress[0] = SIDO_FULL_NAME.getOrDefault(splitAddress[0], splitAddress[0]); // 시도 약칭을 정식명칭으로 변환
+        String validAddress = Arrays.stream(splitAddress)
+                .limit(splitAddress.length - 1)
+                .filter(s -> !s.equals("산")) // 지번 앞에 산이 있는 경우 산을 제외한다.
+                .collect(Collectors.joining(" "));
+        String regionCode = REGION_CODE.get(validAddress);
+        if (Objects.nonNull(regionCode)) {
+            return regionCode;
+        }
+        throw new CommonException(BError.NOT_VALID, "address");
     }
 
     //== private methods ==//
+    private void initRegionCode() throws IOException {
+        BufferedReader reader = getResourcesReader("static/region-code.csv");
+        String currentLine = reader.readLine(); // 첫 줄은 column명이므로 skip
+        while ((currentLine = reader.readLine()) != null) {
+            String[] splitLine = currentLine.split(",");
+            String regionCode = splitLine[0];
+            String area = String.join(" ",
+                    splitLine[1], splitLine[2], splitLine[3], splitLine[4]).trim();
+            REGION_CODE.put(area, regionCode);
+        }
+        reader.close();
+    }
+
+    private void initRegionAbbreviation() throws IOException {
+        BufferedReader reader = getResourcesReader("static/region-abbreviation.csv");
+        String currentLine = reader.readLine();
+        while ((currentLine = reader.readLine()) != null) {
+            String[] splitLine = currentLine.split(",");
+            SIDO_FULL_NAME.put(splitLine[0], splitLine[1]);
+        }
+        reader.close();
+    }
+
+    private BufferedReader getResourcesReader(String filePath) throws IOException {
+        Resource resource = resourceLoader.getResource("classpath:" + filePath);
+        InputStream inputStream = resource.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        return reader;
+    }
+
+
+
     private Address createAddress(CreateFacilityRequestDto dto) {
         return Address.builder()
                 .regionCode(getRegionCode(dto.getJibunAddress()))
