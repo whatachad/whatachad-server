@@ -53,12 +53,15 @@ public class FacilityController implements FacilityApi {
                 .findAddressesWith4Directions(
                         findFacilityDto.getLatitude(),
                         findFacilityDto.getLongitude(),
-                        findFacilityDto.getDistance()
-                );
+                        findFacilityDto.getDistance());
         String[] regionCodes = Arrays.stream(addressesWith4Directions)
                 .map(facilityConverter::getRegionCode)
                 .toArray(String[]::new);
-        Slice<Facility> facilities = facilityService.findFacilitiesAroundV2(pageable, regionCodes);
+        Slice<Facility> facilities = facilityService
+                .findFacilitiesAroundV2(
+                        pageable,
+                        findFacilityDto.getCategory(),
+                        regionCodes);
         return ResponseEntity.ok(facilities.map(FacilityResponseDto::new));
     }
 

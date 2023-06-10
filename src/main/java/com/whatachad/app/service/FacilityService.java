@@ -7,6 +7,7 @@ import com.whatachad.app.model.domain.User;
 import com.whatachad.app.model.dto.FacilityDto;
 import com.whatachad.app.model.request.FindFacilityDto;
 import com.whatachad.app.repository.FacilityRepository;
+import com.whatachad.app.type.FacilityType;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
@@ -42,12 +43,12 @@ public class FacilityService {
 
     @Transactional(readOnly = true)
     public Slice<Facility> findFacilitiesAroundV1(Pageable pageable, FindFacilityDto findFacilityDto) {
-        return facilityRepository.findFaciliteisAroundUser(pageable, findFacilityDto);
+        return facilityRepository.findFacilitiesAroundUser(pageable, findFacilityDto);
     }
 
     @Transactional(readOnly = true)
-    public Slice<Facility> findFacilitiesAroundV2(Pageable pageable, String[] regionCodes) {
-        return facilityRepository.findByRegionCode(pageable, regionCodes);
+    public Slice<Facility> findFacilitiesAroundV2(Pageable pageable, FacilityType category, String[] regionCodes) {
+        return facilityRepository.findFacilitiesAroundUserV2(pageable, category, regionCodes);
     }
 
     @Transactional(readOnly = true)
