@@ -1,11 +1,11 @@
 package com.whatachad.app.service;
 
-import com.whatachad.app.model.vo.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.dto.FacilityDto;
 import com.whatachad.app.model.request.FindFacilityDto;
 import com.whatachad.app.model.request.UserLoginRequestDto;
 import com.whatachad.app.model.response.UserTokenResponseDto;
+import com.whatachad.app.model.vo.Address;
 import com.whatachad.app.type.FacilityType;
 import com.whatachad.app.util.TestDataProcessor;
 import io.jsonwebtoken.Claims;
@@ -116,7 +116,7 @@ class FacilityServiceTest {
                 .longitude(126.929699)
                 .distance(100)
                 .build();
-        Slice<Facility> facilities = facilityService.findFacilities(pageRequest, findFacilityDto);
+        Slice<Facility> facilities = facilityService.findFacilitiesAroundV1(pageRequest, findFacilityDto);
         List<Facility> result = facilities.getContent();
         assertThat(result.size()).isEqualTo(2);
     }
@@ -135,10 +135,20 @@ class FacilityServiceTest {
         facilityService.createFacility(facilityDto);
 
         PageRequest pageRequest = PageRequest.of(0, 10);
-        Slice<Facility> facilities = facilityService.findFacilities(pageRequest, "서울특별시 강남구");
+        Slice<Facility> facilities = facilityService.findFacilitiesInArea(pageRequest, "서울특별시 강남구");
         Facility facility = facilities.getContent().get(0);
         assertThat(facility.getAddress().getJibunAddress()).isEqualTo("서울특별시 강남구 청담동 92-22");
         assertThat(facility.getCategory()).isEqualTo(FacilityType.HEALTH);
+    }
+
+    @Test
+    @DisplayName("사용자 주위의 스포츠 시설을 지역코드를 이용해 조회한다.")
+    void find_facilities_around_user_by_region_code() {
+        PageRequest pageRequest = PageRequest.of(0, 10);
+        String[] regionCodes = {"1162010200", "1162010100", "1162010300"};
+        Slice<Facility> facilities = facilityService.findFacilitiesAroundV2(pageRequest, FacilityType.HEALTH, regionCodes);
+        List<Facility> result = facilities.getContent();
+        assertThat(result.size()).isEqualTo(7);
     }
 
     private void authorize() {

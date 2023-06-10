@@ -197,7 +197,21 @@ class FacilityControllerTest {
                         .value("서울특별시 강남구 청담동 92-22"));
     }
 
-    // TODO : 예외 상황에 대한 테스트 필요 -> 하나의 기능에 대한 여러 파라미터 값으로 테스트 (Parameterized Test)
+    @Test
+    @DisplayName("사용자 주변 스포츠 시설을 조회한다. (지역코드 이용하는 버전) " +
+            "GET /v1/facilities/v2?page=0&size=5&category=HEALTH&latitude=37.4846553&longitude=126.9272265&distance=1")
+    void find_facilities_around_user_v2() throws Exception {
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities/v2")
+                        .param("page", "0")
+                        .param("size", "5")
+                        .param("category", "HEALTH")
+                        .param("latitude", "37.4846553")
+                        .param("longitude", "126.9272265")
+                        .param("distance", "1")
+                        .header("Authorization", "Bearer " + accessToken))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content.length()").value(5));
+    }
 
     private void authorize() {
         UserLoginRequestDto loginDto = UserLoginRequestDto.builder()
