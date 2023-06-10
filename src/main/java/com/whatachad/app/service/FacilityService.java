@@ -46,8 +46,8 @@ public class FacilityService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<Facility> findFacilitiesAroundV2(Pageable pageable, String regionCode) {
-        return facilityRepository.findByRegionCode(pageable, regionCode);
+    public Slice<Facility> findFacilitiesAroundV2(Pageable pageable, String[] regionCodes) {
+        return facilityRepository.findByRegionCode(pageable, regionCodes);
     }
 
     @Transactional(readOnly = true)

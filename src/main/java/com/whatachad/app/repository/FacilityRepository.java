@@ -15,8 +15,8 @@ public interface FacilityRepository extends JpaRepository<Facility, Long> {
     @Query("select f from Facility f where f.address.jibunAddress like %:area%")
     Slice<Facility> findByArea(Pageable pageable, @Param("area") String area);
 
-    @Query("select f from Facility f where f.address.regionCode = :regionCode")
-    Slice<Facility> findByRegionCode(Pageable pageable, @Param("regionCode") String regionCode);
+    @Query("select f from Facility f where f.address.regionCode in (:regionCodes)")
+    Slice<Facility> findByRegionCode(Pageable pageable, @Param("regionCodes") String[] regionCodes);
 
     @Query(value = "select * from Facility f"
             + " where ST_DWithin(CAST(ST_SetSRID(ST_Point(:#{#dto.latitude}, :#{#dto.longitude}), 4326) as"

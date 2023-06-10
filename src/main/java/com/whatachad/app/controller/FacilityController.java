@@ -15,7 +15,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -46,9 +49,16 @@ public class FacilityController implements FacilityApi {
                                                                             Map<String, String> findFacilityParam) {
 
         FindFacilityDto findFacilityDto = facilityConverter.toFindFacilityDto(findFacilityParam);
-        String jibunAddress = localMapService.reverseGeocode(findFacilityDto.getLatitude(), findFacilityDto.getLongitude());
-        String regionCode = facilityConverter.getRegionCode(jibunAddress);
-        Slice<Facility> facilities = facilityService.findFacilitiesAroundV2(pageable, regionCode);
+        String[] addressesWith4Directions = localMapService
+                .findAddressesWith4Directions(
+                        findFacilityDto.getLatitude(),
+                        findFacilityDto.getLongitude(),
+                        findFacilityDto.getDistance()
+                );
+        String[] regionCodes = Arrays.stream(addressesWith4Directions)
+                .map(facilityConverter::getRegionCode)
+                .toArray(String[]::new);
+        Slice<Facility> facilities = facilityService.findFacilitiesAroundV2(pageable, regionCodes);
         return ResponseEntity.ok(facilities.map(FacilityResponseDto::new));
     }
 
