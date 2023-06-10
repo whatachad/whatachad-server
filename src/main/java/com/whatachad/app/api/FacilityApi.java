@@ -1,5 +1,6 @@
 package com.whatachad.app.api;
 
+import com.whatachad.app.model.request.AreaRequestDto;
 import com.whatachad.app.model.request.CreateFacilityRequestDto;
 import com.whatachad.app.model.request.UpdateFacilityRequestDto;
 import com.whatachad.app.model.response.FacilityResponseDto;
@@ -37,7 +38,7 @@ public interface FacilityApi {
 
 
     @Operation(summary = "주변 스포츠 시설 조회",
-            description = "유저의 위치를 기반으로 주변 스포츠 시설을 조회")
+            description = "유저의 위치를 기반으로 주변 스포츠 시설을 조회 (반경 거리를 이용)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "OK",
                     content = @Content(schema = @Schema(implementation = FacilityResponseSlice.class))),
@@ -47,6 +48,18 @@ public interface FacilityApi {
     @GetMapping
     ResponseEntity<Slice<FacilityResponseDto>> getFacilitiesAround(@PageableDefault(page = 0, size = 10) Pageable pageable,
                                                              @RequestParam Map<String, String> findFacilityParam);
+
+    @Operation(summary = "주변 스포츠 시설 조회",
+            description = "유저의 위치를 기반으로 주변 스포츠 시설을 조회 (지역 코드를 이용)")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "OK",
+                    content = @Content(schema = @Schema(implementation = FacilityResponseSlice.class))),
+            @ApiResponse(responseCode = "400", description = "Bad Request"),
+            @ApiResponse(responseCode = "405", description = "Method Not Allowed")
+    })
+    @GetMapping("/v2")
+    ResponseEntity<Slice<FacilityResponseDto>> getFacilitiesAroundV2(@PageableDefault(page = 0, size = 10) Pageable pageable,
+                                                                     @RequestParam Map<String, String> findFacilityParam);
 
 
     // TODO : 검색 조건 추가

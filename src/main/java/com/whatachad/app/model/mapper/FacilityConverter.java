@@ -68,15 +68,7 @@ public class FacilityConverter {
 
     // 조회용 dto 변환
     public FindFacilityDto toFindFacilityDto(Map<String, String> findFacilityParam) {
-        Map<String, String> validParam = new HashMap<>();
-        String[] keys = new String[]{"category", "latitude", "longitude", "distance"};
-        Arrays.stream(keys)
-                .forEach(k -> {
-                    validParam.put(k, null);
-                });
-        validParam.putAll(findFacilityParam);
-        validParam.entrySet()
-                .forEach(e -> validate(e));
+        Map<String, String> validParam = getValidatedParam(findFacilityParam);
         return FindFacilityDto.builder()
                 .category(FacilityType.valueOf(validParam.get("category")))
                 .latitude(Double.valueOf(validParam.get("latitude")))
@@ -90,6 +82,16 @@ public class FacilityConverter {
         return facilityMapper.toResponseDto(entity);
     }
 
+    // TODO : <주의> 올바르지 않은 지번 주소에 대해서는 null을 반환한다. 이에 대한 예외 처리가 필요하다.
+    public String getRegionCode(String jibunAddress) {
+        String[] addressArr = jibunAddress.split(" ");
+        StringJoiner validAddress = new StringJoiner(" ");
+        IntStream.range(0, addressArr.length - 1)
+                .forEach(i -> {
+                    validAddress.add(addressArr[i]);
+                });
+        return REGION_CODE.get(String.valueOf(validAddress));
+    }
 
     //== private methods ==//
     private Address createAddress(CreateFacilityRequestDto dto) {
@@ -112,6 +114,19 @@ public class FacilityConverter {
                 .build();
     }
 
+    private Map<String, String> getValidatedParam(Map<String, String> findFacilityParam) {
+        Map<String, String> validParam = new HashMap<>();
+        String[] keys = new String[]{"category", "latitude", "longitude", "distance"};
+        Arrays.stream(keys)
+                .forEach(k -> {
+                    validParam.put(k, null);
+                });
+        validParam.putAll(findFacilityParam);
+        validParam.entrySet()
+                .forEach(e -> validate(e));
+        return validParam;
+    }
+
     private void validate(Map.Entry entry) {
         // TODO : 존재하지 않는 카테고리, 잘못된 형식의 위도/경도, 거리 타입 검증 등
         // 카테고리 값이 존재하지 않는다면 "HEALTH"를 default로서 지정한다.
@@ -130,14 +145,5 @@ public class FacilityConverter {
         }
     }
 
-    // TODO : <주의> 올바르지 않은 지번 주소에 대해서는 null을 반환한다. 이에 대한 예외 처리가 필요하다.
-    private String getRegionCode(String jibunAddress) {
-        String[] addressArr = jibunAddress.split(" ");
-        StringJoiner validAddress = new StringJoiner(" ");
-        IntStream.range(0, addressArr.length - 1)
-                .forEach(i -> {
-                    validAddress.add(addressArr[i]);
-                });
-        return REGION_CODE.get(String.valueOf(validAddress));
-    }
+
 }

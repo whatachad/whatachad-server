@@ -7,6 +7,7 @@ import com.whatachad.app.model.mapper.FacilityConverter;
 import com.whatachad.app.model.request.*;
 import com.whatachad.app.model.response.FacilityResponseDto;
 import com.whatachad.app.service.FacilityService;
+import com.whatachad.app.service.LocalMapService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
@@ -22,6 +23,7 @@ import java.util.Map;
 public class FacilityController implements FacilityApi {
 
     private final FacilityService facilityService;
+    private final LocalMapService localMapService;
     private final FacilityConverter facilityConverter;
 
     @Override
@@ -35,14 +37,25 @@ public class FacilityController implements FacilityApi {
     public ResponseEntity<Slice<FacilityResponseDto>> getFacilitiesAround(Pageable pageable,
                                                                           Map<String, String> findFacilityParam) {
         FindFacilityDto findFacilityDto = facilityConverter.toFindFacilityDto(findFacilityParam);
-        Slice<Facility> facilities = facilityService.findFacilities(pageable, findFacilityDto);
+        Slice<Facility> facilities = facilityService.findFacilitiesAroundV1(pageable, findFacilityDto);
+        return ResponseEntity.ok(facilities.map(FacilityResponseDto::new));
+    }
+
+    @Override
+    public ResponseEntity<Slice<FacilityResponseDto>> getFacilitiesAroundV2(Pageable pageable,
+                                                                            Map<String, String> findFacilityParam) {
+
+        FindFacilityDto findFacilityDto = facilityConverter.toFindFacilityDto(findFacilityParam);
+        String jibunAddress = localMapService.reverseGeocode(findFacilityDto.getLatitude(), findFacilityDto.getLongitude());
+        String regionCode = facilityConverter.getRegionCode(jibunAddress);
+        Slice<Facility> facilities = facilityService.findFacilitiesAroundV2(pageable, regionCode);
         return ResponseEntity.ok(facilities.map(FacilityResponseDto::new));
     }
 
     @Override
     public ResponseEntity<Slice<FacilityResponseDto>> getFacilitiesBySearchCond(Pageable pageable,
                                                                                 String l1, String l2, String l3) {
-        Slice<Facility> facilities = facilityService.findFacilities(pageable, AreaRequestDto.getArea(l1, l2, l3));
+        Slice<Facility> facilities = facilityService.findFacilitiesInArea(pageable, AreaRequestDto.getArea(l1, l2, l3));
         return ResponseEntity.ok(facilities.map(FacilityResponseDto::new));
     }
 

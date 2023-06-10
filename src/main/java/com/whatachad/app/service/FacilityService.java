@@ -41,13 +41,18 @@ public class FacilityService {
     }
 
     @Transactional(readOnly = true)
-    public Slice<Facility> findFacilities(Pageable pageable, FindFacilityDto findFacilityDto) {
-        return facilityRepository.findFacilityAroundUser(pageable, findFacilityDto);
+    public Slice<Facility> findFacilitiesAroundV1(Pageable pageable, FindFacilityDto findFacilityDto) {
+        return facilityRepository.findFaciliteisAroundUser(pageable, findFacilityDto);
     }
 
     @Transactional(readOnly = true)
-    public Slice<Facility> findFacilities(Pageable pageable, String area) {
-        return facilityRepository.findFacilityByArea(pageable, area);
+    public Slice<Facility> findFacilitiesAroundV2(Pageable pageable, String regionCode) {
+        return facilityRepository.findByRegionCode(pageable, regionCode);
+    }
+
+    @Transactional(readOnly = true)
+    public Slice<Facility> findFacilitiesInArea(Pageable pageable, String area) {
+        return facilityRepository.findByArea(pageable, area);
     }
 
     @Transactional
