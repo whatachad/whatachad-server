@@ -1,6 +1,7 @@
 package com.whatachad.app.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.whatachad.app.init.TestInit;
 import com.whatachad.app.model.vo.Address;
 import com.whatachad.app.model.domain.Facility;
 import com.whatachad.app.model.dto.FacilityDto;
@@ -38,6 +39,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class FacilityControllerTest {
 
+    private static final String ADDRESS_EXAMPLE1 = "서울특별시 중구 태평로1가 31";
+    private static final String ROAD_ADDRESS_EXAMPLE = "서울특별시 중구 세종대로 110 서울특별시청";
+    private static final double LATITUDE_EXAMPLE1 = 37.5666612;
+    private static final double LONGITUDE_EXAMPLE1 = 126.9783785;
+
+    private static final String ADDRESS_EXAMPLE2 = "서울특별시 중구 소공동 1";
+    private static final double LATITUDE_EXAMPLE2 = 37.5647103;
+    private static final double LONGITUDE_EXAMPLE2 = 126.9816722;
+
     private final ObjectMapper mapper = new ObjectMapper();
     private Facility facility;
     private String accessToken;
@@ -56,10 +66,10 @@ class FacilityControllerTest {
         authorize();
         FacilityDto facilityDto = FacilityDto.builder()
                 .address(Address.builder()
-                        .jibunAddress("지번 주소")
-                        .roadAddress("도로명 주소")
-                        .latitude(0D)
-                        .longitude(0D)
+                        .jibunAddress(ADDRESS_EXAMPLE1)
+                        .roadAddress(ROAD_ADDRESS_EXAMPLE)
+                        .latitude(LATITUDE_EXAMPLE1)
+                        .longitude(LONGITUDE_EXAMPLE1)
                         .build())
                 .category(FacilityType.HEALTH)
                 .build();
@@ -75,9 +85,9 @@ class FacilityControllerTest {
     @DisplayName("facility를 등록한다. POST /v1/facilities")
     void registerFacility() throws Exception {
         CreateFacilityRequestDto createFacilityDto = CreateFacilityRequestDto.builder()
-                .jibunAddress("지번 주소")
-                .latitude(0D)
-                .longitude(0D)
+                .jibunAddress(ADDRESS_EXAMPLE2)
+                .latitude(LATITUDE_EXAMPLE2)
+                .longitude(LONGITUDE_EXAMPLE2)
                 .category(FacilityType.HEALTH)
                 .build();
         String request = mapper.writeValueAsString(createFacilityDto);
@@ -86,9 +96,9 @@ class FacilityControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.address.jibunAddress").value("지번 주소"))
-                .andExpect(jsonPath("$.address.latitude").value("0.0"))
-                .andExpect(jsonPath("$.address.longitude").value("0.0"))
+                .andExpect(jsonPath("$.address.jibunAddress").value(ADDRESS_EXAMPLE2))
+                .andExpect(jsonPath("$.address.latitude").value(String.valueOf(LATITUDE_EXAMPLE2)))
+                .andExpect(jsonPath("$.address.longitude").value(String.valueOf(LONGITUDE_EXAMPLE2)))
                 .andExpect(jsonPath("$.category").value("HEALTH"));
     }
 
@@ -97,9 +107,9 @@ class FacilityControllerTest {
     void editFacility() throws Exception {
         UpdateFacilityRequestDto updateFacilityDto = UpdateFacilityRequestDto.builder()
                 .id(facility.getId())
-                .jibunAddress("변경된 주소")
-                .latitude(0D)
-                .longitude(0D)
+                .jibunAddress(ADDRESS_EXAMPLE2)
+                .latitude(LATITUDE_EXAMPLE2)
+                .longitude(LONGITUDE_EXAMPLE2)
                 .category(FacilityType.HEALTH)
                 .build();
         String request = mapper.writeValueAsString(updateFacilityDto);
@@ -108,7 +118,7 @@ class FacilityControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.address.jibunAddress").value("변경된 주소"));
+                .andExpect(jsonPath("$.address.jibunAddress").value(ADDRESS_EXAMPLE2));
     }
 
     @Test
@@ -125,7 +135,7 @@ class FacilityControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities/" + facility.getId())
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.address.jibunAddress").value("지번 주소"))
+                .andExpect(jsonPath("$.address.jibunAddress").value(ADDRESS_EXAMPLE1))
                 .andExpect(jsonPath("$.category").value("HEALTH"));
     }
 
@@ -177,24 +187,17 @@ class FacilityControllerTest {
     }
 
     @Test
-    @DisplayName("facility를 지역명으로 조회한다. GET /v1/facilities/search?page=0&size=5&l1=서울특별시&l2=강남구&l3=청담동")
+    @DisplayName("facility를 지역명으로 조회한다. GET /v1/facilities/search?page=0&size=5&l1=서울특별시&l2=중구")
     void getFacilityByArea() throws Exception {
-        FacilityDto facilityDto = FacilityDto.builder()
-                .address(Address.builder()
-                        .jibunAddress("서울특별시 강남구 청담동 92-22")
-                        .latitude(0D)
-                        .longitude(0D)
-                        .build())
-                .category(FacilityType.HEALTH)
-                .build();
-        facilityService.createFacility(facilityDto);
+        String[] splitAddress = ADDRESS_EXAMPLE1.split(" ");
+        String l1 = splitAddress[0];
+        String l2 = splitAddress[1];
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/facilities/search")
-                        .param("l1", "서울특별시")
-                        .param("l2", "강남구")
+                        .param("l1", l1)
+                        .param("l2", l2)
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].address.jibunAddress")
-                        .value("서울특별시 강남구 청담동 92-22"));
+                .andExpect(jsonPath("$.content[0].address.jibunAddress").value(ADDRESS_EXAMPLE1));
     }
 
     @Test
@@ -205,8 +208,8 @@ class FacilityControllerTest {
                         .param("page", "0")
                         .param("size", "5")
                         .param("category", "HEALTH")
-                        .param("latitude", "37.4846553")
-                        .param("longitude", "126.9272265")
+                        .param("latitude", String.valueOf(TestInit.LAT_LNG[0][0]))
+                        .param("longitude", String.valueOf(TestInit.LAT_LNG[0][1]))
                         .param("distance", "1")
                         .header("Authorization", "Bearer " + accessToken))
                 .andExpect(status().isOk())
