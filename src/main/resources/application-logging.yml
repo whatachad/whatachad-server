@@ -1,0 +1,13 @@
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+logging:
+  level:
+    p6spy: info
+#    org.apache.hc.client5.http: debug # server to server http 통신 추척
+decorator:
+  datasource:
+    p6spy:
+      enable-logging: false # sql 추적이 필요할 때 true
