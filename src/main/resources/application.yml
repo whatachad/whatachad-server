@@ -6,11 +6,13 @@ spring:
     include:
       - datasource
       - whatachad
+      - logging
   mvc:
     pathmatch:
       matching-strategy: ant_path_matcher
   messages:
     basename: messages/validation
+    encoding: UTF-8
     cache-duration: -1
 --- # local 설정
 springdoc:

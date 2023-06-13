@@ -41,6 +41,11 @@ import static com.whatachad.app.type.DayworkPriority.*;
 @RequiredArgsConstructor
 public class TestInit {
 
+    /**
+     * 테스트 데이터:
+     * 신림역 기준으로 반경 100m 안에 있는 헬스장
+     */
+    public static final double[] USER_COORDINATE = {37.484231, 126.929699}; // 신림역 (구글맵 기준)
     public static final String[] FACILITY_TITLE = new String[]
             {"영휘트니스", "짐박스피트니스 신림역점",
                     "자마이카 피트니스 신림역점", "스포애니 보라매점",

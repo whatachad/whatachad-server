@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MailSendService {
 
 
-    @Value("${server.address}") // TODO : 추후에 profile 분리하고 application.yml에서 변수 관리
+    @Value("${server.address}")
     private String address;
     @Value("${server.port}")
     private int port;

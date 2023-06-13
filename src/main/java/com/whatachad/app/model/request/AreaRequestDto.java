@@ -28,4 +28,12 @@ public class AreaRequestDto {
         if (l3 != null) area.add(l3);
         return String.valueOf(area);
     }
+
+    public String getArea() {
+        StringJoiner area = new StringJoiner(DELIMITER);
+        if (l1 != null) area.add(l1);
+        if (l2 != null) area.add(l2);
+        if (l3 != null) area.add(l3);
+        return String.valueOf(area);
+    }
 }
