@@ -55,11 +55,6 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 
 # Project Setting
 
-## Pull Request
-- feature 브랜치 작성 및 remote 브랜치 생성
-- push하고 이에 대한 Pull Request 생성
-- Approve 되면 PR을 요청한 사람이 Merge 하기
-
 ## swagger
 - 아래 URL로 실행 가능
 - 로컬 : http://localhost:3000/swagger-ui/index.html
