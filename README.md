@@ -36,40 +36,11 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 
 ## 기능 목록
 ### ⭐️ 주요 기능 ⭐️
-- 사용자 위치를 기준으로 반경 거리를 설정하여 스포츠 시설을 조회
-- 야외 운동 기구 사용 후 위치 정보 등록하고 후기 남기기
-- (추후 업데이트)
-
-#### 기타 기능
-<details>
-<summary>유저</summary>
-<div markdown="1">
-
-</div>
-</details>
-
-<details>
-<summary>스포츠 시설</summary>
-<div markdown="1">
-
-</div>
-</details>
-
-<details>
-<summary>가계부</summary>
-<div markdown="1">
-
-</div>
-</details>
-
-<details>
-<summary>할 일</summary>
-<div markdown="1">
-
-</div>
-</details>
-
-
+- 사용자 위치를 기준으로 반경 거리를 설정하여 스포츠 시설을 조회합니다.
+- 반경 거리를 계산하지 않고 지역 코드를 이용하여 시설을 조회할 수도 있습니다.
+- 야외 운동 기구 사용 후 위치 정보 등록하고 후기를 남깁니다.
+- 캘린더에서 Todo 리스트 전체 훑어볼 수 있습니다.
+- 최근 Todo 리스트나 가계부를 조회하여 할 일 완료 여부와 수입/지출 기록을 확인합니다.
 
 
 ## ERD
@@ -84,11 +55,6 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 
 # Project Setting
 
-## Pull Request
-- feature 브랜치 작성 및 remote 브랜치 생성
-- push하고 이에 대한 Pull Request 생성
-- Approve 되면 PR을 요청한 사람이 Merge 하기
-
 ## swagger
 - 아래 URL로 실행 가능
 - 로컬 : http://localhost:3000/swagger-ui/index.html
@@ -102,16 +68,6 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 - db : whatachad
 - username : postgres
 - password : postgres
-
-## H2 (test 환경에서 사용 예정)
-- [H2 DBMS 설치](http://h2database.com/html/main.html)
-- 애플리케이션 서버를 실행한 후
-- 로컬 : http://localhost:3000/h2-console
-- 배포 : http://whatachad.site:3000/h2-console
-- 각 환경에 맞는 링크로 접속
-- JDBC URL에 jdbc:h2:mem:whatachad을 입력
-- username: sa / password: 
-- connect(연결)
 
 ## swagger에서 인증/인가
 - 회원가입 (아이디 : admin / 비밀번호 : admin) -> admin용 계정
