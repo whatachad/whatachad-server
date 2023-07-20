@@ -19,6 +19,7 @@ import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -76,6 +77,7 @@ public class TestInit {
         initializers.orderedStream().forEach(OrderedPostConstruct::init);
     }
 
+    @Profile({"local", "dev"})
     @Component
     @Order(1)
     @RequiredArgsConstructor
@@ -117,6 +119,7 @@ public class TestInit {
         }
     }
 
+    @Profile("local")
     @Component
     @Order(2)
     @RequiredArgsConstructor
@@ -146,6 +149,7 @@ public class TestInit {
         }
     }
 
+    @Profile("local")
     @Component
     @Order(3)
     @RequiredArgsConstructor
