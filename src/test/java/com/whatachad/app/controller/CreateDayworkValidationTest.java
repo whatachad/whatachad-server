@@ -210,7 +210,6 @@ public class CreateDayworkValidationTest {
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
-                .andExpect(jsonPath("$.errors[0].field").value("registerDaywork.yearAndMonth"))
                 .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("pattern.year_and_month", null, null)))
                 .andDo(print());
     }

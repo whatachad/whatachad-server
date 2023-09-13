@@ -14,10 +14,6 @@ public class TestDataProcessor {
     @Autowired
     private EntityManager em;
 
-    public TestDataProcessor(EntityManager em) {
-        this.em = em;
-    }
-
     @Transactional
     public void rollback() {
         em.createQuery("delete from Facility f where (f.title not in :title) or (f.title is null)")

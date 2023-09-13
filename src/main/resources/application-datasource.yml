@@ -6,7 +6,7 @@ spring:
     open-in-view: false
     generate-ddl: true
     hibernate:
-      ddl-auto: create-drop # TODO : test 환경에서만 쓸 것
+      ddl-auto: create # TODO : test 환경에서만 쓸 것
 --- # local 설정
 spring:
   config:

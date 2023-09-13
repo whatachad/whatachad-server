@@ -58,7 +58,6 @@ public class SubscribeService {
     /**
      * private Method
      */
-    @Transactional
     private boolean existFollow(String followId, String followingId) {
         return subscribeRepository.existsFollow(followId, followingId);
     }

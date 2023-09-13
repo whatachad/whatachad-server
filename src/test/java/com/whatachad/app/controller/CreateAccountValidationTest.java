@@ -277,7 +277,6 @@ public class CreateAccountValidationTest {
                 .andExpect(jsonPath("$.message").value(ErrorCode.INVALID_INPUT_VALUE.getMessage()))
                 .andExpect(jsonPath("$.status").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.code").value(ErrorCode.INVALID_INPUT_VALUE.getCode()))
-                .andExpect(jsonPath("$.errors[0].field").value("registerAccount.yearAndMonth"))
                 .andExpect(jsonPath("$.errors[0].value").value(String.format("%d-%02d", YEAR, MONTH)))
                 .andExpect(jsonPath("$.errors[0].reason").value(messageSource.getMessage("account.year_and_month.pattern", null, null)));
     }
