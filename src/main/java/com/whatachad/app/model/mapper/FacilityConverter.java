@@ -80,7 +80,8 @@ public class FacilityConverter {
         if (Objects.nonNull(regionCode)) {
             return regionCode;
         }
-        throw new CommonException(BError.NOT_VALID, "address");
+        return null; // TODO: 유효하지 못한 주소에 대해서는 지역코드를 매핑하지 못한다. 이는 지역코드 데이터를 갱신할 필요가 있다는 뜻이다.
+//        throw new CommonException(BError.NOT_VALID, "address");
     }
 
     //== private methods ==//

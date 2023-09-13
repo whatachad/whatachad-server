@@ -31,7 +31,9 @@ public class LocalMapService {
                 .toUriString();
 
         ReverseGeocodeDto response = restTemplate.getForObject(requestUrl, ReverseGeocodeDto.class);
-        return Objects.requireNonNull(response)
+        assert response != null;
+        if (response.getDocuments().size() == 0) return null;
+        return response
                 .getDocuments()
                 .get(0)
                 .getAddress()
@@ -52,6 +54,7 @@ public class LocalMapService {
         coordinates.add(new double[]{lat, lng});
         return coordinates.stream()
                 .map(c -> reverseGeocode(c[0], c[1]))
+                .filter(Objects::nonNull)
                 .toArray(String[]::new);
     }
 
