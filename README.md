@@ -55,15 +55,7 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 
 # Project Setting
 
-## swagger
-- 아래 URL로 실행 가능
-- 로컬 : http://localhost:3000/swagger-ui/index.html
-- 배포 : http://whatachad.site:3000/swagger-ui/index.html 
-
 ## PostgreSQL
-- [PostgreSQL 설치](https://www.postgresql.org/download/)
-- 혹은 각 OS 환경에 따라서 CLI로 설치
-- terminal 혹은 pgadmin을 이용하여 DB server에 접속
 - port : 5432
 - db : whatachad
 - username : postgres
