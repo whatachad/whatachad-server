@@ -32,7 +32,7 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 ![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
 
 ### Cloud
-![Oracle](https://img.shields.io/badge/Oracle-F80000?style=for-the-badge&logo=oracle&logoColor=white)
+![AWS](https://img.shields.io/badge/aws-FF9900?style=for-the-badge&logo=aws&logoColor=white)
 
 ## 기능 목록
 ### ⭐️ 주요 기능 ⭐️
