@@ -42,17 +42,17 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 - 최근 Todo 리스트나 가계부를 조회하여 할 일 완료 여부와 수입/지출 기록을 확인합니다.
 
 ## 개발 일지
-![업데이트 로직을 어떻게 구현할 것인가](https://whispering-sloop-711.notion.site/update-4f665be3ce5040a984051dc4226b96f1?pvs=4)
-![mapping 로직을 어디서 사용할 것인가](https://whispering-sloop-711.notion.site/mapping-ea8a0270e69741cf9daf09b16f35fb70?pvs=4)
-![지역명을 키워드로 스포츠 시설 검색](https://whispering-sloop-711.notion.site/8088b1caf1fc478abf32bfe7da4a0a8b?pvs=4)
-![CommandLineRunner vs. @PostConstruct](https://whispering-sloop-711.notion.site/CommandLineRunner-vs-PostConstruct-9cf528752dd54c7093527c063c6063b0?pvs=4)
-![반경 몇 km 이내 조회는 어떻게?](https://whispering-sloop-711.notion.site/km-3470497eb8cd4aab82afe152485b92ed?pvs=4)
-![@BeforeEach와 @AfterEach를 사용할 때의 트랜잭션](https://whispering-sloop-711.notion.site/BeforeEach-AfterEach-6f55b5a930cc4f35a8e640304d6f7483?pvs=4)
-![DaySchedule 추가](https://whispering-sloop-711.notion.site/DaySchedule-e4c017cab15742adb4144ff98c0b4ac8?pvs=4)
-![mapping 로직 리팩토링](https://whispering-sloop-711.notion.site/mapping-5278db89a7b846b5a4fac387b22472de?pvs=4)
-![N + 1 문제 해결(1)](https://whispering-sloop-711.notion.site/N-1-1-1f3fc1b4f90742f1898020f823b80959?pvs=4)
-![N + 1 문제 해결(2)](https://whispering-sloop-711.notion.site/N-1-2-7a5488fad7b346469e34eb0faf89a41f?pvs=4)
-![테스트 데이터 초기화 문제](https://whispering-sloop-711.notion.site/cfed391be0fd41ec97720ddc84d1dd8d?pvs=4)
+1. [업데이트 로직을 어떻게 구현할 것인가](https://whispering-sloop-711.notion.site/update-4f665be3ce5040a984051dc4226b96f1?pvs=4)  
+2. [mapping 로직을 어디서 사용할 것인가](https://whispering-sloop-711.notion.site/mapping-ea8a0270e69741cf9daf09b16f35fb70?pvs=4)  
+3. [지역명을 키워드로 스포츠 시설 검색](https://whispering-sloop-711.notion.site/8088b1caf1fc478abf32bfe7da4a0a8b?pvs=4)  
+4. [CommandLineRunner vs. @PostConstruct](https://whispering-sloop-711.notion.site/CommandLineRunner-vs-PostConstruct-9cf528752dd54c7093527c063c6063b0?pvs=4)  
+5. [반경 몇 km 이내 조회는 어떻게?](https://whispering-sloop-711.notion.site/km-3470497eb8cd4aab82afe152485b92ed?pvs=4)  
+6. [@BeforeEach와 @AfterEach를 사용할 때의 트랜잭션](https://whispering-sloop-711.notion.site/BeforeEach-AfterEach-6f55b5a930cc4f35a8e640304d6f7483?pvs=4)  
+7. [DaySchedule 추가](https://whispering-sloop-711.notion.site/DaySchedule-e4c017cab15742adb4144ff98c0b4ac8?pvs=4)  
+8. [mapping 로직 리팩토링](https://whispering-sloop-711.notion.site/mapping-5278db89a7b846b5a4fac387b22472de?pvs=4)  
+9. [N + 1 문제 해결(1)](https://whispering-sloop-711.notion.site/N-1-1-1f3fc1b4f90742f1898020f823b80959?pvs=4)  
+10. [N + 1 문제 해결(2)](https://whispering-sloop-711.notion.site/N-1-2-7a5488fad7b346469e34eb0faf89a41f?pvs=4)  
+11. [테스트 데이터 초기화 문제](https://whispering-sloop-711.notion.site/cfed391be0fd41ec97720ddc84d1dd8d?pvs=4)  
 
 
 ## 예외처리 계층 구조
