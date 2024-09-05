@@ -59,22 +59,3 @@ What a Chad 프로젝트는 자기 계발에 열정을 다하는 모든 분들�
 
 ## 예외처리 계층 구조
 <img width="2899" alt="예외처리 계층 구조" src="https://github.com/whatachad/whatachad-server/assets/93817551/3a07b8ec-780c-412b-908e-3e7d713548f6">
-
-
------------------------------------
-
-# Project Setting
-
-## PostgreSQL
-- port : 5432
-- db : whatachad
-- username : postgres
-- password : postgres
-
-## swagger에서 인증/인가
-- 회원가입 (아이디 : admin / 비밀번호 : admin) -> admin용 계정
-- login 후 access token 을 발급 받고
-- 로컬 : http://localhost:3000/swagger-ui/index.html
-- 배포 : http://whatachad.site:3000/swagger-ui/index.html 
-- 위 링크에서 자물쇠 모양을 누르고 "Bearer" + " " + <access token\> 입력
-- 빠른 authorization을 원한다면 debug만 입력
